@@ -79,14 +79,6 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 
 
 bool maxlvl;
-int e = 0;
-
-void Patches() {
-    gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A03A8FD2C0035FD6");
-    while (e == 0) {
-        if (maxlvl) { gPatches.maxlvl.Modify(); } else { gPatches.maxlvl.Restore(); }
-    }
-}
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -95,6 +87,8 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader("AccountMods Mods")) {
             ImGui::Checkbox("Max Level", &maxlvl);
         }
+        gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A03A8FD2C0035FD6");
+        if (maxlvl) { gPatches.maxlvl.Modify(); } else { gPatches.maxlvl.Restore(); }
         ImGui::End();
     }
 }
@@ -125,8 +119,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
 
-
-    Patches();
     DrawMenu();
 
     ImGui::EndFrame();
