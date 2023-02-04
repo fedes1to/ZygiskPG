@@ -30,7 +30,7 @@
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     // boolean function
-    MemoryPatch maxlvl;
+    MemoryPatch maxlvl, maxlvl1;
     // etc...
 }gPatches;
 
@@ -78,17 +78,85 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 }
 
 
-bool maxlvl;
+bool maxlvl, maxlvl1, maxlvl2, maxlvl3, maxlvl4, maxlvl5, maxlvl6, maxlvl7, maxlvl8;
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("AccountMods Mods")) {
-            ImGui::Checkbox("Max Level", &maxlvl);
+            ImGui::Checkbox("Max Level ( DISABLE 1 AND ENABLE ANOTHER ONE AFTER, check if it actually patched in logcat)", &maxlvl);
+            ImGui::Checkbox("Max Level 1", &maxlvl1);
+            ImGui::Checkbox("Max Level 2", &maxlvl2);
+            ImGui::Checkbox("Max Level 3", &maxlvl3);
+            ImGui::Checkbox("Max Level 4", &maxlvl4);
+            ImGui::Checkbox("Max Level 5", &maxlvl5);
+            ImGui::Checkbox("Max Level 6", &maxlvl6);
+            ImGui::Checkbox("Max Level 7", &maxlvl7);
+            ImGui::Checkbox("Max Level 8", &maxlvl8);
         }
         gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A03A8FD2C0035FD6");
-        if (maxlvl) { gPatches.maxlvl.Modify(); } else { gPatches.maxlvl.Restore(); }
+        if (maxlvl) {
+           if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL1");
+            }
+        }
+
+        if(maxlvl1){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C2655C, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL1");
+            }
+        }
+
+        if(maxlvl2){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26564, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL2");
+            }
+        }
+
+        if(maxlvl3){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C2656C, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL3");
+            }
+        }
+
+        if(maxlvl4){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26574, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL4");
+            }
+        }
+
+        if(maxlvl5){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C2657C, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL5");
+            }
+        }
+
+        if(maxlvl6){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C2657D, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL6");
+            }
+        }
+
+        if(maxlvl7){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26584, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL7");
+            }
+        }
+
+        if(maxlvl8){
+            gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C2658C, "A03A8FD2C0035FD6");
+            if (gPatches.maxlvl.Modify()) {
+                LOGE("PATCHED MAXLVL8");
+            }
+        }
         ImGui::End();
     }
 }
