@@ -27,6 +27,13 @@
 
 #define GamePackageName "com.pixel.gun3d"
 
+struct GlobalPatches {
+    // let's assume we have patches for these functions for whatever game
+    // boolean function
+    MemoryPatch maxlvl;
+    // etc...
+}gPatches;
+
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
         return 0;
@@ -70,7 +77,16 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     return;
 }
 
+
 bool maxlvl;
+int e = 0;
+
+void Patches() {
+    gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A03A8FD2C0035FD6");
+    while (e == 0) {
+        if (maxlvl) { gPatches.maxlvl.Modify(); } else { gPatches.maxlvl.Restore(); }
+    }
+}
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -110,7 +126,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     ImGui::NewFrame();
 
 
-
+    Patches();
     DrawMenu();
 
     ImGui::EndFrame();
