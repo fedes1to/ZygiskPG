@@ -59,22 +59,12 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 
 bool maxlvl;
 
-int (*oldExperienceController)(void* obj);
-int ExperienceController(void* obj){
-    if(obj != nullptr && maxlvl){
-        return 32645;
-        LOGW("OBJ ISNT NULL AND ITS PATCHED");
+void(*oldPlayer_Move_c)(void* obj);
+void Player_Move_c(void* obj){
+    if(obj != nullptr){
+        LOGW("SEX");
     }
-    oldExperienceController(obj);
-}
-
-int (*oldExperienceController1)(void* obj);
-int ExperienceController1(void* obj){
-    if(obj != nullptr && maxlvl){
-        return 32645;
-        LOGW("OBJ1 ISNT NULL AND ITS PATCHED");
-    }
-    oldExperienceController(obj);
+    oldPlayer_Move_c(obj);
 }
 
 void DrawMenu(){
@@ -127,8 +117,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
 void *hack_thread(void *arg) {
     sleep(5);
-    DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x1C26554), (void*) ExperienceController, (void**)&oldExperienceController);
-    DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x1C265B4), (void*) ExperienceController1, (void**)&oldExperienceController1);
+    DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x473F064), (void*)Player_Move_c, (void**)&oldPlayer_Move_c);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
