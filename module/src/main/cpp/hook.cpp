@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/system_properties.h>
 #include <dlfcn.h>
-#include <dobby.h>
 #include <dlfcn.h>
 #include <cstdlib>
 #include <cinttypes>
@@ -20,30 +19,11 @@
 #include "backends/imgui_impl_android.h"
 #include "Memory/MemoryPatch.h"
 #include "Include/obfuscate.h"
+#include "Includes/Dobby/dobbyForHooks.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
-struct GlobalPatches {
-    // let's assume we have patches for these functions for whatever game
-    // boolean function
-    MemoryPatch maxLevel;
-    // etc...
-}gPatches;
 
-bool maxLevel;
-bool runonce = true;
-
-void Patches(){
-    if (maxLevel)
-    {
-        if(runonce){
-            gPatches.maxLevel = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A0F08FD2C0035FD6");
-            gPatches.maxLevel.Modify();
-            runonce = false;
-            LOGW("Patched successfully");
-        }
-    }
-}
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -79,13 +59,22 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     return;
 }
 
+bool maxlvl;
+
+int (*oldExperienceController)(void* obj);
+int ExperienceController(void* obj){
+    if(obj != nullptr && maxlvl){
+        return 32645;
+    }
+    oldExperienceController(obj);
+}
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
-            ImGui::Checkbox("Max Level", &maxLevel);
+            ImGui::Checkbox("Max Level", &maxlvl);
         }
         ImGui::End();
     }
@@ -130,13 +119,14 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
 void *hack_thread(void *arg) {
     sleep(5);
+    DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x1C26554), (void*) ExperienceController, (void**)&oldExperienceController);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
-    DobbyHook((void*)eglSwapBuffers,(dobby_dummy_func_t)hook_eglSwapBuffers,
-              (dobby_dummy_func_t*)&old_eglSwapBuffers);
+    DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
+              (void**)&old_eglSwapBuffers);
     void *sym_input = DobbySymbolResolver(("/system/lib/libinput.so"), ("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE"));
     if (NULL != sym_input) {
-        DobbyHook(sym_input,(dobby_dummy_func_t)myInput,(dobby_dummy_func_t*)&origInput);
+        DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
     LOGI("Draw Done!");
     return nullptr;
