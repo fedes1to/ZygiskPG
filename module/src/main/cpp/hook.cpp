@@ -23,8 +23,6 @@
 
 #define GamePackageName "com.pixel.gun3d"
 
-
-
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
         return 0;
