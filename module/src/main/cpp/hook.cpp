@@ -29,7 +29,7 @@ using KittyScanner::RegisterNativeFn;
 
 ProcMap g_il2cppBaseMap;
 
-#define GamePackageName "com.fingerlegend.hidenseek"
+#define GamePackageName "com.pixel.gun.3d"
 
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
