@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdint.h>
-
 typedef uintptr_t addr_t;
 
 #include <mach-o/dyld.h>
@@ -26,5 +25,4 @@ typedef struct nlist nlist_t;
 segment_command_t *macho_kit_get_segment_by_name(mach_header_t *mach_header, const char *segname);
 
 // get macho section by segment name and section name
-section_t *macho_kit_get_section_by_name(mach_header_t *mach_header, const char *segname,
-                                         const char *sectname);
+section_t *macho_kit_get_section_by_name(mach_header_t *mach_header, const char *segname, const char *sectname);

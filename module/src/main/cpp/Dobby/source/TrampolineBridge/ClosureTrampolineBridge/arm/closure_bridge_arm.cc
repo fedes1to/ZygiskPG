@@ -1,5 +1,4 @@
 #include "platform_macro.h"
-
 #if defined(TARGET_ARCH_ARM)
 
 #include "dobby_internal.h"

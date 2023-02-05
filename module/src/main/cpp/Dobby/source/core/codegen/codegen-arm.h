@@ -6,17 +6,17 @@
 #include "core/assembler/assembler-arm.h"
 
 namespace zz {
-    namespace arm {
+namespace arm {
 
-        class CodeGen : public CodeGenBase {
-        public:
-            CodeGen(TurboAssembler *turbo_assembler) : CodeGenBase(turbo_assembler) {
-            }
+class CodeGen : public CodeGenBase {
+public:
+  CodeGen(TurboAssembler *turbo_assembler) : CodeGenBase(turbo_assembler) {
+  }
 
-            void LiteralLdrBranch(uint32_t address);
-        };
+  void LiteralLdrBranch(uint32_t address);
+};
 
-    } // namespace arm
+} // namespace arm
 } // namespace zz
 
 #endif

@@ -8,16 +8,15 @@
 
 class FunctionInlineHookRouting : public InterceptRouting {
 public:
-    FunctionInlineHookRouting(InterceptEntry *entry, dobby_dummy_func_t replace_func)
-            : InterceptRouting(entry) {
-        this->replace_func = replace_func;
-    }
+  FunctionInlineHookRouting(InterceptEntry *entry, dobby_dummy_func_t replace_func) : InterceptRouting(entry) {
+    this->replace_func = replace_func;
+  }
 
-    void DispatchRouting() override;
-
-private:
-    void BuildRouting();
+  void DispatchRouting() override;
 
 private:
-    dobby_dummy_func_t replace_func;
+  void BuildRouting();
+
+private:
+  dobby_dummy_func_t replace_func;
 };

@@ -5,7 +5,7 @@
 #include "core/arch/Cpu.h"
 
 namespace zz {
-    namespace x86 {
+namespace x86 {
 
 #define GENERAL_REGISTERS(V)                                                                                           \
   V(eax)                                                                                                               \
@@ -17,58 +17,54 @@ namespace zz {
   V(esi)                                                                                                               \
   V(edi)
 
-        enum RegisterCode {
+enum RegisterCode {
 #define REGISTER_CODE(R) kRegCode_##R,
-            GENERAL_REGISTERS(REGISTER_CODE)
+  GENERAL_REGISTERS(REGISTER_CODE)
 #undef REGISTER_CODE
-            kRegAfterLast
-        };
+      kRegAfterLast
+};
 
-        class CPURegister : public RegisterBase {
-        public:
-            enum RegisterType {
-                kDefault, kInvalid
-            };
+class CPURegister : public RegisterBase {
+public:
+  enum RegisterType { kDefault, kInvalid };
 
-            constexpr CPURegister(int code, int size, RegisterType type) : RegisterBase(code),
-                                                                           reg_size_(size),
-                                                                           reg_type_(type) {
-            }
+  constexpr CPURegister(int code, int size, RegisterType type) : RegisterBase(code), reg_size_(size), reg_type_(type) {
+  }
 
-            static constexpr CPURegister Create(int code, int size, RegisterType type) {
-                return CPURegister(code, size, type);
-            }
+  static constexpr CPURegister Create(int code, int size, RegisterType type) {
+    return CPURegister(code, size, type);
+  }
 
-            static constexpr CPURegister from_code(int code) {
-                return CPURegister(code, 0, kDefault);
-            }
+  static constexpr CPURegister from_code(int code) {
+    return CPURegister(code, 0, kDefault);
+  }
 
-            static constexpr CPURegister InvalidRegister() {
-                return CPURegister(0, 0, kInvalid);
-            }
+  static constexpr CPURegister InvalidRegister() {
+    return CPURegister(0, 0, kInvalid);
+  }
 
-            RegisterType type() const {
-                return reg_type_;
-            }
+  RegisterType type() const {
+    return reg_type_;
+  }
 
-        public:
-            bool is_byte_register() const {
-                return reg_code_ <= 3;
-            }
+public:
+  bool is_byte_register() const {
+    return reg_code_ <= 3;
+  }
 
-            int size() {
-                return reg_size_;
-            }
+  int size() {
+    return reg_size_;
+  }
 
-        private:
-            RegisterType reg_type_;
-            int reg_size_;
-        };
+private:
+  RegisterType reg_type_;
+  int reg_size_;
+};
 
-        typedef CPURegister Register;
+typedef CPURegister Register;
 
 #define DEFINE_REGISTER(R) constexpr Register R = Register::Create(kRegCode_##R, 32, CPURegister::kDefault);
-        GENERAL_REGISTERS(DEFINE_REGISTER)
+GENERAL_REGISTERS(DEFINE_REGISTER)
 #undef DEFINE_REGISTER
 
 #define DOUBLE_REGISTERS(V)                                                                                            \
@@ -84,47 +80,45 @@ namespace zz {
 #define FLOAT_REGISTERS DOUBLE_REGISTERS
 #define SIMD128_REGISTERS DOUBLE_REGISTERS
 
-        constexpr bool kPadArguments = false;
-        constexpr bool kSimpleFPAliasing = true;
-        constexpr bool kSimdMaskRegisters = false;
+constexpr bool kPadArguments = false;
+constexpr bool kSimpleFPAliasing = true;
+constexpr bool kSimdMaskRegisters = false;
 
-        enum DoubleRegisterCode {
+enum DoubleRegisterCode {
 #define REGISTER_CODE(R) kDoubleCode_##R,
-            DOUBLE_REGISTERS(REGISTER_CODE)
+  DOUBLE_REGISTERS(REGISTER_CODE)
 #undef REGISTER_CODE
-            kDoubleAfterLast
-        };
+      kDoubleAfterLast
+};
 
-        class XMMRegister : public RegisterBase {
-        public:
-            enum RegisterType {
-                kInvalid
-            };
+class XMMRegister : public RegisterBase {
+public:
+  enum RegisterType { kInvalid };
 
-            constexpr XMMRegister(int code) : RegisterBase(code) {
-            }
+  constexpr XMMRegister(int code) : RegisterBase(code) {
+  }
 
-            static constexpr XMMRegister Create(int code) {
-                return XMMRegister(code);
-            }
+  static constexpr XMMRegister Create(int code) {
+    return XMMRegister(code);
+  }
 
-            static constexpr XMMRegister InvalidRegister() {
-                return XMMRegister(0);
-            }
+  static constexpr XMMRegister InvalidRegister() {
+    return XMMRegister(0);
+  }
 
-        private:
-        };
+private:
+};
 
-        typedef XMMRegister FloatRegister;
-        typedef XMMRegister DoubleRegister;
-        typedef XMMRegister Simd128Register;
-        typedef XMMRegister FPURegister;
+typedef XMMRegister FloatRegister;
+typedef XMMRegister DoubleRegister;
+typedef XMMRegister Simd128Register;
+typedef XMMRegister FPURegister;
 
 #define DEFINE_REGISTER(R) constexpr DoubleRegister R = DoubleRegister::Create(kDoubleCode_##R);
-        DOUBLE_REGISTERS(DEFINE_REGISTER)
+DOUBLE_REGISTERS(DEFINE_REGISTER)
 #undef DEFINE_REGISTER
 
-    } // namespace x86
+} // namespace x86
 } // namespace zz
 
 #endif

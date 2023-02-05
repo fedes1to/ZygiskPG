@@ -5,31 +5,31 @@
 
 namespace zz {
 
-    class OSThread {
-    public:
-        typedef int LocalStorageKey;
+class OSThread {
+public:
+  typedef int LocalStorageKey;
 
-        static int GetCurrentProcessId();
+  static int GetCurrentProcessId();
 
-        static int GetCurrentThreadId();
+  static int GetCurrentThreadId();
 
-        // Thread-local storage.
-        static LocalStorageKey CreateThreadLocalKey();
+  // Thread-local storage.
+  static LocalStorageKey CreateThreadLocalKey();
 
-        static void DeleteThreadLocalKey(LocalStorageKey key);
+  static void DeleteThreadLocalKey(LocalStorageKey key);
 
-        static void *GetThreadLocal(LocalStorageKey key);
+  static void *GetThreadLocal(LocalStorageKey key);
 
-        static int GetThreadLocalInt(LocalStorageKey key);
+  static int GetThreadLocalInt(LocalStorageKey key);
 
-        static void SetThreadLocal(LocalStorageKey key, void *value);
+  static void SetThreadLocal(LocalStorageKey key, void *value);
 
-        static void SetThreadLocalInt(LocalStorageKey key, int value);
+  static void SetThreadLocalInt(LocalStorageKey key, int value);
 
-        static bool HasThreadLocal(LocalStorageKey key);
+  static bool HasThreadLocal(LocalStorageKey key);
 
-        static void *GetExistingThreadLocal(LocalStorageKey key);
-    };
+  static void *GetExistingThreadLocal(LocalStorageKey key);
+};
 
 } // namespace zz
 

@@ -19,22 +19,22 @@
 
 class FunctionWrapperRouting : public InterceptRouting {
 public:
-    FunctionWrapperRouting(InterceptEntry *entry) : InterceptRouting(entry) {
-    }
+  FunctionWrapperRouting(InterceptEntry *entry) : InterceptRouting(entry) {
+  }
 
-    void DispatchRouting();
+  void DispatchRouting();
 
-    void *GetTrampolineTarget();
-
-private:
-    void BuildPreCallRouting();
-
-    void BuildPostCallRouting();
+  void *GetTrampolineTarget();
 
 private:
-    void *prologue_dispatch_bridge;
+  void BuildPreCallRouting();
 
-    void *epilogue_dispatch_bridge;
+  void BuildPostCallRouting();
+
+private:
+  void *prologue_dispatch_bridge;
+
+  void *epilogue_dispatch_bridge;
 };
 
 #endif

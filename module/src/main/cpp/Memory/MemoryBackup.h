@@ -10,7 +10,8 @@
 
 #include "KittyMemory.h"
 
-class MemoryBackup {
+class MemoryBackup
+{
 private:
     uintptr_t _address;
     size_t _size;
@@ -25,8 +26,7 @@ public:
     /*
      * expects library name and relative address
      */
-    MemoryBackup(const char *libraryName, uintptr_t address, size_t backup_size,
-                 bool useMapCache = true);
+    MemoryBackup(const char *libraryName, uintptr_t address, size_t backup_size, bool useMapCache = true);
 
     /*
      * expects absolute address

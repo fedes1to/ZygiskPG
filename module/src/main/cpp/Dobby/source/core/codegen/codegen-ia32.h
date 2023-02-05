@@ -6,17 +6,17 @@
 #include "core/assembler/assembler-ia32.h"
 
 namespace zz {
-    namespace x86 {
+namespace x86 {
 
-        class CodeGen : public CodeGenBase {
-        public:
-            CodeGen(TurboAssembler *turbo_assembler) : CodeGenBase(turbo_assembler) {
-            }
+class CodeGen : public CodeGenBase {
+public:
+  CodeGen(TurboAssembler *turbo_assembler) : CodeGenBase(turbo_assembler) {
+  }
 
-            void JmpNear(uint32_t address);
-        };
+  void JmpNear(uint32_t address);
+};
 
-    } // namespace x86
+} // namespace x86
 } // namespace zz
 
 #endif

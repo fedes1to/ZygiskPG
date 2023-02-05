@@ -1,5 +1,4 @@
 #include "platform_macro.h"
-
 #if TARGET_ARCH_ARM64
 
 #include "core/assembler/assembler-arm64.h"

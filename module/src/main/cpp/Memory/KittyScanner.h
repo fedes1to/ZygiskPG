@@ -3,7 +3,8 @@
 #include <string>
 #include <cstdint>
 
-namespace KittyScanner {
+namespace KittyScanner
+{
 
     bool compare(const char *data, const char *pattern, const char *mask);
 

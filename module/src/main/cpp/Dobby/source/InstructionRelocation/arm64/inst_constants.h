@@ -29,21 +29,21 @@ enum UnconditionalBranchOp {
 
 // Compare and branch.
 enum CompareBranchOp {
-    CompareBranchFixed = 0x34000000,
-    CompareBranchFixedMask = 0x7E000000,
-    CompareBranchMask = 0xFF000000,
+  CompareBranchFixed = 0x34000000,
+  CompareBranchFixedMask = 0x7E000000,
+  CompareBranchMask = 0xFF000000,
 };
 
 // Conditional branch.
 enum ConditionalBranchOp {
-    ConditionalBranchFixed = 0x54000000,
-    ConditionalBranchFixedMask = 0xFE000000,
-    ConditionalBranchMask = 0xFF000010,
+  ConditionalBranchFixed = 0x54000000,
+  ConditionalBranchFixedMask = 0xFE000000,
+  ConditionalBranchMask = 0xFF000010,
 };
 
 // Test and branch.
 enum TestBranchOp {
-    TestBranchFixed = 0x36000000,
-    TestBranchFixedMask = 0x7E000000,
-    TestBranchMask = 0x7F000000,
+  TestBranchFixed = 0x36000000,
+  TestBranchFixedMask = 0x7E000000,
+  TestBranchMask = 0x7F000000,
 };

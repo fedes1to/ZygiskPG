@@ -22,6 +22,9 @@
 #include "Memory/MemoryPatch.h"
 
 
+
+
+
 #define GamePackageName "com.pixel.gun3d"
 
 struct GlobalPatches {
@@ -29,7 +32,7 @@ struct GlobalPatches {
     // boolean function
     MemoryPatch maxlvl;
     // etc...
-} gPatches;
+}gPatches;
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -57,28 +60,34 @@ int isGame(JNIEnv *env, jstring appDataDir) {
 }
 
 
+
+
+
+
 int glHeight, glWidth;
 bool setupimg;
 
 
+
+
+
 HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     origInput(thiz, ex_ab, ex_ac);
-    ImGui_ImplAndroid_HandleInputEvent((AInputEvent *) thiz);
+    ImGui_ImplAndroid_HandleInputEvent((AInputEvent *)thiz);
     return;
 }
 
 
 bool maxlvl;
 
-void DrawMenu() {
+void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("AccountMods Mods")) {
             ImGui::Checkbox("Max Level", &maxlvl);
         }
-        gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554,
-                                                     "A0 3A 8F D2 C0 03 5F D6");
+        gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A03A8FD2C0035FD6");
         if (maxlvl) { gPatches.maxlvl.Modify(); } else { gPatches.maxlvl.Restore(); }
         ImGui::End();
     }
@@ -90,13 +99,12 @@ void SetupImgui() {
     ImGuiIO &io = ImGui::GetIO();
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
     ImGui_ImplOpenGL3_Init("#version 100");
-    ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
 
-    ImGui::GetStyle().ScaleAllSizes(6.0f);
+    ImGui::GetStyle().ScaleAllSizes(3.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
-
 EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     eglQuerySurface(dpy, surface, EGL_WIDTH, &glWidth);
     eglQuerySurface(dpy, surface, EGL_HEIGHT, &glHeight);
@@ -115,22 +123,25 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
     ImGui::EndFrame();
     ImGui::Render();
-    glViewport(0, 0, (int) io.DisplaySize.x, (int) io.DisplaySize.y);
+    glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     return old_eglSwapBuffers(dpy, surface);
 }
+
+
+
+
 
 
 void *hack_thread(void *arg) {
     sleep(5);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
-    DobbyHook((void *) eglSwapBuffers, (dobby_dummy_func_t) hook_eglSwapBuffers,
-              (dobby_dummy_func_t *) &old_eglSwapBuffers);
-    void *sym_input = DobbySymbolResolver(("/system/lib/libinput.so"),
-                                          ("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE"));
+    DobbyHook((void*)eglSwapBuffers,(dobby_dummy_func_t)hook_eglSwapBuffers,
+         (dobby_dummy_func_t*)&old_eglSwapBuffers);
+    void *sym_input = DobbySymbolResolver(("/system/lib/libinput.so"), ("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE"));
     if (NULL != sym_input) {
-        DobbyHook(sym_input, (dobby_dummy_func_t) myInput, (dobby_dummy_func_t *) &origInput);
+        DobbyHook(sym_input,(dobby_dummy_func_t)myInput,(dobby_dummy_func_t*)&origInput);
     }
     LOGI("Draw Done!");
     return nullptr;

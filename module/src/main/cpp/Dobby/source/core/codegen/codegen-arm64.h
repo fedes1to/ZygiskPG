@@ -6,17 +6,16 @@
 #include "core/assembler/assembler-arm64.h"
 
 namespace zz {
-    namespace arm64 {
+namespace arm64 {
 
-        class CodeGen : public CodeGenBase {
-        public:
-            CodeGen(TurboAssembler *turbo_assembler) : CodeGenBase(turbo_assembler) {
-            }
+class CodeGen : public CodeGenBase {
+public:
+  CodeGen(TurboAssembler *turbo_assembler) : CodeGenBase(turbo_assembler) {
+  }
+  void LiteralLdrBranch(uint64_t address);
+};
 
-            void LiteralLdrBranch(uint64_t address);
-        };
-
-    } // namespace arm64
+} // namespace arm64
 } // namespace zz
 
 #endif

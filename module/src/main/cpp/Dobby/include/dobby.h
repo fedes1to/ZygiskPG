@@ -15,11 +15,11 @@ void log_switch_to_syslog();
 void log_switch_to_file(const char *path);
 
 typedef enum {
-    kMemoryOperationSuccess,
-    kMemoryOperationError,
-    kNotSupportAllocateExecutableMemory,
-    kNotEnough,
-    kNone
+  kMemoryOperationSuccess,
+  kMemoryOperationError,
+  kNotSupportAllocateExecutableMemory,
+  kNotEnough,
+  kNone
 } MemoryOperationError;
 
 typedef uintptr_t addr_t;
@@ -108,17 +108,17 @@ typedef struct {
 } DobbyRegisterContext;
 #elif defined(TARGET_ARCH_IA32)
 typedef struct _RegisterContext {
-    uint32_t dummy_0;
-    uint32_t esp;
+  uint32_t dummy_0;
+  uint32_t esp;
 
-    uint32_t dummy_1;
-    uint32_t flags;
+  uint32_t dummy_1;
+  uint32_t flags;
 
-    union {
-        struct {
-            uint32_t eax, ebx, ecx, edx, ebp, esp, edi, esi;
-        } regs;
-    } general;
+  union {
+    struct {
+      uint32_t eax, ebx, ecx, edx, ebp, esp, edi, esi;
+    } regs;
+  } general;
 
 } DobbyRegisterContext;
 #elif defined(TARGET_ARCH_X64)
@@ -139,9 +139,7 @@ typedef struct {
 
 #define RT_FAILED -1
 #define RT_SUCCESS 0
-typedef enum {
-    RS_FAILED = -1, RS_SUCCESS = 0
-} RetStatus;
+typedef enum { RS_FAILED = -1, RS_SUCCESS = 0 } RetStatus;
 
 // DobbyWrap <==> DobbyInstrument, so use DobbyInstrument instead of DobbyWrap
 #if 0

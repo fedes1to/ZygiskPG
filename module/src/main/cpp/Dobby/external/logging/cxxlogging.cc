@@ -1,9 +1,8 @@
 #include "logging/cxxlogging.h"
 
 #if 1 || defined(BUILDING_KERNEL)
-
 void Logger::setLogLevel(LogLevel level) {
-    log_level_ = level;
+  log_level_ = level;
 }
 
 void Logger::log(LogLevel level, const char *tag, const char *fmt, ...) {
@@ -12,7 +11,6 @@ void Logger::log(LogLevel level, const char *tag, const char *fmt, ...) {
 
 void Logger::LogFatal(const char *fmt, ...) {
 }
-
 #else
 #include <cstring>
 #include <cstdio>

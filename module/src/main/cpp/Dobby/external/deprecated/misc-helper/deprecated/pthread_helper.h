@@ -77,10 +77,8 @@ void *pthread_getspecific(pthread_key_t key);
 #endif
 
 #else
-
 #include <pthread.h>
 #include <unistd.h>
-
 #define Sleep(num) usleep(num * 1000)
 #endif
 

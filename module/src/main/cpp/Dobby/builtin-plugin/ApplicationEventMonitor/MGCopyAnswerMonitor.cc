@@ -6,30 +6,30 @@
 #define LOG_TAG "MGCopyAnswer"
 
 static uintptr_t getCallFirstArg(DobbyRegisterContext *ctx) {
-    uintptr_t result;
+  uintptr_t result;
 #if defined(_M_X64) || defined(__x86_64__)
 #if defined(_WIN32)
-    result = ctx->general.regs.rcx;
+  result = ctx->general.regs.rcx;
 #else
-    result = ctx->general.regs.rdi;
+  result = ctx->general.regs.rdi;
 #endif
 #elif defined(__arm64__) || defined(__aarch64__)
-    result = ctx->general.regs.x0;
+  result = ctx->general.regs.x0;
 #elif defined(__arm__)
-    result = ctx->general.regs.r0;
+  result = ctx->general.regs.r0;
 #else
 #error "Not Support Architecture."
 #endif
-    return result;
+  return result;
 }
 
 void common_handler(DobbyRegisterContext *ctx, const InterceptEntry *info) {
-    CFStringRef key_ = 0;
-    key_ = (CFStringRef) getCallFirstArg(ctx);
+  CFStringRef key_ = 0;
+  key_ = (CFStringRef)getCallFirstArg(ctx);
 
-    char str_key[256] = {0};
-    CFStringGetCString(key_, str_key, 256, kCFStringEncodingUTF8);
-    LOG("[#] MGCopyAnswer:: %s\n", str_key);
+  char str_key[256] = {0};
+  CFStringGetCString(key_, str_key, 256, kCFStringEncodingUTF8);
+  LOG("[#] MGCopyAnswer:: %s\n", str_key);
 }
 
 #if 0

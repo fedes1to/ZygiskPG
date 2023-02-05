@@ -9,28 +9,28 @@
 #define LOG_TAG "BionicLinkerUtil"
 
 __attribute__((constructor)) static void ctor() {
-    const char *lib = NULL;
+  const char *lib = NULL;
 
 #if defined(__LP64__)
-    lib = "/system/lib64/libandroid_runtime.so";
+  lib = "/system/lib64/libandroid_runtime.so";
 #else
-    lib = "/system/lib/libandroid_runtime.so";
+  lib = "/system/lib/libandroid_runtime.so";
 #endif
 
-    void *vm = NULL;
+  void *vm = NULL;
 
-    vm = DobbySymbolResolver(lib, "_ZN7android14AndroidRuntime7mJavaVME");
-    LOG(1, "DobbySymbolResolver::vm %p", vm);
+  vm = DobbySymbolResolver(lib, "_ZN7android14AndroidRuntime7mJavaVME");
+  LOG(1, "DobbySymbolResolver::vm %p", vm);
 
 #if 0
-    linker_disable_namespace_restriction();
-    void *handle = NULL;
-    handle       = dlopen(lib, RTLD_LAZY);
-    vm           = dlsym(handle, "_ZN7android14AndroidRuntime7mJavaVME");
+  linker_disable_namespace_restriction();
+  void *handle = NULL;
+  handle       = dlopen(lib, RTLD_LAZY);
+  vm           = dlsym(handle, "_ZN7android14AndroidRuntime7mJavaVME");
 #else
-    void *handle = NULL;
-    handle = linker_dlopen(lib, RTLD_LAZY);
-    vm = dlsym(handle, "_ZN7android14AndroidRuntime7mJavaVME");
+  void *handle = NULL;
+  handle = linker_dlopen(lib, RTLD_LAZY);
+  vm = dlsym(handle, "_ZN7android14AndroidRuntime7mJavaVME");
 #endif
-    LOG(1, "vm %p", vm);
+  LOG(1, "vm %p", vm);
 }

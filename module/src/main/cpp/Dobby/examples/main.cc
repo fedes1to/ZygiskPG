@@ -7,8 +7,8 @@
 
 int main(int argc, char const *argv[]) {
 
-    std::cout << "Start..." << std::endl;
+  std::cout << "Start..." << std::endl;
 
-    sleep(100);
-    return 0;
+  sleep(100);
+  return 0;
 }

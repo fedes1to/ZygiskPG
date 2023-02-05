@@ -1,6 +1,5 @@
 #include "pthread_helper.h"
 #include <stdio.h>
-
 #ifdef _WIN32
 
 typedef void (*windows_thread)(void *);

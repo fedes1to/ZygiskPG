@@ -7,7 +7,6 @@
 
 #include "src/base/base-export.h"
 #include "src/base/lazy-instance.h"
-
 #if V8_OS_WIN
 #include "src/base/win32-headers.h"
 #endif
@@ -19,10 +18,10 @@
 #endif
 
 namespace v8 {
-    namespace base {
+namespace base {
 
 // Forward declarations.
-        class TimeDelta;
+class TimeDelta;
 
 // ----------------------------------------------------------------------------
 // Semaphore
@@ -33,52 +32,43 @@ namespace v8 {
 // count reaches zero,  threads waiting for the semaphore blocks until the
 // count becomes non-zero.
 
-        class V8_BASE_EXPORT Semaphore
+class V8_BASE_EXPORT Semaphore final {
+public:
+  explicit Semaphore(int count);
+  ~Semaphore();
 
-        final {
-        public:
+  // Increments the semaphore counter.
+  void Signal();
 
-        explicit Semaphore(int count);
+  // Decrements the semaphore counter if it is positive, or blocks until it
+  // becomes positive and then decrements the counter.
+  void Wait();
 
-        ~
-
-        Semaphore();
-
-        // Increments the semaphore counter.
-        void Signal();
-
-        // Decrements the semaphore counter if it is positive, or blocks until it
-        // becomes positive and then decrements the counter.
-        void Wait();
-
-        // Like Wait() but returns after rel_time time has passed. If the timeout
-        // happens the return value is false and the counter is unchanged. Otherwise
-        // the semaphore counter is decremented and true is returned.
-        bool WaitFor(const TimeDelta &rel_time)
-
-        V8_WARN_UNUSED_RESULT;
+  // Like Wait() but returns after rel_time time has passed. If the timeout
+  // happens the return value is false and the counter is unchanged. Otherwise
+  // the semaphore counter is decremented and true is returned.
+  bool WaitFor(const TimeDelta &rel_time) V8_WARN_UNUSED_RESULT;
 
 #if V8_OS_MACOSX
-        using NativeHandle = dispatch_semaphore_t;
+  using NativeHandle = dispatch_semaphore_t;
 #elif V8_OS_POSIX
-        using NativeHandle = sem_t;
+  using NativeHandle = sem_t;
 #elif V8_OS_WIN
-        using NativeHandle = HANDLE;
+  using NativeHandle = HANDLE;
 #endif
 
-        NativeHandle &native_handle() {
-            return native_handle_;
-        }
+  NativeHandle &native_handle() {
+    return native_handle_;
+  }
+  const NativeHandle &native_handle() const {
+    return native_handle_;
+  }
 
-        const NativeHandle &native_handle() const {
-            return native_handle_;
-        }
+private:
+  NativeHandle native_handle_;
 
-        private:
-        NativeHandle native_handle_;
-
-        DISALLOW_COPY_AND_ASSIGN(Semaphore);
-    };
+  DISALLOW_COPY_AND_ASSIGN(Semaphore);
+};
 
 // POD Semaphore initialized lazily (i.e. the first time Pointer() is called).
 // Usage:
@@ -90,17 +80,15 @@ namespace v8 {
 //   }
 //
 
-    template<int N>
-    struct CreateSemaphoreTrait {
-        static Semaphore *Create() {
-            return new Semaphore(N);
-        }
-    };
+template <int N> struct CreateSemaphoreTrait {
+  static Semaphore *Create() {
+    return new Semaphore(N);
+  }
+};
 
-    template<int N>
-    struct LazySemaphore {
-        using typename LazyDynamicInstance<Semaphore, CreateSemaphoreTrait<N>, ThreadSafeInitOnceTrait>::type;
-    };
+template <int N> struct LazySemaphore {
+  using typename LazyDynamicInstance<Semaphore, CreateSemaphoreTrait<N>, ThreadSafeInitOnceTrait>::type;
+};
 
 #define LAZY_SEMAPHORE_INITIALIZER LAZY_DYNAMIC_INSTANCE_INITIALIZER
 

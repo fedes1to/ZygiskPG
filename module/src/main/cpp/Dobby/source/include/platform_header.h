@@ -15,7 +15,6 @@
 #include <math.h>
 #include <machine/limits.h>
 #else
-
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -24,12 +23,9 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <assert.h>
-
 #if defined(__linux__) || defined(__APPLE__)
-
 #include <unistd.h>
 #include <syslog.h>
-
 #endif
 #endif
 
@@ -47,12 +43,10 @@
 #endif
 #else
 #ifdef __cplusplus
-
 #include <type_traits>
 #include <vector>
 #include <map>
 #include "TINYSTL/vector.h"
 #include "TINYSTL/unordered_map.h"
-
 #endif
 #endif

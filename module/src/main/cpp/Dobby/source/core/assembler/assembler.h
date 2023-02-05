@@ -8,57 +8,57 @@ class CodeBuffer;
 
 namespace zz {
 
-    class ExternalReference {
-    public:
-        explicit ExternalReference(void *address) : address_(address) {
+class ExternalReference {
+public:
+  explicit ExternalReference(void *address) : address_(address) {
 #if defined(__APPLE__) && __arm64e__
 #if __has_feature(ptrauth_calls)
-            address_ = ptrauth_strip(address, ptrauth_key_asia);
+    address_ = ptrauth_strip(address, ptrauth_key_asia);
 #endif
 #endif
-        }
+  }
 
-        const void *address();
+  const void *address();
 
-    private:
-        const void *address_;
-    };
+private:
+  const void *address_;
+};
 
-    class AssemblerBase {
-    public:
-        explicit AssemblerBase(void *address);
+class AssemblerBase {
+public:
+  explicit AssemblerBase(void *address);
 
-        ~AssemblerBase();
+  ~AssemblerBase();
 
-        size_t ip_offset() const;
+  size_t ip_offset() const;
 
-        size_t pc_offset() const;
+  size_t pc_offset() const;
 
-        CodeBuffer *GetCodeBuffer();
+  CodeBuffer *GetCodeBuffer();
 
-        void PseudoBind(AssemblerPseudoLabel *label);
+  void PseudoBind(AssemblerPseudoLabel *label);
 
-        void RelocBind();
+  void RelocBind();
 
-        void AppendRelocLabel(RelocLabel *label);
+  void AppendRelocLabel(RelocLabel *label);
 
-    protected:
-        std::vector<RelocLabel *> data_labels_;
+protected:
+  std::vector<RelocLabel *> data_labels_;
 
-    public:
-        virtual void *GetRealizedAddress();
+public:
+  virtual void *GetRealizedAddress();
 
-        virtual void SetRealizedAddress(void *address);
+  virtual void SetRealizedAddress(void *address);
 
-        static void FlushICache(addr_t start, int size);
+  static void FlushICache(addr_t start, int size);
 
-        static void FlushICache(addr_t start, addr_t end);
+  static void FlushICache(addr_t start, addr_t end);
 
-    protected:
-        CodeBuffer *buffer_;
+protected:
+  CodeBuffer *buffer_;
 
-        void *realized_addr_;
-    };
+  void *realized_addr_;
+};
 
 } // namespace zz
 

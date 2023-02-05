@@ -47,11 +47,9 @@ int pmap_kit_set_perm(pmap_t pmap, vaddr_t start, vaddr_t end, unsigned int prot
 
 #define cppvPsnk 1
 #define cppvPsrc 2
-
 void pmap_kit_bcopy_phys(paddr_t src, paddr_t dst, size_t size, int flags);
 
 typedef uint64_t pt_entry_t;
-
 pt_entry_t pmap_kit_kva_to_pte(pmap_t pmap, vaddr_t va);
 
 #ifdef __cplusplus

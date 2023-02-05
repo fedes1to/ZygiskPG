@@ -24,9 +24,11 @@
 
 #define EMPTY_VEC_OFFSET std::vector<int>()
 
-namespace KittyMemory {
+namespace KittyMemory
+{
 
-    typedef enum {
+    typedef enum
+    {
         FAILED = 0,
         SUCCESS = 1,
         INV_ADDR = 2,
@@ -35,7 +37,8 @@ namespace KittyMemory {
         INV_PROT = 5
     } Memory_Status;
 
-    struct ProcMap {
+    struct ProcMap
+    {
         void *startAddr;
         void *endAddr;
         size_t length;
@@ -72,16 +75,19 @@ namespace KittyMemory {
      * Wrapper to dereference & get value of a multi level pointer
      * Make sure to use the correct data type!
      */
-    template<typename Type>
-    Type readMultiPtr(void *ptr, std::vector<int> offsets) {
+    template <typename Type>
+    Type readMultiPtr(void *ptr, std::vector<int> offsets)
+    {
         Type defaultVal = {};
         if (ptr == NULL)
             return defaultVal;
 
         uintptr_t finalPtr = reinterpret_cast<uintptr_t>(ptr);
         int offsetsSize = offsets.size();
-        if (offsetsSize > 0) {
-            for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
+        if (offsetsSize > 0)
+        {
+            for (int i = 0; finalPtr != 0 && i < offsetsSize; i++)
+            {
                 if (i == (offsetsSize - 1))
                     return *reinterpret_cast<Type *>(finalPtr + offsets[i]);
 
@@ -99,16 +105,20 @@ namespace KittyMemory {
      * Wrapper to dereference & set value of a multi level pointer
      * Make sure to use the correct data type!, const objects won't work
      */
-    template<typename Type>
-    bool writeMultiPtr(void *ptr, std::vector<int> offsets, Type val) {
+    template <typename Type>
+    bool writeMultiPtr(void *ptr, std::vector<int> offsets, Type val)
+    {
         if (ptr == NULL)
             return false;
 
         uintptr_t finalPtr = reinterpret_cast<uintptr_t>(ptr);
         int offsetsSize = offsets.size();
-        if (offsetsSize > 0) {
-            for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
-                if (i == (offsetsSize - 1)) {
+        if (offsetsSize > 0)
+        {
+            for (int i = 0; finalPtr != 0 && i < offsetsSize; i++)
+            {
+                if (i == (offsetsSize - 1))
+                {
                     *reinterpret_cast<Type *>(finalPtr + offsets[i]) = val;
                     return true;
                 }
@@ -128,8 +138,9 @@ namespace KittyMemory {
      * Wrapper to dereference & get value of a pointer
      * Make sure to use the correct data type!
      */
-    template<typename Type>
-    Type readPtr(void *ptr) {
+    template <typename Type>
+    Type readPtr(void *ptr)
+    {
         Type defaultVal = {};
         if (ptr == NULL)
             return defaultVal;
@@ -141,8 +152,9 @@ namespace KittyMemory {
      * Wrapper to dereference & set value of a pointer
      * Make sure to use the correct data type!, const objects won't work
      */
-    template<typename Type>
-    bool writePtr(void *ptr, Type val) {
+    template <typename Type>
+    bool writePtr(void *ptr, Type val)
+    {
         if (ptr == NULL)
             return false;
 
@@ -159,6 +171,5 @@ namespace KittyMemory {
      * Expects a relative address in a library
      * Returns final absolute address
      */
-    uintptr_t
-    getAbsoluteAddress(const char *libraryName, uintptr_t relativeAddr, bool useCache = false);
+    uintptr_t getAbsoluteAddress(const char *libraryName, uintptr_t relativeAddr, bool useCache = false);
 };

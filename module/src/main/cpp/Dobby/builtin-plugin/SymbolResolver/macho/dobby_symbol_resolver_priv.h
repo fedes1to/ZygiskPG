@@ -17,31 +17,30 @@ typedef struct nlist nlist_t;
 #endif
 
 typedef struct macho_ctx {
-    mach_header_t *header;
+  mach_header_t *header;
 
-    uintptr_t slide;
-    uintptr_t linkedit_base;
+  uintptr_t slide;
+  uintptr_t linkedit_base;
 
-    segment_command_t *segments[64];
-    int segments_count;
+  segment_command_t *segments[64];
+  int segments_count;
 
-    segment_command_t *text_seg;
-    segment_command_t *data_seg;
-    segment_command_t *text_exec_seg;
-    segment_command_t *data_const_seg;
-    segment_command_t *linkedit_seg;
+  segment_command_t *text_seg;
+  segment_command_t *data_seg;
+  segment_command_t *text_exec_seg;
+  segment_command_t *data_const_seg;
+  segment_command_t *linkedit_seg;
 
-    struct symtab_command *symtab_cmd;
-    struct dysymtab_command *dysymtab_cmd;
-    struct dyld_info_command *dyld_info_cmd;
+  struct symtab_command *symtab_cmd;
+  struct dysymtab_command *dysymtab_cmd;
+  struct dyld_info_command *dyld_info_cmd;
 
-    nlist_t *symtab;
-    char *strtab;
-    uint32_t *indirect_symtab;
+  nlist_t *symtab;
+  char *strtab;
+  uint32_t *indirect_symtab;
 
 } macho_ctx_t;
 
 void macho_ctx_init(macho_ctx_t *ctx, mach_header_t *header);
 
-uintptr_t
-iterate_symbol_table(char *name_pattern, nlist_t *symtab, uint32_t symtab_count, char *strtab);
+uintptr_t iterate_symbol_table(char *name_pattern, nlist_t *symtab, uint32_t symtab_count, char *strtab);

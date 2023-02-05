@@ -31,15 +31,15 @@
 
 namespace tinystl {
 
-    struct allocator {
-        static void *static_allocate(size_t bytes) {
-            return operator new(bytes);
-        }
+	struct allocator {
+		static void* static_allocate(size_t bytes) {
+			return operator new(bytes);
+		}
 
-        static void static_deallocate(void *ptr, size_t /*bytes*/) {
-            operator delete(ptr);
-        }
-    };
+		static void static_deallocate(void* ptr, size_t /*bytes*/) {
+			operator delete(ptr);
+		}
+	};
 }
 
 #ifndef TINYSTL_ALLOCATOR
