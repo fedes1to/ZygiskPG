@@ -20,6 +20,9 @@
 #include "Memory/MemoryPatch.h"
 #include "Include/obfuscate.h"
 #include "Includes/Dobby/dobbyForHooks.h"
+#include "Memory/KittyMemory.h"
+#include "ByNameModding/BNM.hpp"
+#include "And64InlineHook/And64InlineHook.hpp"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -116,8 +119,12 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 }
 
 void *hack_thread(void *arg) {
-    sleep(5);
-    DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x473F064), (void*)Player_Move_c, (void**)&oldPlayer_Move_c);
+    using namespace BNM;
+    do {
+        sleep(1);
+    } while (!Il2cppLoaded());
+    
+    A64HookFunction(KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x473F064), (void*)Player_Move_c, (void**)&oldPlayer_Move_c);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
