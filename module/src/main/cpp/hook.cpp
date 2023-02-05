@@ -1,4 +1,3 @@
-
 #include "hook.h"
 #include <cstring>
 #include <cstdio>
@@ -20,19 +19,27 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_android.h"
 #include "Memory/MemoryPatch.h"
-
-
-
-
+#include "Include/obfuscate.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     // boolean function
-    MemoryPatch maxlvl;
+    MemoryPatch maxLevel;
     // etc...
 }gPatches;
+
+bool maxLevel;
+
+void Patches(){
+    if (maxLevel)
+    {
+        gPatches.maxLevel = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A0F08FD2C0035FD6");
+        gPatches.maxLevel.Modify();
+        LOGW("Patched successfully");
+    }
+}
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -59,17 +66,8 @@ int isGame(JNIEnv *env, jstring appDataDir) {
     }
 }
 
-
-
-
-
-
 int glHeight, glWidth;
 bool setupimg;
-
-
-
-
 
 HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     origInput(thiz, ex_ab, ex_ac);
@@ -77,23 +75,14 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     return;
 }
 
-
-bool maxlvl;
-
-void Patches(){
-    gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A0F08FD2C0035FD6");
-    gPatches.maxlvl.Modify();
-
-    LOGE("Patches Complete!");
-}
-
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
-            ImGui::Checkbox("Max Level", &maxlvl);
+            ImGui::Checkbox("Max Level", &maxLevel);
         }
+        ImGui::End();
     }
 }
 
@@ -105,7 +94,7 @@ void SetupImgui() {
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
 
-    ImGui::GetStyle().ScaleAllSizes(3.0f);
+    ImGui::GetStyle().ScaleAllSizes(5.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
@@ -122,6 +111,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
+
     DrawMenu();
 
     ImGui::EndFrame();
@@ -131,22 +121,16 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     return old_eglSwapBuffers(dpy, surface);
 }
 
-
-
-
-
-
 void *hack_thread(void *arg) {
     sleep(5);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(dobby_dummy_func_t)hook_eglSwapBuffers,
-         (dobby_dummy_func_t*)&old_eglSwapBuffers);
+              (dobby_dummy_func_t*)&old_eglSwapBuffers);
     void *sym_input = DobbySymbolResolver(("/system/lib/libinput.so"), ("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE"));
     if (NULL != sym_input) {
         DobbyHook(sym_input,(dobby_dummy_func_t)myInput,(dobby_dummy_func_t*)&origInput);
     }
     LOGI("Draw Done!");
     return nullptr;
-    Patches();
 }
