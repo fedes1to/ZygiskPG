@@ -81,7 +81,7 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 bool maxlvl;
 
 void Patches(){
-    gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A03A8FD2C0035FD6");
+    gPatches.maxlvl = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A0F08FD2C0035FD6");
     gPatches.maxlvl.Modify();
 
     LOGE("Patches Complete!");
@@ -129,7 +129,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     return old_eglSwapBuffers(dpy, surface);
-    Patches();
 }
 
 
@@ -148,5 +147,6 @@ void *hack_thread(void *arg) {
         DobbyHook(sym_input,(dobby_dummy_func_t)myInput,(dobby_dummy_func_t*)&origInput);
     }
     LOGI("Draw Done!");
+    Patches();
     return nullptr;
 }
