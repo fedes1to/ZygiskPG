@@ -91,7 +91,7 @@ void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
-        if (ImGui::CollapsingHeader("AccountMods Mods")) {
+        if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxlvl);
         }
     }
@@ -103,7 +103,7 @@ void SetupImgui() {
     ImGuiIO &io = ImGui::GetIO();
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
     ImGui_ImplOpenGL3_Init("#version 100");
-    ImGui::StyleColorsLight();
+    ImGui::StyleColorsDark();
 
     ImGui::GetStyle().ScaleAllSizes(3.0f);
 }
