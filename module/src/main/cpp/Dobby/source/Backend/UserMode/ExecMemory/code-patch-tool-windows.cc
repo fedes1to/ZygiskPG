@@ -4,24 +4,26 @@
 
 using namespace zz;
 
-PUBLIC MemoryOperationError DobbyCodePatch(void *address, uint8_t *buffer, uint32_t buffer_size) {
-  DWORD oldProtect;
-  int page_size;
+PUBLIC MemoryOperationError
 
-  // Get page size
-  SYSTEM_INFO si;
-  GetSystemInfo(&si);
-  page_size = si.dwPageSize;
+DobbyCodePatch(void *address, uint8_t *buffer, uint32_t buffer_size) {
+    DWORD oldProtect;
+    int page_size;
 
-  void *addressPageAlign = (void *)ALIGN(address, page_size);
+    // Get page size
+    SYSTEM_INFO si;
+    GetSystemInfo(&si);
+    page_size = si.dwPageSize;
 
-  if (!VirtualProtect(addressPageAlign, page_size, PAGE_EXECUTE_READWRITE, &oldProtect))
-    return kMemoryOperationError;
+    void *addressPageAlign = (void *) ALIGN(address, page_size);
 
-  memcpy(address, buffer, buffer_size);
+    if (!VirtualProtect(addressPageAlign, page_size, PAGE_EXECUTE_READWRITE, &oldProtect))
+        return kMemoryOperationError;
 
-  if (!VirtualProtect(addressPageAlign, page_size, oldProtect, &oldProtect))
-    return kMemoryOperationError;
+    memcpy(address, buffer, buffer_size);
 
-  return kMemoryOperationSuccess;
+    if (!VirtualProtect(addressPageAlign, page_size, oldProtect, &oldProtect))
+        return kMemoryOperationError;
+
+    return kMemoryOperationSuccess;
 }

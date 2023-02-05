@@ -4,8 +4,9 @@
 
 class CodeBuffer : public CodeBufferBase {
 public:
-  CodeBuffer() : CodeBufferBase() {
-  }
+    CodeBuffer() : CodeBufferBase() {
+    }
+
 public:
-  void FixBindLabel(int offset, int32_t disp);
+    void FixBindLabel(int offset, int32_t disp);
 };

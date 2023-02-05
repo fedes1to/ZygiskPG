@@ -1,4 +1,5 @@
 #include "platform_macro.h"
+
 #if defined(TARGET_ARCH_IA32)
 
 #include "MemoryAllocator/CodeBuffer/code-buffer-x86.h"

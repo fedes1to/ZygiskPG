@@ -9,7 +9,8 @@ extern "C" {
 
 IMP DobbyObjcReplace(Class _class, SEL _selector, IMP replacement);
 
-void DobbyObjcReplaceEx(const char *class_name, const char *selector_name, void *fake_impl, void **orig_impl);
+void DobbyObjcReplaceEx(const char *class_name, const char *selector_name, void *fake_impl,
+                        void **orig_impl);
 
 void *DobbyObjcResolveMethodImp(const char *class_name, const char *selector_name);
 

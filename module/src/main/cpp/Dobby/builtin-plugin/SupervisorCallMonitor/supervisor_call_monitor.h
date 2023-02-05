@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+
 typedef uintptr_t addr_t;
 
 #include "dobby.h"

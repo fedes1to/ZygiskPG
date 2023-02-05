@@ -34,256 +34,284 @@
 
 namespace tinystl {
 
-	template<typename Key, typename Value, typename Alloc = TINYSTL_ALLOCATOR>
-	class unordered_map {
-	public:
-		unordered_map();
-		unordered_map(const unordered_map& other);
-		unordered_map(unordered_map&& other);
-		~unordered_map();
+    template<typename Key, typename Value, typename Alloc = TINYSTL_ALLOCATOR>
+    class unordered_map {
+    public:
+        unordered_map();
 
-		unordered_map& operator=(const unordered_map& other);
-		unordered_map& operator=(unordered_map&& other);
+        unordered_map(const unordered_map &other);
 
-		typedef pair<Key, Value> value_type;
+        unordered_map(unordered_map &&other);
 
-		typedef unordered_hash_iterator<const unordered_hash_node<Key, Value> > const_iterator;
-		typedef unordered_hash_iterator<unordered_hash_node<Key, Value> > iterator;
+        ~unordered_map();
 
-		iterator begin();
-		iterator end();
+        unordered_map &operator=(const unordered_map &other);
 
-		const_iterator begin() const;
-		const_iterator end() const;
+        unordered_map &operator=(unordered_map &&other);
 
-		void clear();
-		bool empty() const;
-		size_t size() const;
+        typedef pair<Key, Value> value_type;
 
-		const_iterator find(const Key& key) const;
-		iterator find(const Key& key);
-		pair<iterator, bool> insert(const pair<Key, Value>& p);
-		pair<iterator, bool> emplace(pair<Key, Value>&& p);
-		void erase(const_iterator where);
+        typedef unordered_hash_iterator<const unordered_hash_node<Key, Value> > const_iterator;
+        typedef unordered_hash_iterator<unordered_hash_node<Key, Value> > iterator;
 
-		Value& operator[](const Key& key);
+        iterator begin();
 
-		void swap(unordered_map& other);
+        iterator end();
 
-	private:
+        const_iterator begin() const;
 
-		void rehash(size_t nbuckets);
+        const_iterator end() const;
 
-		typedef unordered_hash_node<Key, Value>* pointer;
+        void clear();
 
-		size_t m_size;
-		tinystl::buffer<pointer, Alloc> m_buckets;
-	};
+        bool empty() const;
 
-	template<typename Key, typename Value, typename Alloc>
-	inline unordered_map<Key, Value, Alloc>::unordered_map()
-		: m_size(0)
-	{
-		buffer_init<pointer, Alloc>(&m_buckets);
-		buffer_resize<pointer, Alloc>(&m_buckets, 9, 0);
-	}
+        size_t size() const;
 
-	template<typename Key, typename Value, typename Alloc>
-	inline unordered_map<Key, Value, Alloc>::unordered_map(const unordered_map& other)
-		: m_size(other.m_size)
-	{
-		const size_t nbuckets = (size_t)(other.m_buckets.last - other.m_buckets.first);
-		buffer_init<pointer, Alloc>(&m_buckets);
-		buffer_resize<pointer, Alloc>(&m_buckets, nbuckets, 0);
+        const_iterator find(const Key &key) const;
 
-		for (pointer it = *other.m_buckets.first; it; it = it->next) {
-			unordered_hash_node<Key, Value>* newnode = new(placeholder(), Alloc::static_allocate(sizeof(unordered_hash_node<Key, Value>))) unordered_hash_node<Key, Value>(it->first, it->second);
-			newnode->next = newnode->prev = 0;
+        iterator find(const Key &key);
 
-			unordered_hash_node_insert(newnode, hash(it->first), m_buckets.first, nbuckets - 1);
-		}
-	}
+        pair<iterator, bool> insert(const pair<Key, Value> &p);
 
-	template<typename Key, typename Value, typename Alloc>
-	inline unordered_map<Key, Value, Alloc>::unordered_map(unordered_map&& other)
-		: m_size(other.m_size)
-	{
-		buffer_move(&m_buckets, &other.m_buckets);
-		other.m_size = 0;
-	}
+        pair<iterator, bool> emplace(pair<Key, Value> &&p);
 
-	template<typename Key, typename Value, typename Alloc>
-	inline unordered_map<Key, Value, Alloc>::~unordered_map() {
-		if (m_buckets.first != m_buckets.last)
-			clear();
-		buffer_destroy<pointer, Alloc>(&m_buckets);
-	}
+        void erase(const_iterator where);
 
-	template<typename Key, typename Value, typename Alloc>
-	inline unordered_map<Key, Value, Alloc>& unordered_map<Key, Value, Alloc>::operator=(const unordered_map<Key, Value, Alloc>& other) {
-		unordered_map<Key, Value, Alloc>(other).swap(*this);
-		return *this;
-	}
+        Value &operator[](const Key &key);
 
-	template<typename Key, typename Value, typename Alloc>
-	inline unordered_map<Key, Value, Alloc>& unordered_map<Key, Value, Alloc>::operator=(unordered_map&& other) {
-		unordered_map(static_cast<unordered_map&&>(other)).swap(*this);
-		return *this;
-	}
+        void swap(unordered_map &other);
 
-	template<typename Key, typename Value, typename Alloc>
-	inline typename unordered_map<Key, Value, Alloc>::iterator unordered_map<Key, Value, Alloc>::begin() {
-		iterator it;
-		it.node = *m_buckets.first;
-		return it;
-	}
+    private:
 
-	template<typename Key, typename Value, typename Alloc>
-	inline typename unordered_map<Key, Value, Alloc>::iterator unordered_map<Key, Value, Alloc>::end() {
-		iterator it;
-		it.node = 0;
-		return it;
-	}
+        void rehash(size_t nbuckets);
 
-	template<typename Key, typename Value, typename Alloc>
-	inline typename unordered_map<Key, Value, Alloc>::const_iterator unordered_map<Key, Value, Alloc>::begin() const {
-		const_iterator cit;
-		cit.node = *m_buckets.first;
-		return cit;
-	}
+        typedef unordered_hash_node<Key, Value> *pointer;
 
-	template<typename Key, typename Value, typename Alloc>
-	inline typename unordered_map<Key, Value, Alloc>::const_iterator unordered_map<Key, Value, Alloc>::end() const {
-		const_iterator cit;
-		cit.node = 0;
-		return cit;
-	}
+        size_t m_size;
+        tinystl::buffer<pointer, Alloc> m_buckets;
+    };
 
-	template<typename Key, typename Value, typename Alloc>
-	inline bool unordered_map<Key, Value, Alloc>::empty() const {
-		return m_size == 0;
-	}
+    template<typename Key, typename Value, typename Alloc>
+    inline unordered_map<Key, Value, Alloc>::unordered_map()
+            : m_size(0) {
+        buffer_init<pointer, Alloc>(&m_buckets);
+        buffer_resize<pointer, Alloc>(&m_buckets, 9, 0);
+    }
 
-	template<typename Key, typename Value, typename Alloc>
-	inline size_t unordered_map<Key, Value, Alloc>::size() const {
-		return m_size;
-	}
+    template<typename Key, typename Value, typename Alloc>
+    inline unordered_map<Key, Value, Alloc>::unordered_map(const unordered_map &other)
+            : m_size(other.m_size) {
+        const size_t nbuckets = (size_t) (other.m_buckets.last - other.m_buckets.first);
+        buffer_init<pointer, Alloc>(&m_buckets);
+        buffer_resize<pointer, Alloc>(&m_buckets, nbuckets, 0);
 
-	template<typename Key, typename Value, typename Alloc>
-	inline void unordered_map<Key, Value, Alloc>::clear() {
-		pointer it = *m_buckets.first;
-		while (it) {
-			const pointer next = it->next;
-			it->~unordered_hash_node<Key, Value>();
-			Alloc::static_deallocate(it, sizeof(unordered_hash_node<Key, Value>));
+        for (pointer it = *other.m_buckets.first; it; it = it->next) {
+            unordered_hash_node<Key, Value> *newnode = new(placeholder(), Alloc::static_allocate(
+                    sizeof(unordered_hash_node<Key, Value>))) unordered_hash_node<Key, Value>(
+                    it->first, it->second);
+            newnode->next = newnode->prev = 0;
 
-			it = next;
-		}
+            unordered_hash_node_insert(newnode, hash(it->first), m_buckets.first, nbuckets - 1);
+        }
+    }
 
-		m_buckets.last = m_buckets.first;
-		buffer_resize<pointer, Alloc>(&m_buckets, 9, 0);
-		m_size = 0;
-	}
+    template<typename Key, typename Value, typename Alloc>
+    inline unordered_map<Key, Value, Alloc>::unordered_map(unordered_map &&other)
+            : m_size(other.m_size) {
+        buffer_move(&m_buckets, &other.m_buckets);
+        other.m_size = 0;
+    }
 
-	template<typename Key, typename Value, typename Alloc>
-	inline typename unordered_map<Key, Value, Alloc>::iterator unordered_map<Key, Value, Alloc>::find(const Key& key) {
-		iterator result;
-		result.node = unordered_hash_find(key, m_buckets.first, (size_t)(m_buckets.last - m_buckets.first));
-		return result;
-	}
+    template<typename Key, typename Value, typename Alloc>
+    inline unordered_map<Key, Value, Alloc>::~unordered_map() {
+        if (m_buckets.first != m_buckets.last)
+            clear();
+        buffer_destroy<pointer, Alloc>(&m_buckets);
+    }
 
-	template<typename Key, typename Value, typename Alloc>
-	inline typename unordered_map<Key, Value, Alloc>::const_iterator unordered_map<Key, Value, Alloc>::find(const Key& key) const {
-		iterator result;
-		result.node = unordered_hash_find(key, m_buckets.first, (size_t)(m_buckets.last - m_buckets.first));
-		return result;
-	}
+    template<typename Key, typename Value, typename Alloc>
+    inline unordered_map<Key, Value, Alloc> &
+    unordered_map<Key, Value, Alloc>::operator=(const unordered_map<Key, Value, Alloc> &other) {
+        unordered_map<Key, Value, Alloc>(other).swap(*this);
+        return *this;
+    }
 
-	template<typename Key, typename Value, typename Alloc>
-	inline void unordered_map<Key, Value, Alloc>::rehash(size_t nbuckets) {
-		if (m_size + 1 > 4 * nbuckets) {
-			pointer root = *m_buckets.first;
+    template<typename Key, typename Value, typename Alloc>
+    inline unordered_map<Key, Value, Alloc> &
+    unordered_map<Key, Value, Alloc>::operator=(unordered_map &&other) {
+        unordered_map(static_cast<unordered_map &&>(other)).swap(*this);
+        return *this;
+    }
 
-			const size_t newnbuckets = ((size_t)(m_buckets.last - m_buckets.first) - 1) * 8;
-			m_buckets.last = m_buckets.first;
-			buffer_resize<pointer, Alloc>(&m_buckets, newnbuckets + 1, 0);
-			unordered_hash_node<Key, Value>** buckets = m_buckets.first;
+    template<typename Key, typename Value, typename Alloc>
+    inline typename unordered_map<Key, Value, Alloc>::iterator
+    unordered_map<Key, Value, Alloc>::begin() {
+        iterator it;
+        it.node = *m_buckets.first;
+        return it;
+    }
 
-			while (root) {
-				const pointer next = root->next;
-				root->next = root->prev = 0;
-				unordered_hash_node_insert(root, hash(root->first), buckets, newnbuckets);
-				root = next;
-			}
-		}
-	}
+    template<typename Key, typename Value, typename Alloc>
+    inline typename unordered_map<Key, Value, Alloc>::iterator
+    unordered_map<Key, Value, Alloc>::end() {
+        iterator it;
+        it.node = 0;
+        return it;
+    }
 
-	template<typename Key, typename Value, typename Alloc>
-	inline pair<typename unordered_map<Key, Value, Alloc>::iterator, bool> unordered_map<Key, Value, Alloc>::insert(const pair<Key, Value>& p) {
-		pair<iterator, bool> result;
-		result.second = false;
+    template<typename Key, typename Value, typename Alloc>
+    inline typename unordered_map<Key, Value, Alloc>::const_iterator
+    unordered_map<Key, Value, Alloc>::begin() const {
+        const_iterator cit;
+        cit.node = *m_buckets.first;
+        return cit;
+    }
 
-		result.first = find(p.first);
-		if (result.first.node != 0)
-			return result;
+    template<typename Key, typename Value, typename Alloc>
+    inline typename unordered_map<Key, Value, Alloc>::const_iterator
+    unordered_map<Key, Value, Alloc>::end() const {
+        const_iterator cit;
+        cit.node = 0;
+        return cit;
+    }
 
-		unordered_hash_node<Key, Value>* newnode = new(placeholder(), Alloc::static_allocate(sizeof(unordered_hash_node<Key, Value>))) unordered_hash_node<Key, Value>(p.first, p.second);
-		newnode->next = newnode->prev = 0;
+    template<typename Key, typename Value, typename Alloc>
+    inline bool unordered_map<Key, Value, Alloc>::empty() const {
+        return m_size == 0;
+    }
 
-		const size_t nbuckets = (size_t)(m_buckets.last - m_buckets.first);
-		unordered_hash_node_insert(newnode, hash(p.first), m_buckets.first, nbuckets - 1);
+    template<typename Key, typename Value, typename Alloc>
+    inline size_t unordered_map<Key, Value, Alloc>::size() const {
+        return m_size;
+    }
 
-		++m_size;
-		rehash(nbuckets);
+    template<typename Key, typename Value, typename Alloc>
+    inline void unordered_map<Key, Value, Alloc>::clear() {
+        pointer it = *m_buckets.first;
+        while (it) {
+            const pointer next = it->next;
+            it->~unordered_hash_node<Key, Value>();
+            Alloc::static_deallocate(it, sizeof(unordered_hash_node<Key, Value>));
 
-		result.first.node = newnode;
-		result.second = true;
-		return result;
-	}
+            it = next;
+        }
 
-	template<typename Key, typename Value, typename Alloc>
-	inline pair<typename unordered_map<Key, Value, Alloc>::iterator, bool> unordered_map<Key, Value, Alloc>::emplace(pair<Key, Value>&& p) {
-		pair<iterator, bool> result;
-		result.second = false;
+        m_buckets.last = m_buckets.first;
+        buffer_resize<pointer, Alloc>(&m_buckets, 9, 0);
+        m_size = 0;
+    }
 
-		result.first = find(p.first);
-		if (result.first.node != 0)
-			return result;
+    template<typename Key, typename Value, typename Alloc>
+    inline typename unordered_map<Key, Value, Alloc>::iterator
+    unordered_map<Key, Value, Alloc>::find(const Key &key) {
+        iterator result;
+        result.node = unordered_hash_find(key, m_buckets.first,
+                                          (size_t) (m_buckets.last - m_buckets.first));
+        return result;
+    }
 
-		const size_t keyhash = hash(p.first);
-		unordered_hash_node<Key, Value>* newnode = new(placeholder(), Alloc::static_allocate(sizeof(unordered_hash_node<Key, Value>))) unordered_hash_node<Key, Value>(static_cast<Key&&>(p.first), static_cast<Value&&>(p.second));
-		newnode->next = newnode->prev = 0;
+    template<typename Key, typename Value, typename Alloc>
+    inline typename unordered_map<Key, Value, Alloc>::const_iterator
+    unordered_map<Key, Value, Alloc>::find(const Key &key) const {
+        iterator result;
+        result.node = unordered_hash_find(key, m_buckets.first,
+                                          (size_t) (m_buckets.last - m_buckets.first));
+        return result;
+    }
 
-		const size_t nbuckets = (size_t)(m_buckets.last - m_buckets.first);
-		unordered_hash_node_insert(newnode, keyhash, m_buckets.first, nbuckets - 1);
+    template<typename Key, typename Value, typename Alloc>
+    inline void unordered_map<Key, Value, Alloc>::rehash(size_t nbuckets) {
+        if (m_size + 1 > 4 * nbuckets) {
+            pointer root = *m_buckets.first;
 
-		++m_size;
-		rehash(nbuckets);
+            const size_t newnbuckets = ((size_t) (m_buckets.last - m_buckets.first) - 1) * 8;
+            m_buckets.last = m_buckets.first;
+            buffer_resize<pointer, Alloc>(&m_buckets, newnbuckets + 1, 0);
+            unordered_hash_node<Key, Value> **buckets = m_buckets.first;
 
-		result.first.node = newnode;
-		result.second = true;
-		return result;
-	}
+            while (root) {
+                const pointer next = root->next;
+                root->next = root->prev = 0;
+                unordered_hash_node_insert(root, hash(root->first), buckets, newnbuckets);
+                root = next;
+            }
+        }
+    }
 
-	template<typename Key, typename Value, typename Alloc>
-	inline void unordered_map<Key, Value, Alloc>::erase(const_iterator where) {
-		unordered_hash_node_erase(where.node, hash(where->first), m_buckets.first, (size_t)(m_buckets.last - m_buckets.first) - 1);
+    template<typename Key, typename Value, typename Alloc>
+    inline pair<typename unordered_map<Key, Value, Alloc>::iterator, bool>
+    unordered_map<Key, Value, Alloc>::insert(const pair<Key, Value> &p) {
+        pair<iterator, bool> result;
+        result.second = false;
 
-		where->~unordered_hash_node<Key, Value>();
-		Alloc::static_deallocate((void*)where.node, sizeof(unordered_hash_node<Key, Value>));
-		--m_size;
-	}
+        result.first = find(p.first);
+        if (result.first.node != 0)
+            return result;
 
-	template<typename Key, typename Value, typename Alloc>
-	inline Value& unordered_map<Key, Value, Alloc>::operator[](const Key& key) {
-		return insert(pair<Key, Value>(key, Value())).first->second;
-	}
+        unordered_hash_node<Key, Value> *newnode = new(placeholder(), Alloc::static_allocate(
+                sizeof(unordered_hash_node<Key, Value>))) unordered_hash_node<Key, Value>(p.first,
+                                                                                          p.second);
+        newnode->next = newnode->prev = 0;
 
-	template<typename Key, typename Value, typename Alloc>
-	inline void unordered_map<Key, Value, Alloc>::swap(unordered_map& other) {
-		size_t tsize = other.m_size;
-		other.m_size = m_size, m_size = tsize;
-		buffer_swap(&m_buckets, &other.m_buckets);
-	}
+        const size_t nbuckets = (size_t) (m_buckets.last - m_buckets.first);
+        unordered_hash_node_insert(newnode, hash(p.first), m_buckets.first, nbuckets - 1);
+
+        ++m_size;
+        rehash(nbuckets);
+
+        result.first.node = newnode;
+        result.second = true;
+        return result;
+    }
+
+    template<typename Key, typename Value, typename Alloc>
+    inline pair<typename unordered_map<Key, Value, Alloc>::iterator, bool>
+    unordered_map<Key, Value, Alloc>::emplace(pair<Key, Value> &&p) {
+        pair<iterator, bool> result;
+        result.second = false;
+
+        result.first = find(p.first);
+        if (result.first.node != 0)
+            return result;
+
+        const size_t keyhash = hash(p.first);
+        unordered_hash_node<Key, Value> *newnode = new(placeholder(), Alloc::static_allocate(
+                sizeof(unordered_hash_node<Key, Value>))) unordered_hash_node<Key, Value>(
+                static_cast<Key &&>(p.first), static_cast<Value &&>(p.second));
+        newnode->next = newnode->prev = 0;
+
+        const size_t nbuckets = (size_t) (m_buckets.last - m_buckets.first);
+        unordered_hash_node_insert(newnode, keyhash, m_buckets.first, nbuckets - 1);
+
+        ++m_size;
+        rehash(nbuckets);
+
+        result.first.node = newnode;
+        result.second = true;
+        return result;
+    }
+
+    template<typename Key, typename Value, typename Alloc>
+    inline void unordered_map<Key, Value, Alloc>::erase(const_iterator where) {
+        unordered_hash_node_erase(where.node, hash(where->first), m_buckets.first,
+                                  (size_t) (m_buckets.last - m_buckets.first) - 1);
+
+        where->~unordered_hash_node<Key, Value>();
+        Alloc::static_deallocate((void *) where.node, sizeof(unordered_hash_node<Key, Value>));
+        --m_size;
+    }
+
+    template<typename Key, typename Value, typename Alloc>
+    inline Value &unordered_map<Key, Value, Alloc>::operator[](const Key &key) {
+        return insert(pair<Key, Value>(key, Value())).first->second;
+    }
+
+    template<typename Key, typename Value, typename Alloc>
+    inline void unordered_map<Key, Value, Alloc>::swap(unordered_map &other) {
+        size_t tsize = other.m_size;
+        other.m_size = m_size, m_size = tsize;
+        buffer_swap(&m_buckets, &other.m_buckets);
+    }
 }
 #endif

@@ -1,37 +1,37 @@
 #include "MemoryAllocator/CodeBuffer/CodeBufferBase.h"
 
 CodeBufferBase *CodeBufferBase::Copy() {
-  CodeBufferBase *result = new CodeBufferBase();
-  result->EmitBuffer(GetBuffer(), GetBufferSize());
-  return result;
+    CodeBufferBase *result = new CodeBufferBase();
+    result->EmitBuffer(GetBuffer(), GetBufferSize());
+    return result;
 }
 
 void CodeBufferBase::Emit8(uint8_t data) {
-  Emit(data);
+    Emit(data);
 }
 
 void CodeBufferBase::Emit16(uint16_t data) {
-  Emit(data);
+    Emit(data);
 }
 
 void CodeBufferBase::Emit32(uint32_t data) {
-  Emit(data);
+    Emit(data);
 }
 
 void CodeBufferBase::Emit64(uint64_t data) {
-  Emit(data);
+    Emit(data);
 }
 
 void CodeBufferBase::EmitBuffer(uint8_t *buffer, int buffer_size) {
-  buffer_.insert(buffer_.end(), buffer, buffer + buffer_size);
+    buffer_.insert(buffer_.end(), buffer, buffer + buffer_size);
 }
 
 uint8_t *CodeBufferBase::GetBuffer() {
-  return buffer_.data();
+    return buffer_.data();
 }
 
 size_t CodeBufferBase::GetBufferSize() {
-  return buffer_.size();
+    return buffer_.size();
 }
 
 #if 0 // Template Advanced won't enable even in userspace

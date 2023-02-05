@@ -1,4 +1,5 @@
 #include "platform_macro.h"
+
 #if defined(TARGET_ARCH_IA32) || defined(TARGET_ARCH_X64)
 
 #include "./X86OpcodoDecodeTable.h"

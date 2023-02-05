@@ -49,16 +49,16 @@ typedef struct nlist nlist_t;
 typedef uintptr_t addr_t;
 
 typedef struct shared_cache_ctx {
-  struct dyld_cache_header *runtime_shared_cache;
-  struct dyld_cache_header *mmap_shared_cache;
+    struct dyld_cache_header *runtime_shared_cache;
+    struct dyld_cache_header *mmap_shared_cache;
 
-  uintptr_t runtime_slide;
+    uintptr_t runtime_slide;
 
-  struct dyld_cache_local_symbols_info *local_symbols_info;
-  struct dyld_cache_local_symbols_entry *local_symbols_entries;
+    struct dyld_cache_local_symbols_info *local_symbols_info;
+    struct dyld_cache_local_symbols_entry *local_symbols_entries;
 
-  nlist_t *symtab;
-  char *strtab;
+    nlist_t *symtab;
+    char *strtab;
 
 } shared_cache_ctx_t;
 
@@ -66,5 +66,6 @@ int shared_cache_ctx_init(shared_cache_ctx_t *ctx);
 
 bool shared_cache_is_contain(shared_cache_ctx_t *ctx, addr_t addr, size_t length);
 
-int shared_cache_get_symbol_table(shared_cache_ctx_t *ctx, mach_header_t *image_header, nlist_t **out_symtab,
+int shared_cache_get_symbol_table(shared_cache_ctx_t *ctx, mach_header_t *image_header,
+                                  nlist_t **out_symtab,
                                   uint32_t *out_symtab_count, char **out_strtab);

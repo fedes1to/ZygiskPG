@@ -14,13 +14,13 @@
 #define LOG_TAG "DobbySymbolResolver"
 
 PUBLIC void *DobbySymbolResolver(const char *image_name, const char *symbol_name_pattern) {
-  void *result = NULL;
+    void *result = NULL;
 
-  HMODULE hMod = LoadLibraryExA(image_name, NULL, DONT_RESOLVE_DLL_REFERENCES);
-  result = GetProcAddress(hMod, symbol_name_pattern);
-  if (result)
+    HMODULE hMod = LoadLibraryExA(image_name, NULL, DONT_RESOLVE_DLL_REFERENCES);
+    result = GetProcAddress(hMod, symbol_name_pattern);
+    if (result)
+        return result;
+
+    //result = resolve_elf_internal_symbol(image_name, symbol_name_pattern);
     return result;
-
-  //result = resolve_elf_internal_symbol(image_name, symbol_name_pattern);
-  return result;
 }

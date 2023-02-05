@@ -12,8 +12,7 @@
 
 #include "KittyMemory.h"
 
-class MemoryPatch
-{
+class MemoryPatch {
 private:
     uintptr_t _address;
     size_t _size;
@@ -43,7 +42,9 @@ public:
     /*
      * compatible hex format (0xffff & ffff & ff ff)
      */
-    static MemoryPatch createWithHex(const char *libraryName, uintptr_t address, std::string hex, bool useMapCache = true);
+    static MemoryPatch createWithHex(const char *libraryName, uintptr_t address, std::string hex,
+                                     bool useMapCache = true);
+
     static MemoryPatch createWithHex(uintptr_t absolute_address, std::string hex);
 
     /*

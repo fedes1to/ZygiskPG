@@ -9,23 +9,29 @@ extern "C" {
 #include <stdint.h>
 
 void log_set_level(int level);
+
 void log_set_tag(const char *tag);
+
 void log_enable_time_tag();
+
 void log_switch_to_syslog();
+
 void log_switch_to_file(const char *path);
 
 typedef enum {
-  kMemoryOperationSuccess,
-  kMemoryOperationError,
-  kNotSupportAllocateExecutableMemory,
-  kNotEnough,
-  kNone
+    kMemoryOperationSuccess,
+    kMemoryOperationError,
+    kNotSupportAllocateExecutableMemory,
+    kNotEnough,
+    kNone
 } MemoryOperationError;
 
 typedef uintptr_t addr_t;
 typedef uint32_t addr32_t;
 typedef uint64_t addr64_t;
+
 typedef void (*dobby_dummy_func_t)();
+
 typedef void (*asm_func_t)();
 
 MemoryOperationError DobbyCodePatch(void *address, uint8_t *buffer, uint32_t buffer_size);
@@ -139,7 +145,9 @@ typedef struct {
 
 #define RT_FAILED -1
 #define RT_SUCCESS 0
-typedef enum { RS_FAILED = -1, RS_SUCCESS = 0 } RetStatus;
+typedef enum {
+    RS_FAILED = -1, RS_SUCCESS = 0
+} RetStatus;
 
 // DobbyWrap <==> DobbyInstrument, so use DobbyInstrument instead of DobbyWrap
 #if 0
@@ -156,6 +164,7 @@ int DobbyHook(void *address, dobby_dummy_func_t replace_func, dobby_dummy_func_t
 // [!!! READ ME !!!]
 // for Arm64, can't access q8 - q31, unless enable full floating-point register pack
 typedef void (*dobby_instrument_callback_t)(void *address, DobbyRegisterContext *ctx);
+
 int DobbyInstrument(void *address, dobby_instrument_callback_t pre_handler);
 
 int DobbyDestroy(void *address);

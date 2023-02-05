@@ -5,21 +5,21 @@
 
 class Interceptor {
 public:
-  static Interceptor *SharedInstance();
+    static Interceptor *SharedInstance();
 
 public:
-  InterceptEntry *find(addr_t addr);
+    InterceptEntry *find(addr_t addr);
 
-  void remove(addr_t addr);
+    void remove(addr_t addr);
 
-  void add(InterceptEntry *entry);
+    void add(InterceptEntry *entry);
 
-  const InterceptEntry *getEntry(int i);
+    const InterceptEntry *getEntry(int i);
 
-  int count();
+    int count();
 
 private:
-  static Interceptor *instance;
+    static Interceptor *instance;
 
-  tinystl::vector<InterceptEntry *> entries;
+    tinystl::vector<InterceptEntry *> entries;
 };

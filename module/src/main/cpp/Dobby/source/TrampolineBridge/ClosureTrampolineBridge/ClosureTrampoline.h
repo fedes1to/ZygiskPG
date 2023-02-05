@@ -18,10 +18,10 @@ extern "C" {
 #endif //__cplusplus
 
 typedef struct {
-  void *address;
-  int size;
-  void *carry_handler;
-  void *carry_data;
+    void *address;
+    int size;
+    void *carry_handler;
+    void *carry_data;
 } ClosureTrampolineEntry;
 
 asm_func_t get_closure_bridge();
@@ -32,8 +32,8 @@ asm_func_t get_closure_bridge();
 
 class ClosureTrampoline {
 private:
-  static std::vector<ClosureTrampolineEntry> *trampolines_;
+    static std::vector<ClosureTrampolineEntry> *trampolines_;
 
 public:
-  static ClosureTrampolineEntry *CreateClosureTrampoline(void *carry_data, void *carry_handler);
+    static ClosureTrampolineEntry *CreateClosureTrampoline(void *carry_data, void *carry_handler);
 };

@@ -32,261 +32,267 @@
 
 namespace tinystl {
 
-	template<typename Key, typename Value>
-	struct pair {
-		pair();
-		pair(const pair& other);
-		pair(pair&& other);
-		pair(const Key& key, const Value& value);
-		pair(Key&& key, Value&& value);
+    template<typename Key, typename Value>
+    struct pair {
+        pair();
 
-		pair& operator=(const pair& other);
-		pair& operator=(pair&& other);
+        pair(const pair &other);
 
-		Key first;
-		Value second;
-	};
+        pair(pair &&other);
 
-	template<typename Key, typename Value>
-	inline pair<Key, Value>::pair() {
-	}
+        pair(const Key &key, const Value &value);
 
-	template<typename Key, typename Value>
-	inline pair<Key, Value>::pair(const pair& other)
-		: first(other.first)
-		, second(other.second)
-	{
-	}
+        pair(Key &&key, Value &&value);
 
-	template<typename Key, typename Value>
-	inline pair<Key, Value>::pair(pair&& other)
-		: first(static_cast<Key&&>(other.first))
-		, second(static_cast<Value&&>(other.second))
-	{
-	}
+        pair &operator=(const pair &other);
 
-	template<typename Key, typename Value>
-	inline pair<Key, Value>::pair(const Key& key, const Value& value)
-		: first(key)
-		, second(value)
-	{
-	}
+        pair &operator=(pair &&other);
 
-	template<typename Key, typename Value>
-	inline pair<Key, Value>::pair(Key&& key, Value&& value)
-		: first(static_cast<Key&&>(key))
-		, second(static_cast<Value&&>(value))
-	{
-	}
+        Key first;
+        Value second;
+    };
 
-	template<typename Key, typename Value>
-	inline pair<Key, Value>& pair<Key, Value>::operator=(const pair& other) {
-		first = other.first;
-		second = other.second;
-		return *this;
-	}
+    template<typename Key, typename Value>
+    inline pair<Key, Value>::pair() {
+    }
 
-	template<typename Key, typename Value>
-	inline pair<Key, Value>& pair<Key, Value>::operator=(pair&& other) {
-		first = static_cast<Key&&>(other.first);
-		second = static_cast<Value&&>(other.second);
-		return *this;
-	}
+    template<typename Key, typename Value>
+    inline pair<Key, Value>::pair(const pair &other)
+            : first(other.first), second(other.second) {
+    }
 
-	template<typename Key, typename Value>
-	static inline pair<typename remove_reference<Key>::type, typename remove_reference<Value>::type>
-	make_pair(Key&& key, Value&& value) {
-		return pair<typename remove_reference<Key>::type, typename remove_reference<Value>::type>(
-				  static_cast<Key&&>(key)
-				, static_cast<Value&&>(value)
-			);
-	}
+    template<typename Key, typename Value>
+    inline pair<Key, Value>::pair(pair &&other)
+            : first(static_cast<Key &&>(other.first)), second(static_cast<Value &&>(other.second)) {
+    }
+
+    template<typename Key, typename Value>
+    inline pair<Key, Value>::pair(const Key &key, const Value &value)
+            : first(key), second(value) {
+    }
+
+    template<typename Key, typename Value>
+    inline pair<Key, Value>::pair(Key &&key, Value &&value)
+            : first(static_cast<Key &&>(key)), second(static_cast<Value &&>(value)) {
+    }
+
+    template<typename Key, typename Value>
+    inline pair<Key, Value> &pair<Key, Value>::operator=(const pair &other) {
+        first = other.first;
+        second = other.second;
+        return *this;
+    }
+
+    template<typename Key, typename Value>
+    inline pair<Key, Value> &pair<Key, Value>::operator=(pair &&other) {
+        first = static_cast<Key &&>(other.first);
+        second = static_cast<Value &&>(other.second);
+        return *this;
+    }
+
+    template<typename Key, typename Value>
+    static inline pair<typename remove_reference<Key>::type, typename remove_reference<Value>::type>
+    make_pair(Key &&key, Value &&value) {
+        return pair<typename remove_reference<Key>::type, typename remove_reference<Value>::type>(
+                static_cast<Key &&>(key), static_cast<Value &&>(value)
+        );
+    }
 
 
-	template<typename Key, typename Value>
-	struct unordered_hash_node {
-		unordered_hash_node(const Key& key, const Value& value);
-		unordered_hash_node(Key&& key, Value&& value);
+    template<typename Key, typename Value>
+    struct unordered_hash_node {
+        unordered_hash_node(const Key &key, const Value &value);
 
-		const Key first;
-		Value second;
-		unordered_hash_node* next;
-		unordered_hash_node* prev;
+        unordered_hash_node(Key &&key, Value &&value);
 
-	private:
-		unordered_hash_node& operator=(const unordered_hash_node&);
-	};
+        const Key first;
+        Value second;
+        unordered_hash_node *next;
+        unordered_hash_node *prev;
 
-	template<typename Key, typename Value>
-	inline unordered_hash_node<Key, Value>::unordered_hash_node(const Key& key, const Value& value)
-		: first(key)
-		, second(value)
-	{
-	}
+    private:
+        unordered_hash_node &operator=(const unordered_hash_node &);
+    };
 
-	template<typename Key, typename Value>
-	inline unordered_hash_node<Key, Value>::unordered_hash_node(Key&& key, Value&& value)
-		: first(static_cast<Key&&>(key))
-		, second(static_cast<Value&&>(value))
-	{
-	}
+    template<typename Key, typename Value>
+    inline unordered_hash_node<Key, Value>::unordered_hash_node(const Key &key, const Value &value)
+            : first(key), second(value) {
+    }
 
-	template <typename Key>
-	struct unordered_hash_node<Key, void> {
-		explicit unordered_hash_node(const Key& key);
-		explicit unordered_hash_node(Key&& key);
+    template<typename Key, typename Value>
+    inline unordered_hash_node<Key, Value>::unordered_hash_node(Key &&key, Value &&value)
+            : first(static_cast<Key &&>(key)), second(static_cast<Value &&>(value)) {
+    }
 
-		const Key first;
-		unordered_hash_node* next;
-		unordered_hash_node* prev;
+    template<typename Key>
+    struct unordered_hash_node<Key, void> {
+        explicit unordered_hash_node(const Key &key);
 
-	private:
-		unordered_hash_node& operator=(const unordered_hash_node&);
-	};
+        explicit unordered_hash_node(Key &&key);
 
-	template<typename Key>
-	inline unordered_hash_node<Key, void>::unordered_hash_node(const Key& key)
-		: first(key)
-	{
-	}
+        const Key first;
+        unordered_hash_node *next;
+        unordered_hash_node *prev;
 
-	template<typename Key>
-	inline unordered_hash_node<Key, void>::unordered_hash_node(Key&& key)
-		: first(static_cast<Key&&>(key))
-	{
-	}
+    private:
+        unordered_hash_node &operator=(const unordered_hash_node &);
+    };
 
-	template<typename Key, typename Value>
-	static inline void unordered_hash_node_insert(unordered_hash_node<Key, Value>* node, size_t hash, unordered_hash_node<Key, Value>** buckets, size_t nbuckets) {
-		size_t bucket = hash & (nbuckets - 1);
+    template<typename Key>
+    inline unordered_hash_node<Key, void>::unordered_hash_node(const Key &key)
+            : first(key) {
+    }
 
-		unordered_hash_node<Key, Value>* it = buckets[bucket + 1];
-		node->next = it;
-		if (it) {
-			node->prev = it->prev;
-			it->prev = node;
-			if (node->prev)
-				node->prev->next = node;
-		} else {
-			size_t newbucket = bucket;
-			while (newbucket && !buckets[newbucket])
-				--newbucket;
+    template<typename Key>
+    inline unordered_hash_node<Key, void>::unordered_hash_node(Key &&key)
+            : first(static_cast<Key &&>(key)) {
+    }
 
-			unordered_hash_node<Key, Value>* prev = buckets[newbucket];
-			while (prev && prev->next)
-				prev = prev->next;
+    template<typename Key, typename Value>
+    static inline void
+    unordered_hash_node_insert(unordered_hash_node<Key, Value> *node, size_t hash,
+                               unordered_hash_node<Key, Value> **buckets, size_t nbuckets) {
+        size_t bucket = hash & (nbuckets - 1);
 
-			node->prev = prev;
-			if (prev)
-				prev->next = node;
-		}
+        unordered_hash_node<Key, Value> *it = buckets[bucket + 1];
+        node->next = it;
+        if (it) {
+            node->prev = it->prev;
+            it->prev = node;
+            if (node->prev)
+                node->prev->next = node;
+        } else {
+            size_t newbucket = bucket;
+            while (newbucket && !buckets[newbucket])
+                --newbucket;
 
-		// propagate node through buckets
-		for (; it == buckets[bucket]; --bucket) {
-			buckets[bucket] = node;
-			if (!bucket)
-				break;
-		}
-	}
+            unordered_hash_node<Key, Value> *prev = buckets[newbucket];
+            while (prev && prev->next)
+                prev = prev->next;
 
-	template<typename Key, typename Value>
-	static inline void unordered_hash_node_erase(const unordered_hash_node<Key, Value>* where, size_t hash, unordered_hash_node<Key, Value>** buckets, size_t nbuckets) {
-		size_t bucket = hash & (nbuckets - 1);
+            node->prev = prev;
+            if (prev)
+                prev->next = node;
+        }
 
-		unordered_hash_node<Key, Value>* next = where->next;
-		for (; buckets[bucket] == where; --bucket) {
-			buckets[bucket] = next;
-			if (!bucket)
-				break;
-		}
+        // propagate node through buckets
+        for (; it == buckets[bucket]; --bucket) {
+            buckets[bucket] = node;
+            if (!bucket)
+                break;
+        }
+    }
 
-		if (where->prev)
-			where->prev->next = where->next;
-		if (next)
-			next->prev = where->prev;
-	}
+    template<typename Key, typename Value>
+    static inline void
+    unordered_hash_node_erase(const unordered_hash_node<Key, Value> *where, size_t hash,
+                              unordered_hash_node<Key, Value> **buckets, size_t nbuckets) {
+        size_t bucket = hash & (nbuckets - 1);
 
-	template<typename Node>
-	struct unordered_hash_iterator {
-		Node* operator->() const;
-		Node& operator*() const;
-		Node* node;
-	};
+        unordered_hash_node<Key, Value> *next = where->next;
+        for (; buckets[bucket] == where; --bucket) {
+            buckets[bucket] = next;
+            if (!bucket)
+                break;
+        }
 
-	template<typename Node>
-	struct unordered_hash_iterator<const Node> {
+        if (where->prev)
+            where->prev->next = where->next;
+        if (next)
+            next->prev = where->prev;
+    }
 
-		unordered_hash_iterator() {}
-		unordered_hash_iterator(unordered_hash_iterator<Node> other)
-			: node(other.node)
-		{
-		}
+    template<typename Node>
+    struct unordered_hash_iterator {
+        Node *operator->() const;
 
-		const Node* operator->() const;
-		const Node& operator*() const;
-		const Node* node;
-	};
+        Node &operator*() const;
 
-	template<typename Key>
-	struct unordered_hash_iterator<const unordered_hash_node<Key, void> > {
-		const Key* operator->() const;
-		const Key& operator*() const;
-		unordered_hash_node<Key, void>* node;
-	};
+        Node *node;
+    };
 
-	template<typename LNode, typename RNode>
-	static inline bool operator==(const unordered_hash_iterator<LNode>& lhs, const unordered_hash_iterator<RNode>& rhs) {
-		return lhs.node == rhs.node;
-	}
+    template<typename Node>
+    struct unordered_hash_iterator<const Node> {
 
-	template<typename LNode, typename RNode>
-	static inline bool operator!=(const unordered_hash_iterator<LNode>& lhs, const unordered_hash_iterator<RNode>& rhs) {
-		return lhs.node != rhs.node;
-	}
+        unordered_hash_iterator() {}
 
-	template<typename Node>
-	static inline void operator++(unordered_hash_iterator<Node>& lhs) {
-		lhs.node = lhs.node->next;
-	}
+        unordered_hash_iterator(unordered_hash_iterator<Node> other)
+                : node(other.node) {
+        }
 
-	template<typename Node>
-	inline Node* unordered_hash_iterator<Node>::operator->() const {
-		return node;
-	}
+        const Node *operator->() const;
 
-	template<typename Node>
-	inline Node& unordered_hash_iterator<Node>::operator*() const {
-		return *node;
-	}
+        const Node &operator*() const;
 
-	template<typename Node>
-	inline const Node* unordered_hash_iterator<const Node>::operator->() const {
-		return node;
-	}
+        const Node *node;
+    };
 
-	template<typename Node>
-	inline const Node& unordered_hash_iterator<const Node>::operator*() const {
-		return *node;
-	}
+    template<typename Key>
+    struct unordered_hash_iterator<const unordered_hash_node<Key, void> > {
+        const Key *operator->() const;
 
-	template<typename Key>
-	inline const Key* unordered_hash_iterator<const unordered_hash_node<Key, void> >::operator->() const {
-		return &node->first;
-	}
+        const Key &operator*() const;
 
-	template<typename Key>
-	inline const Key& unordered_hash_iterator<const unordered_hash_node<Key, void> >::operator*() const {
-		return node->first;
-	}
+        unordered_hash_node<Key, void> *node;
+    };
 
-	template<typename Node, typename Key>
-	static inline Node unordered_hash_find(const Key& key, Node* buckets, size_t nbuckets) {
-		const size_t bucket = hash(key) & (nbuckets - 2);
-		for (Node it = buckets[bucket], end = buckets[bucket+1]; it != end; it = it->next)
-			if (it->first == key)
-				return it;
+    template<typename LNode, typename RNode>
+    static inline bool operator==(const unordered_hash_iterator<LNode> &lhs,
+                                  const unordered_hash_iterator<RNode> &rhs) {
+        return lhs.node == rhs.node;
+    }
 
-		return 0;
-	}
+    template<typename LNode, typename RNode>
+    static inline bool operator!=(const unordered_hash_iterator<LNode> &lhs,
+                                  const unordered_hash_iterator<RNode> &rhs) {
+        return lhs.node != rhs.node;
+    }
+
+    template<typename Node>
+    static inline void operator++(unordered_hash_iterator<Node> &lhs) {
+        lhs.node = lhs.node->next;
+    }
+
+    template<typename Node>
+    inline Node *unordered_hash_iterator<Node>::operator->() const {
+        return node;
+    }
+
+    template<typename Node>
+    inline Node &unordered_hash_iterator<Node>::operator*() const {
+        return *node;
+    }
+
+    template<typename Node>
+    inline const Node *unordered_hash_iterator<const Node>::operator->() const {
+        return node;
+    }
+
+    template<typename Node>
+    inline const Node &unordered_hash_iterator<const Node>::operator*() const {
+        return *node;
+    }
+
+    template<typename Key>
+    inline const Key *
+    unordered_hash_iterator<const unordered_hash_node<Key, void> >::operator->() const {
+        return &node->first;
+    }
+
+    template<typename Key>
+    inline const Key &
+    unordered_hash_iterator<const unordered_hash_node<Key, void> >::operator*() const {
+        return node->first;
+    }
+
+    template<typename Node, typename Key>
+    static inline Node unordered_hash_find(const Key &key, Node *buckets, size_t nbuckets) {
+        const size_t bucket = hash(key) & (nbuckets - 2);
+        for (Node it = buckets[bucket], end = buckets[bucket + 1]; it != end; it = it->next)
+            if (it->first == key)
+                return it;
+
+        return 0;
+    }
 }
 #endif

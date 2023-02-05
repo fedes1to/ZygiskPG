@@ -26,111 +26,113 @@ typedef short word;
 typedef int dword;
 #endif
 
-enum OpcodeType { OpTy_Op1, OpTy_RegInOp1, OpTy_Op1ExtraOp };
+enum OpcodeType {
+    OpTy_Op1, OpTy_RegInOp1, OpTy_Op1ExtraOp
+};
 
 struct Instr {
-  byte_t prefix;
+    byte_t prefix;
 
-  byte_t REX;
+    byte_t REX;
 
-  union {
-    byte_t opcode[3];
-    struct {
-      byte_t opcode1;
-      byte_t opcode2;
-      byte_t opcode3;
+    union {
+        byte_t opcode[3];
+        struct {
+            byte_t opcode1;
+            byte_t opcode2;
+            byte_t opcode3;
+        };
     };
-  };
 
-  union {
-    byte_t ModRM;
-    struct {
-      byte_t Mod : 2;
-      byte_t RegOpcode : 3;
-      byte_t RM : 3;
+    union {
+        byte_t ModRM;
+        struct {
+            byte_t Mod: 2;
+            byte_t RegOpcode: 3;
+            byte_t RM: 3;
+        };
     };
-  };
 
-  union {
-    byte_t SIB;
-    struct {
-      byte_t base : 2;
-      byte_t index : 3;
-      byte_t scale : 3;
+    union {
+        byte_t SIB;
+        struct {
+            byte_t base: 2;
+            byte_t index: 3;
+            byte_t scale: 3;
+        };
     };
-  };
 
-  byte_t Displacement[4];
-  int DisplacementOffset;
+    byte_t Displacement[4];
+    int DisplacementOffset;
 
-  byte_t Immediate[4];
-  int ImmediateOffset;
+    byte_t Immediate[4];
+    int ImmediateOffset;
 };
 
 // clang-format off
 enum OperandSize {
-  OpSz_0 = 0,
-  OpSz_8=1,
-  OpSz_16=2,
-  OpSz_32=4,
-  OpSz_64=8
+    OpSz_0 = 0,
+    OpSz_8 = 1,
+    OpSz_16 = 2,
+    OpSz_32 = 4,
+    OpSz_64 = 8
 };
 
 enum ImmediteSize {
-  ImmSz_0      = 0,
-  ImmSz_8=1,
-  ImmSz_16=2,
-  ImmSz_32=4,
-  ImmSz_64=8
+    ImmSz_0 = 0,
+    ImmSz_8 = 1,
+    ImmSz_16 = 2,
+    ImmSz_32 = 4,
+    ImmSz_64 = 8
 };
 
 enum InstrFlag {
-  kNoFlag = 0,
-  kIPRelativeAddress = 1
+    kNoFlag = 0,
+    kIPRelativeAddress = 1
 };
 // clang-format on
 
 struct InstrMnemonic {
-  uint len;
+    uint len;
 
-  int flag;
+    int flag;
 
-  OperandSize OperandSz;
+    OperandSize OperandSz;
 
-  ImmediteSize ImmediteSz;
+    ImmediteSize ImmediteSz;
 
-  struct Instr instr;
+    struct Instr instr;
 };
 
 struct OpcodeDecodeItem {
-  unsigned char opcode;
+    unsigned char opcode;
 
-  int FixedSize;
+    int FixedSize;
 
-  int OpEn;
+    int OpEn;
 
-  int OperandSz;
+    int OperandSz;
 
-  int ImmediteSz;
+    int ImmediteSz;
 
-  void (*DecodeHandler)(InstrMnemonic *, addr_t);
+    void (*DecodeHandler)(InstrMnemonic *, addr_t);
 };
 
 // clang-format off
 enum OperandEncodingType {
-  OpEn_NONE =0,
-  OpEn_ZO,
-  OpEn_M,
-  OpEn_I,
-  OpEn_D,
-  OpEn_O,
-  OpEn_RM,
-  OpEn_MR,
-  OpEn_MI,
-  OpEn_OI,
-  OpEn_M1,
-  OpEn_MC,
-  OpEn_RMI
+    OpEn_NONE = 0,
+    OpEn_ZO,
+    OpEn_M,
+    OpEn_I,
+    OpEn_D,
+    OpEn_O,
+    OpEn_RM,
+    OpEn_MR,
+    OpEn_MI,
+    OpEn_OI,
+    OpEn_M1,
+    OpEn_MC,
+    OpEn_RMI
 };
 
 // clang-format on

@@ -3,23 +3,23 @@
 
 class RegisterBase {
 public:
-  static constexpr RegisterBase from_code(int code);
+    static constexpr RegisterBase from_code(int code);
 
-  static constexpr RegisterBase no_reg();
+    static constexpr RegisterBase no_reg();
 
-  virtual bool Is(const RegisterBase &reg) const {
-    return (reg.reg_code_ == this->reg_code_);
-  }
+    virtual bool Is(const RegisterBase &reg) const {
+        return (reg.reg_code_ == this->reg_code_);
+    }
 
-  int code() const {
-    return reg_code_;
-  };
+    int code() const {
+        return reg_code_;
+    };
 
 protected:
-  explicit constexpr RegisterBase(int code) : reg_code_(code) {
-  }
+    explicit constexpr RegisterBase(int code) : reg_code_(code) {
+    }
 
-  int reg_code_;
+    int reg_code_;
 };
 
 #endif

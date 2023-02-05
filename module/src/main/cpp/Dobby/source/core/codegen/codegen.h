@@ -7,11 +7,11 @@ using namespace zz;
 
 class CodeGenBase {
 public:
-  CodeGenBase(AssemblerBase *assembler) : assembler_(assembler) {
-  }
+    CodeGenBase(AssemblerBase *assembler) : assembler_(assembler) {
+    }
 
 protected:
-  AssemblerBase *assembler_;
+    AssemblerBase *assembler_;
 };
 
 #endif

@@ -5,92 +5,104 @@
 #include "core/arch/Cpu.h"
 
 namespace zz {
-namespace arm64 {
+    namespace arm64 {
 
-class CPURegister : RegisterBase {
-public:
-  enum RegisterType {
-    kRegister_32,
-    kRegister_W = kRegister_32,
-    kRegister_64,
-    kRegister_X = kRegister_64,
-    kRegister,
+        class CPURegister : RegisterBase {
+        public:
+            enum RegisterType {
+                kRegister_32,
+                kRegister_W = kRegister_32,
+                kRegister_64,
+                kRegister_X = kRegister_64,
+                kRegister,
 
-    kVRegister,
-    kSIMD_FP_Register_8,
-    kSIMD_FP_Register_B = kSIMD_FP_Register_8,
-    kSIMD_FP_Register_16,
-    kSIMD_FP_Register_H = kSIMD_FP_Register_16,
-    kSIMD_FP_Register_32,
-    kSIMD_FP_Register_S = kSIMD_FP_Register_32,
-    kSIMD_FP_Register_64,
-    kSIMD_FP_Register_D = kSIMD_FP_Register_64,
-    kSIMD_FP_Register_128,
-    kSIMD_FP_Register_Q = kSIMD_FP_Register_128,
+                kVRegister,
+                kSIMD_FP_Register_8,
+                kSIMD_FP_Register_B = kSIMD_FP_Register_8,
+                kSIMD_FP_Register_16,
+                kSIMD_FP_Register_H = kSIMD_FP_Register_16,
+                kSIMD_FP_Register_32,
+                kSIMD_FP_Register_S = kSIMD_FP_Register_32,
+                kSIMD_FP_Register_64,
+                kSIMD_FP_Register_D = kSIMD_FP_Register_64,
+                kSIMD_FP_Register_128,
+                kSIMD_FP_Register_Q = kSIMD_FP_Register_128,
 
-    kInvalid
-  };
+                kInvalid
+            };
 
-  constexpr CPURegister(int code, int size, RegisterType type) : RegisterBase(code), reg_size_(size), reg_type_(type) {
-  }
+            constexpr CPURegister(int code, int size, RegisterType type) : RegisterBase(code),
+                                                                           reg_size_(size),
+                                                                           reg_type_(type) {
+            }
 
-  static constexpr CPURegister Create(int code, int size, RegisterType type) {
-    return CPURegister(code, size, type);
-  }
+            static constexpr CPURegister
 
-  // =====
+            Create(int code, int size, RegisterType type) {
+                return CPURegister(code, size, type);
+            }
 
-  static constexpr CPURegister X(int code) {
-    return CPURegister(code, 64, kRegister_64);
-  }
+            // =====
 
-  static constexpr CPURegister W(int code) {
-    return CPURegister(code, 32, kRegister_32);
-  }
+            static constexpr CPURegister
 
-  static constexpr CPURegister Q(int code) {
-    return CPURegister(code, 128, kSIMD_FP_Register_128);
-  }
+            X(int code) {
+                return CPURegister(code, 64, kRegister_64);
+            }
 
-  static constexpr CPURegister InvalidRegister() {
-    return CPURegister(0, 0, kInvalid);
-  }
+            static constexpr CPURegister
 
-  // =====
+            W(int code) {
+                return CPURegister(code, 32, kRegister_32);
+            }
 
-  bool Is(const CPURegister &reg) const {
-    return (reg.reg_code_ == this->reg_code_);
-  }
+            static constexpr CPURegister
 
-  bool Is64Bits() const {
-    return reg_size_ == 64;
-  }
+            Q(int code) {
+                return CPURegister(code, 128, kSIMD_FP_Register_128);
+            }
 
-  bool IsRegister() const {
-    return reg_type_ < kRegister;
-  }
+            static constexpr CPURegister
 
-  bool IsVRegister() const {
-    return reg_type_ > kVRegister;
-  }
+            InvalidRegister() {
+                return CPURegister(0, 0, kInvalid);
+            }
 
-  // =====
+            // =====
 
-  RegisterType type() const {
-    return reg_type_;
-  }
+            bool Is(const CPURegister &reg) const {
+                return (reg.reg_code_ == this->reg_code_);
+            }
 
-  int32_t code() const {
-    return reg_code_;
-  };
+            bool Is64Bits() const {
+                return reg_size_ == 64;
+            }
 
-private:
-  RegisterType reg_type_;
-  int reg_size_;
-};
+            bool IsRegister() const {
+                return reg_type_ < kRegister;
+            }
 
-typedef CPURegister Register;
-typedef CPURegister VRegister;
+            bool IsVRegister() const {
+                return reg_type_ > kVRegister;
+            }
+
+            // =====
+
+            RegisterType type() const {
+                return reg_type_;
+            }
+
+            int32_t code() const {
+                return reg_code_;
+            };
+
+        private:
+            RegisterType reg_type_;
+            int reg_size_;
+        };
+
+        typedef CPURegister Register;
+        typedef CPURegister VRegister;
 
 // clang-format off
 #define GENERAL_REGISTER_CODE_LIST(R)                     \
@@ -104,7 +116,7 @@ typedef CPURegister VRegister;
 #define DEFINE_REGISTERS(N)                                                                                            \
   DEFINE_REGISTER(Register, w##N, N, 32, CPURegister::kRegister_32);                                                                 \
   DEFINE_REGISTER(Register, x##N, N, 64, CPURegister::kRegister_64);
-    GENERAL_REGISTER_CODE_LIST(DEFINE_REGISTERS)
+        GENERAL_REGISTER_CODE_LIST(DEFINE_REGISTERS)
 #undef DEFINE_REGISTERS
 
 #define DEFINE_VREGISTERS(N)  \
@@ -121,17 +133,25 @@ GENERAL_REGISTER_CODE_LIST(DEFINE_VREGISTERS)
 
 // =====
 
-constexpr Register wzr = w31;
-constexpr Register xzr = x31;
+        constexpr Register
+        wzr = w31;
+        constexpr Register
+        xzr = x31;
 
-constexpr Register SP = x31;
-constexpr Register wSP = w31;
-constexpr Register FP = x29;
-constexpr Register wFP = w29;
-constexpr Register LR = x30;
-constexpr Register wLR = w30;
+        constexpr Register
+        SP = x31;
+        constexpr Register
+        wSP = w31;
+        constexpr Register
+        FP = x29;
+        constexpr Register
+        wFP = w29;
+        constexpr Register
+        LR = x30;
+        constexpr Register
+        wLR = w30;
 
-} // namespace arm64
+    } // namespace arm64
 } // namespace zz
 
 #define W(code) CPURegister::W(code)

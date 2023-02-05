@@ -8,23 +8,23 @@
 
 class InstructionInstrumentRouting : public InterceptRouting {
 public:
-  InstructionInstrumentRouting(InterceptEntry *entry, dobby_instrument_callback_t pre_handler,
-                               dobby_instrument_callback_t post_handler)
-      : InterceptRouting(entry) {
-    this->prologue_dispatch_bridge = nullptr;
-    this->pre_handler = pre_handler;
-    this->post_handler = post_handler;
-  }
+    InstructionInstrumentRouting(InterceptEntry *entry, dobby_instrument_callback_t pre_handler,
+                                 dobby_instrument_callback_t post_handler)
+            : InterceptRouting(entry) {
+        this->prologue_dispatch_bridge = nullptr;
+        this->pre_handler = pre_handler;
+        this->post_handler = post_handler;
+    }
 
-  void DispatchRouting() override;
+    void DispatchRouting() override;
 
 private:
-  void BuildRouting();
+    void BuildRouting();
 
 public:
-  dobby_instrument_callback_t pre_handler;
-  dobby_instrument_callback_t post_handler;
+    dobby_instrument_callback_t pre_handler;
+    dobby_instrument_callback_t post_handler;
 
 private:
-  void *prologue_dispatch_bridge;
+    void *prologue_dispatch_bridge;
 };
