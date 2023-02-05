@@ -31,13 +31,17 @@ struct GlobalPatches {
 }gPatches;
 
 bool maxLevel;
+bool runonce = true;
 
 void Patches(){
     if (maxLevel)
     {
-        gPatches.maxLevel = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A0F08FD2C0035FD6");
-        gPatches.maxLevel.Modify();
-        LOGW("Patched successfully");
+        if(runonce){
+            gPatches.maxLevel = MemoryPatch::createWithHex("libil2cpp.so", 0x1C26554, "A0F08FD2C0035FD6");
+            gPatches.maxLevel.Modify();
+            runonce = false;
+            LOGW("Patched successfully");
+        }
     }
 }
 
@@ -75,6 +79,7 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     return;
 }
 
+
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
@@ -85,6 +90,8 @@ void DrawMenu(){
         ImGui::End();
     }
 }
+
+
 
 void SetupImgui() {
     IMGUI_CHECKVERSION();
