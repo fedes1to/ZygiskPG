@@ -1,9 +1,9 @@
 ext {
-    moduleLibraryName = "ZygiskImGui"
-    magiskModuleId = "Zygisk-ImGui"
-    moduleName = "MagiskImGui"
-    moduleAuthor = "Noobbb"
-    moduleDescription = "ImGui Zygisk version."
+    moduleLibraryName = "ZygiskPG"
+    magiskModuleId = "ZygiskPG"
+    moduleName = "ZygiskPG"
+    moduleAuthor = "chr1s & fedes1to"
+    moduleDescription = "Mod Menu for PG3D 23.0.1"
     moduleVersion = "v1.0.0"
     moduleVersionCode = 1
 }
