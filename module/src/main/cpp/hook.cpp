@@ -122,7 +122,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
-    Patches();
     DrawMenu();
 
     ImGui::EndFrame();
@@ -139,6 +138,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
 void *hack_thread(void *arg) {
     sleep(5);
+    Patches();
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(dobby_dummy_func_t)hook_eglSwapBuffers,
