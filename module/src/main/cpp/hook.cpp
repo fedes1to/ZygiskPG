@@ -63,6 +63,16 @@ int (*oldExperienceController)(void* obj);
 int ExperienceController(void* obj){
     if(obj != nullptr && maxlvl){
         return 32645;
+        LOGW("OBJ ISNT NULL AND ITS PATCHED");
+    }
+    oldExperienceController(obj);
+}
+
+int (*oldExperienceController1)(void* obj);
+int ExperienceController1(void* obj){
+    if(obj != nullptr && maxlvl){
+        return 32645;
+        LOGW("OBJ1 ISNT NULL AND ITS PATCHED");
     }
     oldExperienceController(obj);
 }
@@ -118,6 +128,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 void *hack_thread(void *arg) {
     sleep(5);
     DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x1C26554), (void*) ExperienceController, (void**)&oldExperienceController);
+    DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x1C265B4), (void*) ExperienceController1, (void**)&oldExperienceController1);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
