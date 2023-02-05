@@ -30,7 +30,7 @@ using KittyScanner::RegisterNativeFn;
 
 ProcMap g_il2cppBaseMap;
 
-#define GamePackageName "com.pixel.gun3d"
+#define GamePackageName "com.fingerlegend.hidenseek"
 
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
@@ -43,6 +43,7 @@ bool maxLevel;
 bool levelApplied;
 
 void Patches() {
+    // for maxLevel
     if (maxLevel && !levelApplied) {
         if (gPatches.maxLevel.Modify()) {
             KITTY_LOGI("maxLevel has been modified successfully");
@@ -57,6 +58,15 @@ void Patches() {
         }
         levelApplied = false;
     }
+}
+
+// here we start with the hooking methods
+void (*old_WeaponSounds)(void *instance);
+void WeaponSounds(void *instance){
+    if (instance != nullptr){
+        LOGI("Hooked WeaponSounds");
+    }
+    old_WeaponSounds(instance);
 }
 
 int isGame(JNIEnv *env, jstring appDataDir) {
@@ -147,8 +157,10 @@ void *hack_thread(void *arg) {
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
+    // example of a hex patch
     gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
-//  DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x473F064), (void*)Void, (void**)&oldVoid);
+    // example of a hook
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
