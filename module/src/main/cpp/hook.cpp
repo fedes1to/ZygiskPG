@@ -23,7 +23,6 @@
 #include "KittyMemory/KittyUtils.h"
 #include "Include/obfuscate.h"
 #include "Includes/Dobby/dobbyForHooks.h"
-#include <vector>
 
 using KittyMemory::ProcMap;
 using KittyScanner::RegisterNativeFn;
