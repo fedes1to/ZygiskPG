@@ -147,6 +147,6 @@ void *hack_thread(void *arg) {
         DobbyHook(sym_input,(dobby_dummy_func_t)myInput,(dobby_dummy_func_t*)&origInput);
     }
     LOGI("Draw Done!");
-    Patches();
     return nullptr;
+    Patches();
 }
