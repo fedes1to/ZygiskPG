@@ -23,6 +23,7 @@
 #include "KittyMemory/KittyUtils.h"
 #include "Include/obfuscate.h"
 #include "Includes/Dobby/dobbyForHooks.h"
+#include <vector>
 
 using KittyMemory::ProcMap;
 using KittyScanner::RegisterNativeFn;
@@ -30,6 +31,33 @@ using KittyScanner::RegisterNativeFn;
 ProcMap g_il2cppBaseMap;
 
 #define GamePackageName "com.pixel.gun3d"
+
+struct GlobalPatches {
+    // let's assume we have patches for these functions for whatever game
+    // boolean function
+    MemoryPatch maxLevel;
+    // etc...
+}gPatches;
+
+bool maxLevel;
+bool levelApplied;
+
+void Patches() {
+    if (maxLevel && !levelApplied) {
+        if (gPatches.maxLevel.Modify()) {
+            KITTY_LOGI("maxLevel has been modified successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.maxLevel.get_CurrBytes().c_str());
+        }
+        levelApplied = true;
+    } else if (!maxLevel && levelApplied)
+    {
+        if (gPatches.maxLevel.Restore()) {
+            KITTY_LOGI("maxLevel has been restored successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.maxLevel.get_CurrBytes().c_str());
+        }
+        levelApplied = false;
+    }
+}
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -65,23 +93,14 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     return;
 }
 
-bool maxlvl;
-
-void(*oldPlayer_Move_c)(void* obj);
-void Player_Move_c(void* obj){
-    if(obj != nullptr){
-        LOGW("SEX");
-    }
-    oldPlayer_Move_c(obj);
-}
-
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
-            ImGui::Checkbox("Max Level", &maxlvl);
+            ImGui::Checkbox("Max Level", &maxLevel);
         }
+        Patches();
         ImGui::End();
     }
 }
@@ -95,7 +114,6 @@ void SetupImgui() {
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
-
     ImGui::GetStyle().ScaleAllSizes(5.0f);
 }
 
@@ -128,7 +146,9 @@ void *hack_thread(void *arg) {
         sleep(1);
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
     } while (!g_il2cppBaseMap.isValid());
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x473F064), (void*)Player_Move_c, (void**)&oldPlayer_Move_c);
+    KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
+    gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
+//  DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x473F064), (void*)Void, (void**)&oldVoid);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
