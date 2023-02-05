@@ -6,8 +6,6 @@
 
 #include "MemoryBackup.h"
 
-using KittyMemory::Memory_Status;
-using KittyMemory::ProcMap;
 
 MemoryBackup::MemoryBackup()
 {
@@ -16,14 +14,16 @@ MemoryBackup::MemoryBackup()
   _orig_code.clear();
 }
 
-MemoryBackup::MemoryBackup(const char *libraryName, uintptr_t address, size_t backup_size, bool useMapCache)
+MemoryBackup::MemoryBackup(const ProcMap &map, uintptr_t address, size_t backup_size)
 {
-  MemoryBackup();
+  _address = 0;
+  _size = 0;
+  _orig_code.clear();
 
-  if (libraryName == NULL || address == 0 || backup_size < 1)
+  if (!map.isValid() || address == 0 || backup_size < 1)
     return;
 
-  _address = KittyMemory::getAbsoluteAddress(libraryName, address, useMapCache);
+  _address = map.startAddress+address;
   if (_address == 0)
     return;
 
@@ -37,7 +37,9 @@ MemoryBackup::MemoryBackup(const char *libraryName, uintptr_t address, size_t ba
 
 MemoryBackup::MemoryBackup(uintptr_t absolute_address, size_t backup_size)
 {
-  MemoryBackup();
+  _address = 0;
+  _size = 0;
+  _orig_code.clear();
 
   if (absolute_address == 0 || backup_size < 1)
     return;
@@ -75,17 +77,21 @@ uintptr_t MemoryBackup::get_TargetAddress() const
 
 bool MemoryBackup::Restore()
 {
-  if (!isValid())
-    return false;
-  return KittyMemory::memWrite(reinterpret_cast<void *>(_address), &_orig_code[0], _size) == Memory_Status::SUCCESS;
+  if (!isValid()) return false;
+  
+  return KittyMemory::memWrite(reinterpret_cast<void *>(_address), &_orig_code[0], _size);
 }
 
-std::string MemoryBackup::get_CurrBytes()
+std::string MemoryBackup::get_CurrBytes() const
 {
-  if (!isValid())
-    _hexString = std::string("0xInvalid");
-  else
-    _hexString = KittyMemory::read2HexStr(reinterpret_cast<const void *>(_address), _size);
+  if (!isValid()) return "";
+  
+  return KittyMemory::read2HexStr(reinterpret_cast<const void *>(_address), _size);
+}
 
-  return _hexString;
+std::string MemoryBackup::get_OrigBytes() const
+{
+  if (!isValid()) return "";
+  
+  return KittyMemory::read2HexStr(_orig_code.data(), _orig_code.size());
 }

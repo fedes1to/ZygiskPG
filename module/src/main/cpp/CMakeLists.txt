@@ -38,7 +38,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${C_FLAGS} ${CXX_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
-include_directories(Memory)
+include_directories(KittyMemory)
 include_directories(Includes)
 include_directories(ImGui)
 include_directories(ImGui/backends)
@@ -52,12 +52,12 @@ add_library(${MODULE_NAME}
         ImGui/imgui_tables.cpp
         ImGui/backends/imgui_impl_opengl3.cpp
         ImGui/backends/imgui_impl_android.cpp
-        Memory/KittyArm64.cpp
-        Memory/KittyMemory.cpp
-        Memory/KittyScanner.cpp
-        Memory/KittyUtils.cpp
-        Memory/MemoryBackup.cpp
-        Memory/MemoryPatch.cpp
+        KittyMemory/KittyArm64.cpp
+        KittyMemory/KittyMemory.cpp
+        KittyMemory/KittyScanner.cpp
+        KittyMemory/KittyUtils.cpp
+        KittyMemory/MemoryBackup.cpp
+        KittyMemory/MemoryPatch.cpp
         main.cpp
         hook.cpp
         )

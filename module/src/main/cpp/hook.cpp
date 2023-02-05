@@ -17,9 +17,17 @@
 #include "imgui_internal.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_android.h"
-#include "Memory/MemoryPatch.h"
+#include "KittyMemory/KittyMemory.h"
+#include "KittyMemory/MemoryPatch.h"
+#include "KittyMemory/KittyScanner.h"
+#include "KittyMemory/KittyUtils.h"
 #include "Include/obfuscate.h"
 #include "Includes/Dobby/dobbyForHooks.h"
+
+using KittyMemory::ProcMap;
+using KittyScanner::RegisterNativeFn;
+
+ProcMap g_il2cppBaseMap;
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -116,8 +124,11 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 }
 
 void *hack_thread(void *arg) {
-    sleep(5);
-    DobbyHook((void*)KittyMemory::getAbsoluteAddress("libil2cpp.so", 0x473F064), (void*)Player_Move_c, (void**)&oldPlayer_Move_c);
+    do {
+        sleep(1);
+        g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
+    } while (!g_il2cppBaseMap.isValid());
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x473F064), (void*)Player_Move_c, (void**)&oldPlayer_Move_c);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,

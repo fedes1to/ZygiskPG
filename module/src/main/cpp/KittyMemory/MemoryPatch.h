@@ -8,9 +8,9 @@
 
 #include <vector>
 
-#include "KittyUtils.h"
-
 #include "KittyMemory.h"
+
+using KittyMemory::ProcMap;
 
 class MemoryPatch
 {
@@ -21,16 +21,14 @@ private:
     std::vector<uint8_t> _orig_code;
     std::vector<uint8_t> _patch_code;
 
-    std::string _hexString;
-
 public:
     MemoryPatch();
 
     /*
      * expects library name and relative address
      */
-    MemoryPatch(const char *libraryName, uintptr_t address,
-                const void *patch_code, size_t patch_size, bool useMapCache = true);
+    MemoryPatch(const ProcMap &map, uintptr_t address,
+                const void *patch_code, size_t patch_size);
 
     /*
      * expects absolute address
@@ -43,7 +41,7 @@ public:
     /*
      * compatible hex format (0xffff & ffff & ff ff)
      */
-    static MemoryPatch createWithHex(const char *libraryName, uintptr_t address, std::string hex, bool useMapCache = true);
+    static MemoryPatch createWithHex(const ProcMap &map, uintptr_t address, std::string hex);
     static MemoryPatch createWithHex(uintptr_t absolute_address, std::string hex);
 
     /*
@@ -71,5 +69,9 @@ public:
     /*
      * Returns current patch target address bytes as hex string
      */
-    std::string get_CurrBytes();
+    std::string get_CurrBytes() const;
+
+    std::string get_OrigBytes() const;
+    
+    std::string get_PatchBytes() const;
 };
