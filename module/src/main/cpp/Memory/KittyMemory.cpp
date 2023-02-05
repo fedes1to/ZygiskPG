@@ -131,7 +131,7 @@ namespace KittyMemory
         return retMap;
     }
 
-    uintptr_t KittyMemory::getAbsoluteAddress(const char *libraryName, uintptr_t relativeAddr, bool useCache)
+    uintptr_t getAbsoluteAddress(const char *libraryName, uintptr_t relativeAddr, bool useCache)
     {
         ProcMap libMap;
 
