@@ -23,9 +23,6 @@
 #include "KittyMemory/KittyUtils.h"
 #include "Include/obfuscate.h"
 #include "Includes/Dobby/dobbyForHooks.h"
-#if defined(__aarch64__)
-#include "And64InlineHook/And64InlineHook.hpp"
-#endif
 
 using KittyMemory::ProcMap;
 using KittyScanner::RegisterNativeFn;
@@ -162,9 +159,7 @@ void *hack_thread(void *arg) {
     // example of a hex patch
     gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
     // example of a hook for arm64
-#if defined(__aarch64__)
-    A64HookFunction((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
-#endif
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
