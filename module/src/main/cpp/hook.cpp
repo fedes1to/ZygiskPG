@@ -39,7 +39,7 @@ struct GlobalPatches {
     // etc...
 }gPatches;
 
-bool maxLevel;
+bool maxLevel, setString;
 bool levelApplied;
 
 void Patches() {
@@ -61,29 +61,22 @@ void Patches() {
 }
 
 // here we start with the hooking methods
-void (*old_WeaponSounds)(void *instance);
-void WeaponSounds(void *instance){
-    if (instance != nullptr){
-//      LOGI("Hooked WeaponSounds");
-        
+void (*old_WeaponSounds)(void *obj);
+void WeaponSounds(void *obj){
+    if (obj != nullptr){
+        *(int*)((uint64_t) obj + 0x5C) = 69;
     }
-    old_WeaponSounds(instance);
+    old_WeaponSounds(obj);
 }
 
-/*
-bool (*old_Unban)(void *instance);
-bool Unban(void *instance){
-    LOGI("enabling unban...");
-    return true;
-}
-
-void (*old_SetString)(void *instance);
+void (*old_SetString)(void *instance, monoString *key, monoString *value);
 void SetString(void *instance, monoString *key, monoString *value){
-    LOGW("%s", (char *)(key));
-    LOGW("%s", (char *)(value));
-    old_SetString(instance);
+    if(setString){
+        LOGW("TRYING TO SET ID TO -3");
+        value = CreateIl2cppString("-3");
+        old_SetString(instance, key, value);
+    }
 }
-*/
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -125,6 +118,7 @@ void DrawMenu(){
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
+            ImGui::Checkbox("Try to get ID -3", &setString);
         }
         Patches();
         ImGui::End();
@@ -179,8 +173,7 @@ void *hack_thread(void *arg) {
 
     // example of a hook for arm64
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
-    //DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x279C8F4), (void*)Unban, (void**)&old_Unban);
-    //DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4340BE0), (void*)SetString, (void**)&old_SetString);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4340BE0), (void*)SetString, (void**)&old_SetString);
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
