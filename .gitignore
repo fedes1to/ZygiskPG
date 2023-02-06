@@ -12,3 +12,6 @@
 /out
 .externalNativeBuild
 .cxx
+local.properties
+/module/.cxx
+/module/build
