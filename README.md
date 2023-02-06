@@ -1,8 +1,8 @@
-# Zygisk-Inject-ImGui
-Example of using zygisk to inject imgui menus
+# ZygiskPG
+Mod Menu for Pixel Gun 3D 23.0.1
 
-This is not a good project 
-You may encounter many problems
+This is NOT a good project 
+You WILL encounter many problems
 
 
 # Build and Installation
