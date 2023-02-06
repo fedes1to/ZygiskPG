@@ -12,5 +12,3 @@
 /out
 .externalNativeBuild
 .cxx
-/gradle/wrapper
-/.gradle
