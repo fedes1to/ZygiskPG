@@ -36,13 +36,23 @@ struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     // boolean function
     MemoryPatch maxLevel;
+    MemoryPatch unban;
     // etc...
 }gPatches;
 
-bool maxLevel, setString;
-bool levelApplied;
+static char loadLevel[] = "";
+bool maxLevel, levelApplied;
+
+// specify pointers to call here
+void(*SetString)(monoString* key, monoString* value);
+void(*LoadLevel)(monoString* key);
+void Pointers() {
+    SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x4340BE0);
+    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C);
+}
 
 void Patches() {
+
     // for maxLevel
     if (maxLevel && !levelApplied) {
         if (gPatches.maxLevel.Modify()) {
@@ -63,19 +73,14 @@ void Patches() {
 // here we start with the hooking methods
 void (*old_WeaponSounds)(void *obj);
 void WeaponSounds(void *obj){
+    if (ImGui::IsItemClicked() && loadLevel != NULL)
+    {
+        LoadLevel(CreateIl2cppString(loadLevel));
+    }
     if (obj != nullptr){
         *(int*)((uint64_t) obj + 0x5C) = 69;
     }
     old_WeaponSounds(obj);
-}
-
-void (*old_SetString)(void *instance, monoString *key, monoString *value);
-void SetString(void *instance, monoString *key, monoString *value){
-    if(setString){
-        LOGW("TRYING TO SET ID TO -3");
-        value = CreateIl2cppString("-3");
-        old_SetString(instance, key, value);
-    }
 }
 
 int isGame(JNIEnv *env, jstring appDataDir) {
@@ -118,7 +123,8 @@ void DrawMenu(){
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
-            ImGui::Checkbox("Try to get ID -3", &setString);
+            ImGui::InputText("", loadLevel, IM_ARRAYSIZE(loadLevel));
+            ImGui::Button("Try to load scene");
         }
         Patches();
         ImGui::End();
@@ -167,13 +173,13 @@ void *hack_thread(void *arg) {
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
+    Pointers();
 
     // example of a hex patch
     gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
 
     // example of a hook for arm64
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4340BE0), (void*)SetString, (void**)&old_SetString);
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
