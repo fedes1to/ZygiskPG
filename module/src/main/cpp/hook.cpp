@@ -23,6 +23,7 @@
 #include "KittyMemory/KittyUtils.h"
 #include "Include/obfuscate.h"
 #include "Includes/Dobby/dobbyForHooks.h"
+#include "Include/Unity.h"
 
 using KittyMemory::ProcMap;
 using KittyScanner::RegisterNativeFn;
@@ -63,10 +64,26 @@ void Patches() {
 void (*old_WeaponSounds)(void *instance);
 void WeaponSounds(void *instance){
     if (instance != nullptr){
-        LOGI("Hooked WeaponSounds");
+//      LOGI("Hooked WeaponSounds");
+        
     }
     old_WeaponSounds(instance);
 }
+
+/*
+bool (*old_Unban)(void *instance);
+bool Unban(void *instance){
+    LOGI("enabling unban...");
+    return true;
+}
+
+void (*old_SetString)(void *instance);
+void SetString(void *instance, monoString *key, monoString *value){
+    LOGW("%s", (char *)(key));
+    LOGW("%s", (char *)(value));
+    old_SetString(instance);
+}
+*/
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -162,6 +179,8 @@ void *hack_thread(void *arg) {
 
     // example of a hook for arm64
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
+    //DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x279C8F4), (void*)Unban, (void**)&old_Unban);
+    //DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4340BE0), (void*)SetString, (void**)&old_SetString);
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
