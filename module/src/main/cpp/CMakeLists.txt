@@ -6,17 +6,6 @@ else ()
     project(${MODULE_NAME})
 endif ()
 
-set(DobbyHome Dobby)
-include_directories(
-        ${DobbyHome}/include
-)
-macro(SET_OPTION option value)
-    set(${option} ${value} CACHE INTERNAL "" FORCE)
-endmacro()
-SET_OPTION(DOBBY_DEBUG OFF)
-SET_OPTION(DOBBY_GENERATE_SHARED OFF)
-add_subdirectory(${DobbyHome} dobby)
-
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -38,7 +27,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${C_FLAGS} ${CXX_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
-include_directories(And64InlineHook)
 include_directories(KittyMemory)
 include_directories(Includes)
 include_directories(ImGui)
@@ -59,12 +47,11 @@ add_library(${MODULE_NAME}
         KittyMemory/KittyUtils.cpp
         KittyMemory/MemoryBackup.cpp
         KittyMemory/MemoryPatch.cpp
-        And64InlineHook/And64InlineHook.cpp
         main.cpp
         hook.cpp
         )
 
-
+set(DOBBY_LIB ${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/libdobby.a)
 find_library(log-lib log)
 find_library(egl EGL)
 find_library(android android)
@@ -83,7 +70,8 @@ else ()
 endif (${ANDROID_PLATFORM_LEVEL} LESS 12)
 
 target_link_libraries(
-        ${MODULE_NAME} log dobby
+        ${MODULE_NAME} log
+        ${DOBBY_LIB}
         ${OPENGL_LIB}
         ${GLESV2_LIB}
         ${android}
