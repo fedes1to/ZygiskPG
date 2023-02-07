@@ -312,21 +312,8 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
 
 void Hooks(){
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x477C7AC), (void*)GetAutoFireDistance, (void**)&oldgetAutoFireDistance);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4995C10), (void*)autoTargetRotateSpeed, (void**)&oldautoTargetRotateSpeed);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x170F278), (void*)RadiusAutoAim, (void**)&oldRadiusAutoAim);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x1E7DF04), (void*)AutoAimDistance, (void**)&oldAutoAimDistance);
-}
 
-void *hack_thread(void *arg) {
-    do {
-        sleep(1);
-        g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
-    } while (!g_il2cppBaseMap.isValid());
-    KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
-    Pointers();
-
-    // example of a hex patch
+    // hex patches
     gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
     gPatches.uWear = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x257B7B4,"802580D2C0035FD6");
     gPatches.cWear1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87C14,"802580D2C0035FD6");
@@ -336,8 +323,23 @@ void *hack_thread(void *arg) {
     gPatches.vd1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"00FA80D2C0035FD6");
     gPatches.vd2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"00FA80D2C0035FD6");
 
-    // example of a hook for arm64
-    //DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
+    // hooks
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x477C7AC), (void*)GetAutoFireDistance, (void**)&oldgetAutoFireDistance);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4995C10), (void*)autoTargetRotateSpeed, (void**)&oldautoTargetRotateSpeed);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x170F278), (void*)RadiusAutoAim, (void**)&oldRadiusAutoAim);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x1E7DF04), (void*)AutoAimDistance, (void**)&oldAutoAimDistance);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
+    
+}
+
+void *hack_thread(void *arg) {
+    do {
+        sleep(1);
+        g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
+    } while (!g_il2cppBaseMap.isValid());
+    KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
+
+    Pointers();
     Hooks();
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
