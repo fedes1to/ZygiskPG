@@ -49,7 +49,7 @@ struct GlobalPatches {
 
 static char loadLevel[] = "";
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
-gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied;
+gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied, afdist, autoaim;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -175,6 +175,40 @@ void WeaponSounds(void *obj) {
     old_WeaponSounds(obj);
 }
 
+float (*oldgetAutoFireDistance)(void* obj);
+float GetAutoFireDistance(void* obj){
+    if(obj != nullptr && afdist){
+        return 999999;
+    }
+    oldgetAutoFireDistance(obj);
+}
+
+float (*oldautoTargetRotateSpeed)(void* obj);
+float autoTargetRotateSpeed(void* obj){
+    if(obj != nullptr && autoaim){
+        return 9999;
+    }
+    oldgetAutoFireDistance(obj);
+}
+
+float (*oldAutoAimDistance)(void* obj);
+float AutoAimDistance(void* obj){
+    if(obj != nullptr && autoaim){
+        return 9999;
+    }
+    oldgetAutoFireDistance(obj);
+}
+
+float (*oldRadiusAutoAim)(void* obj);
+float RadiusAutoAim(void* obj){
+    if(obj != nullptr && autoaim){
+        return 9999;
+    }
+    oldgetAutoFireDistance(obj);
+}
+
+
+
 // trying to log a method as a test
 
 int isGame(JNIEnv *env, jstring appDataDir) {
@@ -223,7 +257,11 @@ void DrawMenu(){
             ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
             ImGui::Checkbox("Mod Keys (Test)", &modKeys);
         }
-        if (ImGui::CollapsingHeader("InGame Misc Mods"))
+        if (ImGui::CollapsingHeader("Game Mods")) {
+            ImGui::Checkbox("Infinite Auto-Fire Distance", &afdist);
+            ImGui::Checkbox("Auto-Aim ", &autoaim);
+        }
+        if (ImGui::CollapsingHeader("Misc Mods"))
         {
             ImGui::InputText("Input Scene", loadLevel, IM_ARRAYSIZE(loadLevel));
             if (ImGui::Button("Load Scene"))
@@ -272,6 +310,14 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     return old_eglSwapBuffers(dpy, surface);
 }
 
+
+void Hooks(){
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x477C7AC), (void*)GetAutoFireDistance, (void**)&oldgetAutoFireDistance);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4995C10), (void*)autoTargetRotateSpeed, (void**)&oldautoTargetRotateSpeed);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x170F278), (void*)RadiusAutoAim, (void**)&oldRadiusAutoAim);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x1E7DF04), (void*)AutoAimDistance, (void**)&oldAutoAimDistance);
+}
+
 void *hack_thread(void *arg) {
     do {
         sleep(1);
@@ -291,8 +337,8 @@ void *hack_thread(void *arg) {
     gPatches.vd2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"00FA80D2C0035FD6");
 
     // example of a hook for arm64
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
-
+    //DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
+    Hooks();
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
