@@ -37,16 +37,19 @@ struct GlobalPatches {
     // boolean function
     MemoryPatch maxLevel;
     MemoryPatch unban;
-    MemoryPatch vd;
     MemoryPatch cWear1;
     MemoryPatch cWear2;
     MemoryPatch uWear;
     MemoryPatch gadgetUnlock;
+    MemoryPatch modKeys;
+    MemoryPatch vd1;
+    MemoryPatch vd2;
     // etc...
 }gPatches;
 
 static char loadLevel[] = "";
-bool maxLevel, levelApplied, vd, vdApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock, gadgetUnlockApplied, isLoadScenePressed;
+bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
+gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -57,7 +60,6 @@ void Pointers() {
 }
 
 void Patches() {
-
     // for maxLevel
     if (maxLevel && !levelApplied) {
         if (gPatches.maxLevel.Modify()) {
@@ -74,22 +76,6 @@ void Patches() {
         levelApplied = false;
     }
 
-    //for vd
-    if (vd && !vdApplied) {
-        if (gPatches.vd.Modify()) {
-            KITTY_LOGI("vd has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd.get_CurrBytes().c_str());
-        }
-        vdApplied = true;
-    } else if (!vd && vdApplied)
-    {
-        if (gPatches.vd.Restore()) {
-            KITTY_LOGI("vd has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd.get_CurrBytes().c_str());
-        }
-        vdApplied = false;
-    }
-
     //for uWear
     if (uWear && !uWearApplied) {
         if (gPatches.uWear.Modify()) {
@@ -104,6 +90,24 @@ void Patches() {
             KITTY_LOGI("Current Bytes: %s", gPatches.uWear.get_CurrBytes().c_str());
         }
         uWearApplied = false;
+    }
+
+    //for vd
+    if (vd && !vdApplied) {
+        if (gPatches.vd1.Modify() && gPatches.vd2.Modify()) {
+            KITTY_LOGI("vd has been modified successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.vd1.get_CurrBytes().c_str());
+            KITTY_LOGI("Current Bytes: %s", gPatches.vd2.get_CurrBytes().c_str());
+        }
+        vdApplied = true;
+    } else if (!vd && vdApplied)
+    {
+        if (gPatches.vd1.Restore() && gPatches.vd2.Restore()) {
+            KITTY_LOGI("vd has been restored successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.vd1.get_CurrBytes().c_str());
+            KITTY_LOGI("Current Bytes: %s", gPatches.vd2.get_CurrBytes().c_str());
+        }
+        vdApplied = false;
     }
 
     //for gadgetUnlock
@@ -139,6 +143,22 @@ void Patches() {
         }
         cWearApplied = false;
     }
+
+    //for modKeys
+    if (modKeys && !modKeysApplied) {
+        if (gPatches.modKeys.Modify() && gPatches.modKeys.Modify()) {
+            KITTY_LOGI("modKeys has been modified successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.modKeys.get_CurrBytes().c_str());
+        }
+        modKeysApplied = true;
+    } else if (!modKeys && modKeysApplied)
+    {
+        if (gPatches.modKeys.Restore() && gPatches.modKeys.Restore()) {
+            KITTY_LOGI("modKeys has been restored successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.modKeys.get_CurrBytes().c_str());
+        }
+        modKeysApplied = false;
+    }
 }
 
 // here we start with the hooking methods
@@ -149,10 +169,13 @@ void WeaponSounds(void *obj) {
         if (isLoadScenePressed)
         {
             LoadLevel(CreateIl2cppString(loadLevel));
+            isLoadScenePressed = false;
         }
     }
     old_WeaponSounds(obj);
 }
+
+// trying to log a method as a test
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -194,19 +217,18 @@ void DrawMenu(){
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
-            ImGui::Checkbox("Value Decrypt", &vd);
+            ImGui::Checkbox("Collectibles", &vd);
             ImGui::Checkbox("Unlock Wear", &uWear);
             ImGui::Checkbox("Craftable Wear", &cWear);
             ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
+            ImGui::Checkbox("Mod Keys (Test)", &modKeys);
         }
         if (ImGui::CollapsingHeader("InGame Misc Mods"))
         {
-            ImGui::InputText("", loadLevel, IM_ARRAYSIZE(loadLevel));
+            ImGui::InputText("Input Scene", loadLevel, IM_ARRAYSIZE(loadLevel));
             if (ImGui::Button("Load Scene"))
             {
                 isLoadScenePressed = true;
-            } else {
-                isLoadScenePressed = false;
             }
         }
         Patches();
@@ -260,14 +282,17 @@ void *hack_thread(void *arg) {
 
     // example of a hex patch
     gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
-    gPatches.vd = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"00FA80D2C0035FD6");
     gPatches.uWear = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x257B7B4,"802580D2C0035FD6");
     gPatches.cWear1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87C14,"802580D2C0035FD6");
     gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AFC,"802580D2C0035FD6");
     gPatches.gadgetUnlock = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2C54AFC,"00008052C0035FD6");
+    gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
+    gPatches.vd1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"00FA80D2C0035FD6");
+    gPatches.vd2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"00FA80D2C0035FD6");
 
     // example of a hook for arm64
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
+
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
