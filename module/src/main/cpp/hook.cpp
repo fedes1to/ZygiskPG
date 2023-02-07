@@ -35,13 +35,14 @@ ProcMap g_il2cppBaseMap;
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     // boolean function
-    MemoryPatch vd2, tutorial, tutorial1, vd1, gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3;
+    MemoryPatch vd2, tutorial, tutorial1, vd1, gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1;
     // etc...
 }gPatches;
 
 static char loadLevel[] = "";
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
-gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied, afdist, tgod, tgodapplied;
+gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied, afdist, tgod, tgodapplied, rocketgodapplied,
+rocketgod;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -120,6 +121,16 @@ void Patches() {
         tgodapplied = false;
     }
 
+    //for rocketgod
+    if (rocketgod && !rocketgodapplied) {
+        gPatches.rgod.Modify(); gPatches.rgod1.Modify();
+        rocketgodapplied = true;
+    } else if (!rocketgod && rocketgodapplied)
+    {
+        gPatches.rgod.Restore(); gPatches.rgod1.Restore();
+        rocketgodapplied = false;
+    }
+
 }
 
 // here we start with the hooking methods
@@ -192,8 +203,13 @@ void DrawMenu(){
             ImGui::Checkbox("Free Lottery", &modKeys);
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
         }
+        if (ImGui::CollapsingHeader("Player Mods")) {
+            ImGui::Checkbox("Rocket Noclip", &rocketgod);
+            ImGui::Text("Rockets go through you.");
+        }
         if (ImGui::CollapsingHeader("Game Mods")) {
             ImGui::Checkbox("Turret Godmode", &tgod);
+            ImGui::Text("Gives the Turret Gadget Infinite Health.");
         }
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
@@ -259,6 +275,8 @@ void Modifications(){
     gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//MinusLive
     gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//MinusLive
     gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//MinusLiveReal
+    gPatches.rgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x320A640,"200080D2C0035FD6");//search GameObject in Rocket
+    gPatches.rgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x321A6BC,"200080D2C0035FD6");//search GameObject in Rocket
     gPatches.tutorial.Modify();
 
     // hooks
