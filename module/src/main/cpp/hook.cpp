@@ -35,15 +35,7 @@ ProcMap g_il2cppBaseMap;
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     // boolean function
-    MemoryPatch maxLevel;
-    MemoryPatch unban;
-    MemoryPatch cWear1;
-    MemoryPatch cWear2;
-    MemoryPatch uWear;
-    MemoryPatch gadgetUnlock;
-    MemoryPatch modKeys;
-    MemoryPatch vd1;
-    MemoryPatch vd2;
+    MemoryPatch vd2, tutorial, tutorial1, vd1, gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban;
     // etc...
 }gPatches;
 
@@ -62,101 +54,51 @@ void Pointers() {
 void Patches() {
     // for maxLevel
     if (maxLevel && !levelApplied) {
-        if (gPatches.maxLevel.Modify()) {
-            KITTY_LOGI("maxLevel has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.maxLevel.get_CurrBytes().c_str());
-        }
+        gPatches.maxLevel.Modify();
         levelApplied = true;
     } else if (!maxLevel && levelApplied)
     {
-        if (gPatches.maxLevel.Restore()) {
-            KITTY_LOGI("maxLevel has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.maxLevel.get_CurrBytes().c_str());
-        }
+        gPatches.maxLevel.Restore();
         levelApplied = false;
     }
 
     //for uWear
     if (uWear && !uWearApplied) {
-        if (gPatches.uWear.Modify()) {
-            KITTY_LOGI("uWear has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.uWear.get_CurrBytes().c_str());
-        }
+        gPatches.uWear.Modify();
         uWearApplied = true;
     } else if (!uWear && uWearApplied)
     {
-        if (gPatches.uWear.Restore()) {
-            KITTY_LOGI("uWear has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.uWear.get_CurrBytes().c_str());
-        }
+        gPatches.uWear.Restore();
         uWearApplied = false;
-    }
-
-    //for vd
-    if (vd && !vdApplied) {
-        if (gPatches.vd1.Modify() && gPatches.vd2.Modify()) {
-            KITTY_LOGI("vd has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd2.get_CurrBytes().c_str());
-        }
-        vdApplied = true;
-    } else if (!vd && vdApplied)
-    {
-        if (gPatches.vd1.Restore() && gPatches.vd2.Restore()) {
-            KITTY_LOGI("vd has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd2.get_CurrBytes().c_str());
-        }
-        vdApplied = false;
     }
 
     //for gadgetUnlock
     if (gadgetUnlock && !gadgetUnlockApplied) {
-        if (gPatches.gadgetUnlock.Modify()) {
-            KITTY_LOGI("uWear has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.gadgetUnlock.get_CurrBytes().c_str());
-        }
+        gPatches.gadgetUnlock.Modify();
         gadgetUnlockApplied = true;
     } else if (!gadgetUnlock && gadgetUnlockApplied)
     {
-        if (gPatches.gadgetUnlock.Restore()) {
-            KITTY_LOGI("uWear has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.gadgetUnlock.get_CurrBytes().c_str());
-        }
+        gPatches.gadgetUnlock.Restore();
         gadgetUnlockApplied = false;
     }
 
     //for cWear
     if (cWear && !cWearApplied) {
-        if (gPatches.cWear1.Modify() && gPatches.cWear2.Modify()) {
-            KITTY_LOGI("cWear has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear2.get_CurrBytes().c_str());
-        }
+        gPatches.cWear1.Modify(); gPatches.cWear2.Modify();
         cWearApplied = true;
     } else if (!cWear && cWearApplied)
     {
-        if (gPatches.cWear1.Restore() && gPatches.cWear2.Restore()) {
-            KITTY_LOGI("cWear has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear2.get_CurrBytes().c_str());
-        }
+        gPatches.cWear1.Restore(); gPatches.cWear2.Restore();
         cWearApplied = false;
     }
 
     //for modKeys
     if (modKeys && !modKeysApplied) {
-        if (gPatches.modKeys.Modify() && gPatches.modKeys.Modify()) {
-            KITTY_LOGI("modKeys has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.modKeys.get_CurrBytes().c_str());
-        }
+        gPatches.modKeys.Modify();
         modKeysApplied = true;
     } else if (!modKeys && modKeysApplied)
     {
-        if (gPatches.modKeys.Restore() && gPatches.modKeys.Restore()) {
-            KITTY_LOGI("modKeys has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.modKeys.get_CurrBytes().c_str());
-        }
+        gPatches.modKeys.Restore();
         modKeysApplied = false;
     }
 }
@@ -182,32 +124,6 @@ float GetAutoFireDistance(void* obj){
     }
     oldgetAutoFireDistance(obj);
 }
-
-float (*oldautoTargetRotateSpeed)(void* obj);
-float autoTargetRotateSpeed(void* obj){
-    if(obj != nullptr && autoaim){
-        return 9999;
-    }
-    oldgetAutoFireDistance(obj);
-}
-
-float (*oldAutoAimDistance)(void* obj);
-float AutoAimDistance(void* obj){
-    if(obj != nullptr && autoaim){
-        return 9999;
-    }
-    oldgetAutoFireDistance(obj);
-}
-
-float (*oldRadiusAutoAim)(void* obj);
-float RadiusAutoAim(void* obj){
-    if(obj != nullptr && autoaim){
-        return 9999;
-    }
-    oldgetAutoFireDistance(obj);
-}
-
-
 
 // trying to log a method as a test
 
@@ -251,15 +167,14 @@ void DrawMenu(){
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
-            ImGui::Checkbox("Collectibles", &vd);
-            ImGui::Checkbox("Unlock Wear", &uWear);
-            ImGui::Checkbox("Craftable Wear", &cWear);
-            ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
-            ImGui::Checkbox("Mod Keys (Test)", &modKeys);
+            ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
+            ImGui::Checkbox("Free Craftables", &cWear);
+            ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
+            ImGui::Checkbox("Free Lottery", &modKeys);
+            ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
         }
         if (ImGui::CollapsingHeader("Game Mods")) {
             ImGui::Checkbox("Infinite Auto-Fire Distance", &afdist);
-            ImGui::Checkbox("Auto-Aim ", &autoaim);
         }
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
@@ -322,12 +237,12 @@ void Modifications(){
     gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
     gPatches.vd1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"00FA80D2C0035FD6");
     gPatches.vd2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"00FA80D2C0035FD6");
+    gPatches.tutorial = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"200080D2C0035FD6");
+    gPatches.tutorial1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"200080D2C0035FD6");
+    gPatches.vd1.Modify(); gPatches.vd2.Modify(); gPatches.tutorial.Modify(); gPatches.tutorial1.Modify();
 
     // hooks
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x477C7AC), (void*)GetAutoFireDistance, (void**)&oldgetAutoFireDistance);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4995C10), (void*)autoTargetRotateSpeed, (void**)&oldautoTargetRotateSpeed);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x170F278), (void*)RadiusAutoAim, (void**)&oldRadiusAutoAim);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x1E7DF04), (void*)AutoAimDistance, (void**)&oldAutoAimDistance);
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
     
 }
@@ -338,8 +253,10 @@ void *hack_thread(void *arg) {
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
+
     Pointers();
     Modifications();
+
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
