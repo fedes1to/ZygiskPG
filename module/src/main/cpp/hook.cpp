@@ -56,8 +56,7 @@ void Patches() {
     if (maxLevel && !levelApplied) {
         gPatches.maxLevel.Modify();
         levelApplied = true;
-    } else if (!maxLevel && levelApplied)
-    {
+    } else if (!maxLevel && levelApplied) {
         gPatches.maxLevel.Restore();
         levelApplied = false;
     }
@@ -66,10 +65,20 @@ void Patches() {
     if (uWear && !uWearApplied) {
         gPatches.uWear.Modify();
         uWearApplied = true;
-    } else if (!uWear && uWearApplied)
-    {
+    } else if (!uWear && uWearApplied) {
         gPatches.uWear.Restore();
         uWearApplied = false;
+    }
+
+
+    //for vd
+    if (vd && !vdApplied) {
+        gPatches.vd1.Modify();  gPatches.vd2.Modify();
+        vdApplied = true;
+    } else if (!vd && vdApplied)
+    {
+        gPatches.vd1.Restore(); gPatches.vd2.Restore();
+        vdApplied = false;
     }
 
     //for gadgetUnlock
@@ -86,8 +95,7 @@ void Patches() {
     if (cWear && !cWearApplied) {
         gPatches.cWear1.Modify(); gPatches.cWear2.Modify();
         cWearApplied = true;
-    } else if (!cWear && cWearApplied)
-    {
+    } else if (!cWear && cWearApplied) {
         gPatches.cWear1.Restore(); gPatches.cWear2.Restore();
         cWearApplied = false;
     }
