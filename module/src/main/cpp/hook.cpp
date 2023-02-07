@@ -62,101 +62,64 @@ void Pointers() {
 void Patches() {
     // for maxLevel
     if (maxLevel && !levelApplied) {
-        if (gPatches.maxLevel.Modify()) {
-            KITTY_LOGI("maxLevel has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.maxLevel.get_CurrBytes().c_str());
-        }
+        gPatches.maxLevel.Modify();
         levelApplied = true;
-    } else if (!maxLevel && levelApplied)
-    {
-        if (gPatches.maxLevel.Restore()) {
-            KITTY_LOGI("maxLevel has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.maxLevel.get_CurrBytes().c_str());
-        }
+    } else if (!maxLevel && levelApplied) {
+        gPatches.maxLevel.Restore();
         levelApplied = false;
     }
 
     //for uWear
     if (uWear && !uWearApplied) {
-        if (gPatches.uWear.Modify()) {
-            KITTY_LOGI("uWear has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.uWear.get_CurrBytes().c_str());
-        }
+        gPatches.uWear.Modify();
         uWearApplied = true;
-    } else if (!uWear && uWearApplied)
-    {
-        if (gPatches.uWear.Restore()) {
-            KITTY_LOGI("uWear has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.uWear.get_CurrBytes().c_str());
-        }
+    } else if (!uWear && uWearApplied) {
+        gPatches.uWear.Restore();
         uWearApplied = false;
     }
 
     //for vd
     if (vd && !vdApplied) {
-        if (gPatches.vd1.Modify() && gPatches.vd2.Modify()) {
-            KITTY_LOGI("vd has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd2.get_CurrBytes().c_str());
-        }
+        gPatches.vd1.Modify();
+        gPatches.vd2.Modify();
         vdApplied = true;
     } else if (!vd && vdApplied)
     {
-        if (gPatches.vd1.Restore() && gPatches.vd2.Restore()) {
-            KITTY_LOGI("vd has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.vd2.get_CurrBytes().c_str());
-        }
+        gPatches.vd1.Restore();
+        gPatches.vd2.Restore();
         vdApplied = false;
     }
 
     //for gadgetUnlock
     if (gadgetUnlock && !gadgetUnlockApplied) {
-        if (gPatches.gadgetUnlock.Modify()) {
-            KITTY_LOGI("uWear has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.gadgetUnlock.get_CurrBytes().c_str());
-        }
+        gPatches.gadgetUnlock.Modify();
         gadgetUnlockApplied = true;
     } else if (!gadgetUnlock && gadgetUnlockApplied)
     {
-        if (gPatches.gadgetUnlock.Restore()) {
-            KITTY_LOGI("uWear has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.gadgetUnlock.get_CurrBytes().c_str());
-        }
+        gPatches.gadgetUnlock.Restore();
         gadgetUnlockApplied = false;
     }
 
     //for cWear
     if (cWear && !cWearApplied) {
-        if (gPatches.cWear1.Modify() && gPatches.cWear2.Modify()) {
-            KITTY_LOGI("cWear has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear2.get_CurrBytes().c_str());
-        }
+        gPatches.cWear1.Modify();
+        gPatches.cWear2.Modify();
         cWearApplied = true;
     } else if (!cWear && cWearApplied)
     {
-        if (gPatches.cWear1.Restore() && gPatches.cWear2.Restore()) {
-            KITTY_LOGI("cWear has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear1.get_CurrBytes().c_str());
-            KITTY_LOGI("Current Bytes: %s", gPatches.cWear2.get_CurrBytes().c_str());
-        }
+        gPatches.cWear1.Restore();
+        gPatches.cWear2.Restore();
         cWearApplied = false;
     }
 
     //for modKeys
     if (modKeys && !modKeysApplied) {
-        if (gPatches.modKeys.Modify() && gPatches.modKeys.Modify()) {
-            KITTY_LOGI("modKeys has been modified successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.modKeys.get_CurrBytes().c_str());
-        }
+        gPatches.modKeys.Modify();
         modKeysApplied = true;
     } else if (!modKeys && modKeysApplied)
     {
-        if (gPatches.modKeys.Restore() && gPatches.modKeys.Restore()) {
-            KITTY_LOGI("modKeys has been restored successfully");
-            KITTY_LOGI("Current Bytes: %s", gPatches.modKeys.get_CurrBytes().c_str());
-        }
+        gPatches.modKeys.Restore();
+        gPatches.modKeys.Restore();
         modKeysApplied = false;
     }
 }
