@@ -37,11 +37,16 @@ struct GlobalPatches {
     // boolean function
     MemoryPatch maxLevel;
     MemoryPatch unban;
+    MemoryPatch vd;
+    MemoryPatch cWear1;
+    MemoryPatch cWear2;
+    MemoryPatch uWear;
+    MemoryPatch gadgetUnlock;
     // etc...
 }gPatches;
 
 static char loadLevel[] = "";
-bool maxLevel, levelApplied;
+bool maxLevel, levelApplied, vd, vdApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock, gadgetUnlockApplied;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -68,18 +73,83 @@ void Patches() {
         }
         levelApplied = false;
     }
+
+    //for vd
+    if (vd && !vdApplied) {
+        if (gPatches.vd.Modify()) {
+            KITTY_LOGI("vd has been modified successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.vd.get_CurrBytes().c_str());
+        }
+        vdApplied = true;
+    } else if (!vd && vdApplied)
+    {
+        if (gPatches.vd.Restore()) {
+            KITTY_LOGI("vd has been restored successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.vd.get_CurrBytes().c_str());
+        }
+        vdApplied = false;
+    }
+
+    //for uWear
+    if (uWear && !uWearApplied) {
+        if (gPatches.uWear.Modify()) {
+            KITTY_LOGI("uWear has been modified successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.uWear.get_CurrBytes().c_str());
+        }
+        uWearApplied = true;
+    } else if (!uWear && uWearApplied)
+    {
+        if (gPatches.uWear.Restore()) {
+            KITTY_LOGI("uWear has been restored successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.uWear.get_CurrBytes().c_str());
+        }
+        uWearApplied = false;
+    }
+
+    //for gadgetUnlock
+    if (gadgetUnlock && !gadgetUnlockApplied) {
+        if (gPatches.gadgetUnlock.Modify()) {
+            KITTY_LOGI("uWear has been modified successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.gadgetUnlock.get_CurrBytes().c_str());
+        }
+        gadgetUnlockApplied = true;
+    } else if (!gadgetUnlock && gadgetUnlockApplied)
+    {
+        if (gPatches.gadgetUnlock.Restore()) {
+            KITTY_LOGI("uWear has been restored successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.gadgetUnlock.get_CurrBytes().c_str());
+        }
+        gadgetUnlockApplied = false;
+    }
+
+    //for cWear
+    if (cWear && !cWearApplied) {
+        if (gPatches.cWear1.Modify() && gPatches.cWear2.Modify()) {
+            KITTY_LOGI("cWear has been modified successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.cWear1.get_CurrBytes().c_str());
+            KITTY_LOGI("Current Bytes: %s", gPatches.cWear2.get_CurrBytes().c_str());
+        }
+        cWearApplied = true;
+    } else if (!cWear && cWearApplied)
+    {
+        if (gPatches.cWear1.Restore() && gPatches.cWear2.Restore()) {
+            KITTY_LOGI("cWear has been restored successfully");
+            KITTY_LOGI("Current Bytes: %s", gPatches.cWear1.get_CurrBytes().c_str());
+            KITTY_LOGI("Current Bytes: %s", gPatches.cWear2.get_CurrBytes().c_str());
+        }
+        cWearApplied = false;
+    }
 }
 
 // here we start with the hooking methods
 void (*old_WeaponSounds)(void *obj);
-void WeaponSounds(void *obj){
+void WeaponSounds(void *obj) {
     if (obj != nullptr){
         // load level instance, even though i should hook a different function
         if (ImGui::IsItemClicked() && loadLevel != NULL)
         {
             LoadLevel(CreateIl2cppString(loadLevel));
         }
-        *(int*)((uint64_t) obj + 0x5C) = 69;
     }
     old_WeaponSounds(obj);
 }
@@ -124,8 +194,12 @@ void DrawMenu(){
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
+            ImGui::Checkbox("Value Decrypt", &vd);
+            ImGui::Checkbox("Unlock Wear", &uWear);
+            ImGui::Checkbox("Craftable Wear", &cWear);
+            ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
             ImGui::InputText("", loadLevel, IM_ARRAYSIZE(loadLevel));
-            ImGui::Button("Try to load scene");
+            ImGui::Button("Load Scene");
         }
         Patches();
         ImGui::End();
@@ -178,6 +252,11 @@ void *hack_thread(void *arg) {
 
     // example of a hex patch
     gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
+    gPatches.vd = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"00FA80D2C0035FD6");
+    gPatches.uWear = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x257B7B4,"802580D2C0035FD6");
+    gPatches.cWear1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87C14,"802580D2C0035FD6");
+    gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AFC,"802580D2C0035FD6");
+    gPatches.gadgetUnlock = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2C54AFC,"00008052C0035FD6");
 
     // example of a hook for arm64
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
