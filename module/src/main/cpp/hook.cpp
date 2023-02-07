@@ -73,11 +73,12 @@ void Patches() {
 // here we start with the hooking methods
 void (*old_WeaponSounds)(void *obj);
 void WeaponSounds(void *obj){
-    if (ImGui::IsItemClicked() && loadLevel != NULL)
-    {
-        LoadLevel(CreateIl2cppString(loadLevel));
-    }
     if (obj != nullptr){
+        // load level instance, even though i should hook a different function
+        if (ImGui::IsItemClicked() && loadLevel != NULL)
+        {
+            LoadLevel(CreateIl2cppString(loadLevel));
+        }
         *(int*)((uint64_t) obj + 0x5C) = 69;
     }
     old_WeaponSounds(obj);
