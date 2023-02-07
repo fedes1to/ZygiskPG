@@ -245,8 +245,8 @@ void Modifications(){
     gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
     gPatches.vd1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"00FA80D2C0035FD6");
     gPatches.vd2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"00FA80D2C0035FD6");
-    gPatches.tutorial = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"200080D2C0035FD6");
-    gPatches.tutorial1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"200080D2C0035FD6");
+    gPatches.tutorial = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"600080D22C0035FD6");
+    gPatches.tutorial1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"600080D22C0035FD6");
     gPatches.vd1.Modify(); gPatches.vd2.Modify(); gPatches.tutorial.Modify(); gPatches.tutorial1.Modify();
 
     // hooks
