@@ -46,7 +46,7 @@ struct GlobalPatches {
 }gPatches;
 
 static char loadLevel[] = "";
-bool maxLevel, levelApplied, vd, vdApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock, gadgetUnlockApplied;
+bool maxLevel, levelApplied, vd, vdApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock, gadgetUnlockApplied, isLoadScenePressed;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -146,7 +146,7 @@ void (*old_WeaponSounds)(void *obj);
 void WeaponSounds(void *obj) {
     if (obj != nullptr){
         // load level instance, even though i should hook a different function
-        if (ImGui::IsItemClicked() && loadLevel != NULL)
+        if (isLoadScenePressed)
         {
             LoadLevel(CreateIl2cppString(loadLevel));
         }
@@ -198,8 +198,16 @@ void DrawMenu(){
             ImGui::Checkbox("Unlock Wear", &uWear);
             ImGui::Checkbox("Craftable Wear", &cWear);
             ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
+        }
+        if (ImGui::CollapsingHeader("InGame Misc Mods"))
+        {
             ImGui::InputText("", loadLevel, IM_ARRAYSIZE(loadLevel));
-            ImGui::Button("Load Scene");
+            if (ImGui::Button("Load Scene"))
+            {
+                isLoadScenePressed = true;
+            } else {
+                isLoadScenePressed = false;
+            }
         }
         Patches();
         ImGui::End();
