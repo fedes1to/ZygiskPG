@@ -35,13 +35,13 @@ ProcMap g_il2cppBaseMap;
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     // boolean function
-    MemoryPatch vd2, tutorial, tutorial1, vd1, gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban;
+    MemoryPatch vd2, tutorial, tutorial1, vd1, gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3;
     // etc...
 }gPatches;
 
 static char loadLevel[] = "";
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
-gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied, afdist, autoaim;
+gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied, afdist, tgod, tgodapplied;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -109,6 +109,17 @@ void Patches() {
         gPatches.modKeys.Restore();
         modKeysApplied = false;
     }
+
+    //for turret godmode
+    if (tgod && !tgodapplied) {
+        gPatches.tgod.Modify(); gPatches.tgod1.Modify(); gPatches.tgod2.Modify(); gPatches.tgod3.Modify();
+        tgodapplied = true;
+    } else if (!tgod && tgodapplied)
+    {
+        gPatches.tgod.Restore(); gPatches.tgod1.Restore(); gPatches.tgod2.Restore(); gPatches.tgod3.Restore();
+        tgodapplied = false;
+    }
+
 }
 
 // here we start with the hooking methods
@@ -182,7 +193,7 @@ void DrawMenu(){
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
         }
         if (ImGui::CollapsingHeader("Game Mods")) {
-            ImGui::Checkbox("Infinite Auto-Fire Distance", &afdist);
+            ImGui::Checkbox("Turret Godmode", &tgod);
         }
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
@@ -245,11 +256,12 @@ void Modifications(){
     gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
     gPatches.vd1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"00FA80D2C0035FD6");
     gPatches.vd2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"00FA80D2C0035FD6");
-    gPatches.tutorial = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x314DD04,"600080D22C0035FD6");
-    gPatches.vd1.Modify(); gPatches.vd2.Modify(); gPatches.tutorial.Modify();
+    gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//MinusLive
+    gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//MinusLive
+    gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//MinusLiveReal
+    gPatches.tutorial.Modify();
 
     // hooks
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x477C7AC), (void*)GetAutoFireDistance, (void**)&oldgetAutoFireDistance);
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
     
 }
