@@ -35,14 +35,15 @@ ProcMap g_il2cppBaseMap;
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
-  removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles;  // etc...
+  removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, ezsuper, ezsuper1, currencycheck, crithit;  // etc...
 }gPatches;
 
 static int selectedScene = 0;
 const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rust", "Gluk", "Cube", "City", "Pool", "Ants", "Maze", "Arena", "Train", "Day_D", "Space", "Pizza", "Barge", "Pool2", "Winter", "Area52", "Castle", "Arena2", "Sniper", "Day_D2", "Matrix", "Heaven", "office", "Portal", "Hungry", "Bridge", "Gluk_2", "knife2", "Estate", "Glider", "Utopia", "School", "Gluk_3", "spleef1", "Slender", "Loading", "temple4", "sawmill", "Parkour", "pg_gold", "olympus", "Stadium", "ClanWar", "shipped", "Coliseum", "GGDScene", "Paradise", "valhalla", "Assault2", "Training", "Speedrun", "Hospital", "Hungry_2", "mine_new", "LevelArt", "facility", "office_z", "Pumpkins2", "red_light", "BioHazard", "ChatScene", "impositor", "PromScene", "New_tutor", "Cementery", "AppCenter", "aqua_park", "Aztec_old", "ClanWarV2", "toy_story", "checkmate", "CustomInfo", "tokyo_3019", "new_hangar", "Pool_night", "china_town", "FortAttack", "Ghost_town", "Area52Labs", "Ice_Palace", "Arena_Mine", "SkinEditor", "North_Pole", "Ghost_town2", "Arena_Swamp", "ToyFactory3", "NuclearCity", "space_ships", "FortDefence", "Two_Castles", "Ships_Night", "RacingTrack", "Coliseum_MP", "Underwater2", "ChooseLevel", "Sky_islands", "Menu_Custom", "Secret_Base", "white_house", "ProfileShop", "Arena_Space", "Cube_portals", "ClosingScene", "Mars_Station", "Arena_Castle", "checkmate_22", "Hungry_Night", "Sky_islands2", "Death_Escape", "Arena_Hockey", "WinterIsland", "Dust_entering", "pizza_sandbox", "alien_planet2", "LevelComplete", "COLAPSED_CITY", "ClanTankBuild", "train_robbery", "space_updated", "AfterBanScene", "corporate_war", "ships_updated", "templ4_winter", "Pool_entering", "supermarket_2", "DuelArenaSpace", "LoadAnotherApp", "checkmate_22.0", "Paradise_Night", "Slender_Multy2", "Code_campaign3", "Spleef_Arena_1", "infernal_forge", "china_town_day", "islands_sniper", "FortFieldBuild", "monster_hunter", "paladin_castle", "Spleef_Arena_2", "Bota_campaign4", "CampaignLoading", "Developer_Scene", "christmas_train", "Space_campaign3", "Ice_Palace_Duel", "clan_fortress01", "Christmas_Town3", "orbital_station", "Duel_ghost_town", "Swamp_campaign3", "WalkingFortress", "office_christmas", "Spooky_Lunapark3", "knife3_christmas", "Portal_Campaign4", "Arena_Underwater", "emperors_palace2", "hurricane_shrine", "Castle_campaign3", "christmas_town_22", "CampaignChooseBox", "Christmas_Dinner2", "Dungeon_dead_city", "aqua_park_sandbox", "Stadium_deathmatch", "AuthorizationScene", "sky_islands_updated", "LevelToCompleteProm", "sky_islands_sandbox", "AuthenticationScene", "NuclearCity_entering", "DownloadAssetBundles", "red_light_team_fight", "freeplay_city_summer", "four_seasons_updated", "tokyo_3018_campaign4", "COLAPSED_CITY_sniper", "ice_palace_christmas", "LoveIsland_deathmatch", "cubic_arena_campaign4", "Christmas_Town_Night3", "toy_factory_christmas", "battle_royale_arcade_2", "Dungeon_magical_valley", "Death_Escape_campaign4", "battle_royale_arcade_3", "battle_royale_09_summer", "WalkingFortress_campaign4" };
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
 gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodapplied,
-removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied;
+removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
+crithit, crithitapplied, damage, charm, weakness,fte,enemymarker;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -65,7 +66,7 @@ void Patches() {
     //for uWear
     if (uWear && !uWearApplied) {
         gPatches.uWear.Modify();
-        uWearApplied = true;
+
     } else if (!uWear && uWearApplied) {
         gPatches.uWear.Restore();
         uWearApplied = false;
@@ -149,18 +150,89 @@ void Patches() {
         gPatches.collectibles.Restore();
         collectiblesApplied = false;
     }
+
+    if (ezsuper && !ezsuperApplied) {
+        gPatches.ezsuper.Modify();  gPatches.ezsuper1.Modify();
+        ezsuperApplied = true;
+    } else if (!ezsuper && ezsuperApplied)
+    {
+        gPatches.ezsuper.Restore();  gPatches.ezsuper1.Restore();
+        ezsuperApplied = false;
+    }
+
+    if (crithit && !crithitapplied) {
+        gPatches.crithit.Modify();
+        crithitapplied = true;
+    } else if (!crithit && crithitapplied)
+    {
+        gPatches.crithit.Restore();
+        crithitapplied = false;
+    }
+}
+
+void(*oldWeaponSounds)(void* obj);
+void WeaponSounds(void* obj){
+    if(obj != nullptr){
+        if(damage){
+            *(float*)((uint64_t) obj + 0x200) = 999;//poisonDamageMultiplier
+            *(float*)((uint64_t) obj + 0x21C) = 999;//curseDamageMultiplier
+            *(bool*)((uint64_t) obj + 0x200) = true;//isHeadshotDamageIncreased
+            *(float*)((uint64_t) obj + 0x274) = 999;//increasedHeadshotDamageMultiplier
+            *(bool*)((uint64_t) obj + 0x278) = false;//isReducedHeadshotDamage
+            *(float*)((uint64_t) obj + 0x27C) = 0;//reducedHeadshotDamageMultiplier
+            *(bool*)((uint64_t) obj + 0x280) = true;//teammateDamageBoostBuff
+            *(float*)((uint64_t) obj + 0x284) = 9999999;//teammateDamageBoostRadius
+            *(float*)((uint64_t) obj + 0x288) = 9999999;//teammateDamageBoostMultiplier
+            *(float*)((uint64_t) obj + 0x28C) = 9999999;//teammateDamageBoostZoneTime
+            *(float*)((uint64_t) obj + 0x290) = 9999999;//teammateDamageBoostBuffTime
+            *(float*)((uint64_t) obj + 0x388) = 999;//shotgunMaxDamageDistance
+            *(float*)((uint64_t) obj + 0x38C) = 999;//shotgunMinDamageCoef
+            *(float*)((uint64_t) obj + 0x390) = 999;//shotgunOverDamageDistance
+            *(float*)((uint64_t) obj + 0x394) = 999;//shotgunOverDamageCoef
+            *(bool*)((uint64_t) obj + 0x3FC) = true;//isIncreasedDamageFromKill
+            *(bool*)((uint64_t) obj + 0x3F8) = true;
+        }
+
+        if(charm){
+            *(bool*)((uint64_t) obj + 0x260) = true;//isCharm
+            *(float*)((uint64_t) obj + 0x264) = 0;//charmTime
+        }
+
+        if(weakness){
+            *(bool*)((uint64_t) obj + 0x26C) = true;//isWeaknessEffect
+            *(float*)((uint64_t) obj + 0x26C) = 0;//weaknessEffectTime
+            *(bool*)((uint64_t) obj + 0x254) = true;//isBlindEffect
+            *(float*)((uint64_t) obj + 0x25C) = 0;//isBlindEffectTime
+            *(int*)((uint64_t) obj + 0x258) = 0; //blindEffect
+            *(bool*)((uint64_t) obj + 0x220) = true;//isSlowdown
+        }
+
+        if(fte){
+            *(bool*)((uint64_t) obj + 0x234) = true;//fireImmunity
+            *(bool*)((uint64_t) obj + 0x235) = true;//toxicImmunity
+        }
+
+        if(enemymarker){
+            *(bool*)((uint64_t) obj + 0x236) = true;//enemyMarker
+            *(bool*)((uint64_t) obj + 0x238) = false;//enemyMarkerWhenShot
+            *(bool*)((uint64_t) obj + 0x237) = false;//enemyMarkerWhenAiming
+            *(float*)((uint64_t) obj + 0x240) = 999;//enemyMarkerAngle
+            *(float*)((uint64_t) obj + 0x240) = 0;//enemyMarketChargeTime
+            *(float*)((uint64_t) obj + 0x240) = 999999;//enemyMarkerTriangleCathetLength
+        }
+    }
 }
 
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
     if (obj != nullptr){
         // load level instance, even though i should hook a different function
-        if (isLoadScenePressed)
+      /*  if (isLoadScenePressed)
         {
             LOGI("trying to load scene");
             LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
             isLoadScenePressed = false;
-        }
+        }*/
     }
     old_PixelTime(obj);
 }
@@ -213,19 +285,34 @@ void DrawMenu(){
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
             ImGui::Checkbox("Free Lottery", &modKeys);
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
+            ImGui::Checkbox("Easy Super Cases", &ezsuper);
+            ImGui::Text("Grants the user a super case as soon as he opens any case.");
         }
         if (ImGui::CollapsingHeader("Player Mods")) {
             ImGui::Checkbox("Godmode", &god);
-            ImGui::Text("Makes you invincible, others can kill you but you won't die and just become invisible");
+            ImGui::Text("Makes you invincible (others can kill you but you won't die and just become invisible)");
+            ImGui::Checkbox("No Fire and Toxic Effects", &fte);
+            ImGui::Text("Removes the burning and being intoxicated effect on you.");
         }
         if (ImGui::CollapsingHeader("Weapon Mods")) {
-            ImGui::Checkbox("Infinite Ammo", &ammo);
+            ImGui::Checkbox("One Shot Kill", &damage);
+            ImGui::Text("Kills any entity instantly.");
+            ImGui::Checkbox("Force Charm", &charm);
+            ImGui::Text("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)");
+            ImGui::Checkbox("Force Weakness Effects", &weakness);
+            ImGui::Text("Add effects which ruin your enemys stats.");
+            ImGui::Checkbox("Force Critical Hits", &crithit);
+            ImGui::Text("Forces Critical Shots each time you hit someone.");
+        }
+        if (ImGui::CollapsingHeader("Visual Mods")) {
+            ImGui::Checkbox("Chams", &enemymarker);
+            ImGui::Text("Shows the enemy through walls.");
         }
         if (ImGui::CollapsingHeader("Game Mods")) {
             ImGui::Checkbox("Turret Godmode", &tgod);
             ImGui::Text("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does.");
             ImGui::Checkbox("Drone Godmode", &removedrone);
-            ImGui::Text("The drone gadget will never respawn. (Don't get more than 1 drone or you'll be kicked)");
+            ImGui::Text("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)");
         }
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
@@ -287,23 +374,22 @@ void Modifications(){
     gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AFC,"802580D2C0035FD6");
     gPatches.gadgetUnlock = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2C54AFC,"00008052C0035FD6");
     gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
-    gPatches.vd1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"00FA80D2C0035FD6");
-    gPatches.vd2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F95CF8,"00FA80D2C0035FD6");
     gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//MinusLive
     gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//MinusLive
     gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//MinusLiveReal
-    gPatches.rgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x320A640,"200080D2C0035FD6");//search GameObject in Rocket
-    gPatches.rgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x321A6BC,"200080D2C0035FD6");//search GameObject in Rocket
     gPatches.removedrone = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4755120,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
-    gPatches.ammo = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x14193E4,"200180922C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
-    gPatches.ammo1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x14193D8,"200180922C0035FD6");//dear future self, if this game ever updates kys ( find the Weapon class within player_move_c and some subclass which also has an ItemRecord field.)
     gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"00FA80D2C0035FD6");
+    gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
+    gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
+    gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
+    gPatches.crithit = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1714718,"200080D2C0035FD6");//NextHitCritical
 
     // hooks
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&oldWeaponSounds);
 
 }
 
