@@ -43,14 +43,15 @@ const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rus
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
 gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodapplied,
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
-crithit, crithitapplied, damage, charm, weakness,fte,enemymarker;
+crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
 void(*LoadLevel)(monoString* key);
 void Pointers() {
     SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x4340BE0);
-    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C);
+    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C );
+
 }
 
 void Patches() {
@@ -237,6 +238,25 @@ void PixelTime(void *obj) {
     old_PixelTime(obj);
 }
 
+bool (*old_isEditor)(void *obj);
+bool isEditor(void *obj) {
+    if (enableEditor)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool (*old_isDev)(void *obj);
+bool isDev(void *obj) {
+    if (enableEditor)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -316,6 +336,8 @@ void DrawMenu(){
         }
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
+            ImGui::Checkbox("Spoof Editor", &enableEditor);
+            ImGui::Text("Makes the game think its on the Unity Editor");
             ImGui::ListBox("Select Scene", &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
             if (ImGui::Button("Load Scene"))
             {
@@ -389,7 +411,12 @@ void Modifications(){
 
     // hooks
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
+<<<<<<< HEAD
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&oldWeaponSounds);
+=======
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x438120C), (void*)isEditor, (void**)&old_isEditor);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x2ADECFC), (void*)isDev, (void**)&old_isDev);
+>>>>>>> c9903006dabc1592018232803a1714db77b7f467
 
 }
 
