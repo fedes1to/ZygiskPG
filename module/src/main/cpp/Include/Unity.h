@@ -178,7 +178,9 @@ monoString *CreateIl2cppString(const char *str)
         LOGE(OBFUSCATE("Error Opening Lib: %s"), openerror);
         return nullptr;
     }
-    monoString *(*il2cpp_string_new)(const char *) = (monoString *(*)(const char *))dlsym(handle, OBFUSCATE("il2cpp_string_new"));
+    LOGW("got the library, starting to call the symbol");
+    monoString *(*il2cpp_string_new)(const char *) = (monoString *(*)(const char *))dlsym(handle, "il2cpp_string_new");
+    LOGW("called symbol! returning");
     return il2cpp_string_new(str);
 }
 
