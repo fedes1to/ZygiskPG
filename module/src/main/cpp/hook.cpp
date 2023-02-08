@@ -42,7 +42,7 @@ static int selectedScene = 0;
 const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rust", "Gluk", "Cube", "City", "Pool", "Ants", "Maze", "Arena", "Train", "Day_D", "Ranch", "Space", "Pizza", "Barge", "Pool2", "Winter", "Area52", "Castle", "Arena2", "Sniper", "Day_D2", "Matrix", "Heaven", "office", "Portal", "Hungry", "Bridge", "Gluk_2", "knife2", "Estate", "Glider", "Utopia", "School", "Gluk_3", "spleef1", "Slender", "Loading", "temple4", "sawmill", "Parkour", "pg_gold", "olympus", "Stadium", "ClanWar", "shipped", "Coliseum", "GGDScene", "Paradise", "valhalla", "Assault2", "Training", "Speedrun", "Hospital", "Hungry_2", "mine_new", "LevelArt", "facility", "office_z", "Pumpkins2", "red_light", "BioHazard", "ChatScene", "impositor", "PromScene", "New_tutor", "Cementery", "AppCenter", "aqua_park", "Aztec_old", "ClanWarV2", "toy_story", "checkmate", "CustomInfo", "tokyo_3019", "new_hangar", "Pool_night", "china_town", "FortAttack", "Ghost_town", "Area52Labs", "Ice_Palace", "Arena_Mine", "SkinEditor", "North_Pole", "Ghost_town2", "Arena_Swamp", "ToyFactory3", "NuclearCity", "space_ships", "FortDefence", "Two_Castles", "Ships_Night", "RacingTrack", "Coliseum_MP", "Underwater2", "ChooseLevel", "Sky_islands", "Menu_Custom", "Secret_Base", "white_house", "ProfileShop", "Arena_Space", "Cube_portals", "ClosingScene", "Mars_Station", "Arena_Castle", "checkmate_22", "Hungry_Night", "Sky_islands2", "Death_Escape", "Arena_Hockey", "WinterIsland", "Dust_entering", "pizza_sandbox", "alien_planet2", "LevelComplete", "COLAPSED_CITY", "ClanTankBuild", "train_robbery", "space_updated", "AfterBanScene", "corporate_war", "ships_updated", "templ4_winter", "Pool_entering", "supermarket_2", "DuelArenaSpace", "LoadAnotherApp", "checkmate_22.0", "Paradise_Night", "Slender_Multy2", "Code_campaign3", "Spleef_Arena_1", "infernal_forge", "china_town_day", "islands_sniper", "FortFieldBuild", "monster_hunter", "paladin_castle", "Spleef_Arena_2", "Bota_campaign4", "CampaignLoading", "Developer_Scene", "christmas_train", "Space_campaign3", "Ice_Palace_Duel", "clan_fortress01", "Christmas_Town3", "orbital_station", "Duel_ghost_town", "Swamp_campaign3", "WalkingFortress", "office_christmas", "Spooky_Lunapark3", "knife3_christmas", "Portal_Campaign4", "Arena_Underwater", "emperors_palace2", "hurricane_shrine", "Castle_campaign3", "christmas_town_22", "CampaignChooseBox", "Christmas_Dinner2", "Dungeon_dead_city", "aqua_park_sandbox", "Stadium_deathmatch", "AuthorizationScene", "sky_islands_updated", "LevelToCompleteProm", "sky_islands_sandbox", "AuthenticationScene", "NuclearCity_entering", "DownloadAssetBundles", "red_light_team_fight", "freeplay_city_summer", "four_seasons_updated", "tokyo_3018_campaign4", "COLAPSED_CITY_sniper", "ice_palace_christmas", "LoveIsland_deathmatch", "cubic_arena_campaign4", "Christmas_Town_Night3", "toy_factory_christmas", "battle_royale_arcade_2", "Dungeon_magical_valley", "Death_Escape_campaign4", "battle_royale_arcade_3", "battle_royale_09_summer", "WalkingFortress_campaign4" };
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
 gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, vd, vdApplied, afdist, tgod, tgodapplied, rocketgodapplied,
-rocketgod,removedrone,removedroneapplied, god, godapplied, ammo, ammoapplied;
+rocketgod,removedrone,removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -152,23 +152,25 @@ void Patches() {
     }
 }
 
-// here we start with the hooking methods
-void (*old_WeaponSounds)(void *obj);
-void WeaponSounds(void *obj) {
+void (*old_PixelTime)(void *obj);
+void PixelTime(void *obj) {
     if (obj != nullptr){
         // load level instance, even though i should hook a different function
         if (isLoadScenePressed)
         {
+            LOGI("trying to load scene");
             LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
             isLoadScenePressed = false;
         }
     }
-    old_WeaponSounds(obj);
+    old_PixelTime(obj);
 }
 
 
-
-// trying to log a method as a test
+int (*oldCollectibles)(void* obj, int* value);
+int Collectibles(void* obj, int* value) {
+    return 3000;
+}
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -211,6 +213,8 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
+            ImGui::Checkbox("Collectibles (Test)", &collectibles);
+            ImGui::Text("Sets the value of items to a specific number");
             ImGui::Checkbox("Free Craftables", &cWear);
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
             ImGui::Checkbox("Free Lottery", &modKeys);
@@ -234,6 +238,7 @@ void DrawMenu(){
             ImGui::ListBox("Select Scene", &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
             if (ImGui::Button("Load Scene"))
             {
+                LOGI("%s", sceneList[selectedScene]);
                 isLoadScenePressed = true;
             }
         }
@@ -303,7 +308,9 @@ void Modifications(){
     gPatches.ammo1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x14193D8,"200180922C0035FD6");//dear future self, if this game ever updates kys ( find the Weapon class within player_move_c and some subclass which also has an ItemRecord field.)
 
     // hooks
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&old_WeaponSounds);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x3BBD870), (void*)Collectibles, (void**)&oldCollectibles);
+    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
+
 }
 
 void *hack_thread(void *arg) {
