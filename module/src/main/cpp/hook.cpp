@@ -261,7 +261,7 @@ void WeaponSounds(void* obj){
         if(kspeedboost){
             *(bool*)((uint64_t) obj + 0x410) = true;//isFastAfterKill
             *(float*)((uint64_t) obj + 0x414) = 99999;//fastMultiplier
-          / *(int*)((uint64_t) obj + 0x418) = 99999;//maxStackAfterKill
+           *(int*)((uint64_t) obj + 0x418) = 99999;//maxStackAfterKill
             *(int*)((uint64_t) obj + 0x41C) = 99999;//timeFastAfterKill
         }
 
