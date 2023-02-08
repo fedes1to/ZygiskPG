@@ -32,6 +32,7 @@ ProcMap g_il2cppBaseMap;
 
 #define GamePackageName "com.pixel.gun3d"
 
+// defined this here so we can get g_il2cppBaseMap.pathname inside the method without it getting called twice
 monoString *CreateIl2cppString(const char *str)
 {
     dlerror();
