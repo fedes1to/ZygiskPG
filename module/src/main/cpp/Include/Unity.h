@@ -164,15 +164,6 @@ struct monoDictionary {
     }
 };
 
-monoString *CreateIl2cppString(const char *str)
-{
-    int* length = (int *)(strlen(str));
-    int* startIndex = 0;
-    monoString *(*String_CreateString)(void *instance, const char *str, int* startIndex, int* length);
-    String_CreateString = (monoString *(*)(void *,const char *, int*, int*)) (void*)(KittyMemory::getLibraryBaseMap("libil2cpp.so").startAddress + 0x43F62FC);
-    return String_CreateString(NULL, str, startIndex, length);
-}
-
 int GetObscuredIntValue(uint64_t location){
     int cryptoKey = *(int *)location;
     int obfuscatedValue = *(int *)(location + 0x4);
