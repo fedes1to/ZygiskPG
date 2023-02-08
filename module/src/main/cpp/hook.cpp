@@ -43,7 +43,8 @@ const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rus
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
 gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodapplied,
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
-crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor;
+crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
+doublejump, catspam, coindrop, sandbox;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -132,16 +133,6 @@ void Patches() {
         godapplied = false;
     }
 
-    //for ammo
-    if (ammo && !ammoapplied) {
-        gPatches.ammo.Modify(); gPatches.ammo1.Modify();
-        ammoapplied = true;
-    } else if (!ammo && ammoapplied)
-    {
-        gPatches.ammo.Restore(); gPatches.ammo1.Restore();
-        ammoapplied = false;
-    }
-
     //for collectibles
     if (collectibles && !collectiblesApplied) {
         gPatches.collectibles.Modify();
@@ -175,36 +166,36 @@ void(*oldWeaponSounds)(void* obj);
 void WeaponSounds(void* obj){
     if(obj != nullptr){
         if(damage){
-            *(float*)((uint64_t) obj + 0x200) = 999;//poisonDamageMultiplier
-            *(float*)((uint64_t) obj + 0x21C) = 999;//curseDamageMultiplier
+            *(float*)((uint64_t) obj + 0x200) = 200;//poisonDamageMultiplier
+            *(float*)((uint64_t) obj + 0x21C) = 200;//curseDamageMultiplier
+            *(float*)((uint64_t) obj + 0x168) = 200;//curseDamageMultiplier
             *(bool*)((uint64_t) obj + 0x200) = true;//isHeadshotDamageIncreased
-            *(float*)((uint64_t) obj + 0x274) = 999;//increasedHeadshotDamageMultiplier
+            *(float*)((uint64_t) obj + 0x274) = 200;//increasedHeadshotDamageMultiplier
             *(bool*)((uint64_t) obj + 0x278) = false;//isReducedHeadshotDamage
             *(float*)((uint64_t) obj + 0x27C) = 0;//reducedHeadshotDamageMultiplier
-            *(bool*)((uint64_t) obj + 0x280) = true;//teammateDamageBoostBuff
-            *(float*)((uint64_t) obj + 0x284) = 9999999;//teammateDamageBoostRadius
-            *(float*)((uint64_t) obj + 0x288) = 9999999;//teammateDamageBoostMultiplier
-            *(float*)((uint64_t) obj + 0x28C) = 9999999;//teammateDamageBoostZoneTime
-            *(float*)((uint64_t) obj + 0x290) = 9999999;//teammateDamageBoostBuffTime
             *(float*)((uint64_t) obj + 0x388) = 999;//shotgunMaxDamageDistance
             *(float*)((uint64_t) obj + 0x38C) = 999;//shotgunMinDamageCoef
             *(float*)((uint64_t) obj + 0x390) = 999;//shotgunOverDamageDistance
             *(float*)((uint64_t) obj + 0x394) = 999;//shotgunOverDamageCoef
-            *(bool*)((uint64_t) obj + 0x3FC) = true;//isIncreasedDamageFromKill
-            *(bool*)((uint64_t) obj + 0x3F8) = true;
+        }
+
+        if(killboost){
+            *(bool*)((uint64_t) obj + 0x3F8) = true;//isIncreasedDamageFromKill
+            *(bool*)((uint64_t) obj + 0x3FC) = true;//damageMultiplier
+           //*(int*)((uint64_t) obj + 0x400) = 999;//maxStackIncreasedDamage
         }
 
         if(charm){
             *(bool*)((uint64_t) obj + 0x260) = true;//isCharm
-            *(float*)((uint64_t) obj + 0x264) = 0;//charmTime
+            *(float*)((uint64_t) obj + 0x264) = 9999;//charmTime
         }
 
         if(weakness){
             *(bool*)((uint64_t) obj + 0x26C) = true;//isWeaknessEffect
-            *(float*)((uint64_t) obj + 0x26C) = 0;//weaknessEffectTime
+            *(float*)((uint64_t) obj + 0x26C) = 999;//weaknessEffectTime
             *(bool*)((uint64_t) obj + 0x254) = true;//isBlindEffect
-            *(float*)((uint64_t) obj + 0x25C) = 0;//isBlindEffectTime
-            *(int*)((uint64_t) obj + 0x258) = 0; //blindEffect
+            *(float*)((uint64_t) obj + 0x25C) = 999;//isBlindEffectTime
+            *(int*)((uint64_t) obj + 0x258) = 999; //blindEffect
             *(bool*)((uint64_t) obj + 0x220) = true;//isSlowdown
         }
 
@@ -215,13 +206,58 @@ void WeaponSounds(void* obj){
 
         if(enemymarker){
             *(bool*)((uint64_t) obj + 0x236) = true;//enemyMarker
-            *(bool*)((uint64_t) obj + 0x238) = false;//enemyMarkerWhenShot
-            *(bool*)((uint64_t) obj + 0x237) = false;//enemyMarkerWhenAiming
-            *(float*)((uint64_t) obj + 0x240) = 999;//enemyMarkerAngle
-            *(float*)((uint64_t) obj + 0x240) = 0;//enemyMarketChargeTime
-            *(float*)((uint64_t) obj + 0x240) = 999999;//enemyMarkerTriangleCathetLength
+            *(bool*)((uint64_t) obj + 0x238) = true;//enemyMarkerWhenShot
+            *(bool*)((uint64_t) obj + 0x237) = true;//enemyMarkerWhenAiming
+          //  *(float*)((uint64_t) obj + 0x240) = 999;//enemyMarkerAngle
+           // *(float*)((uint64_t) obj + 0x240) = 0;//enemyMarketChargeTime
+          //  *(float*)((uint64_t) obj + 0x240) = 999999;//enemyMarkerTriangleCathetLength
+        }
+
+        if(electric){
+            *(bool*)((uint64_t) obj + 0x404) = true;//isElectricShock
+            *(float*)((uint64_t) obj + 0x408) = 99999;//teammateDamageBoostBuffTime
+            *(float*)((uint64_t) obj + 0x40C) = 99999;//electricShockTime
+        }
+
+        if(kspeedboost){
+            *(bool*)((uint64_t) obj + 0x410) = true;//isFastAfterKill
+            *(float*)((uint64_t) obj + 0x414) = 99999;//fastMultiplier
+          //  *(int*)((uint64_t) obj + 0x418) = 99999;//maxStackAfterKill
+            *(int*)((uint64_t) obj + 0x41C) = 99999;//timeFastAfterKill
+        }
+
+        if(daterweapon){
+            *(bool*)((uint64_t) obj + 0x428) = true;//isDaterWeapon
+        }
+
+        if(crithit){
+            *(float*)((uint64_t) obj + 0x438) = 9999;//criticalHitCoef
+            *(float*)((uint64_t) obj + 0x434) = 100;//criticalHitChance
+        }
+
+        if(grenade){
+            *(float*)((uint64_t) obj + 0x5B8) = 9999;//grenadeUseTime
+        }
+
+        if(catspam){
+            *(bool*)((uint64_t) obj + 0x640) = false;//is3CatSpam
+            *(bool*)((uint64_t) obj + 0x641) = true;//for3CatSpam
+        }
+
+        if(damage){
+            *(bool*)((uint64_t) obj + 0x42F) = true;//isDoubleJump
+        }
+
+        if(ammo){
+            *(bool*)((uint64_t) obj + 0x421) = true;//isUnlimitedAmmo
+        }
+
+        if(coindrop){
+            *(bool*)((uint64_t) obj + 0x318) = true;//isCoinDrop
+            *(float*)((uint64_t) obj + 0x31C) = 9999;//coinDropChance
         }
     }
+    oldWeaponSounds(obj);
 }
 
 void (*old_PixelTime)(void *obj);
@@ -295,44 +331,57 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
+        ImGui::Begin("Pixel Gun 3D 23.0.1 Mod Menu (0.1) - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
-            ImGui::Checkbox("Collectibles (Test)", &collectibles);
-            ImGui::Text("Sets the value of items to a specific number");
+           // ImGui::Checkbox("Collectibles (Test)", &collectibles);
+          //  ImGui::Text("Sets the value of items to a specific number");
             ImGui::Checkbox("Free Craftables", &cWear);
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
             ImGui::Checkbox("Free Lottery", &modKeys);
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
-            ImGui::Checkbox("Easy Super Cases", &ezsuper);
-            ImGui::Text("Grants the user a super case as soon as he opens any case.");
         }
         if (ImGui::CollapsingHeader("Player Mods")) {
             ImGui::Checkbox("Godmode", &god);
             ImGui::Text("Makes you invincible (others can kill you but you won't die and just become invisible)");
-            ImGui::Checkbox("No Fire and Toxic Effects", &fte);
-            ImGui::Text("Removes the burning and being intoxicated effect on you.");
+            ImGui::Checkbox("Force Double Jump", &doublejump);
         }
         if (ImGui::CollapsingHeader("Weapon Mods")) {
             ImGui::Checkbox("One Shot Kill", &damage);
             ImGui::Text("Kills any entity instantly.");
-            ImGui::Checkbox("Force Charm", &charm);
-            ImGui::Text("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)");
-            ImGui::Checkbox("Force Weakness Effects", &weakness);
-            ImGui::Text("Add effects which ruin your enemys stats.");
             ImGui::Checkbox("Force Critical Hits", &crithit);
             ImGui::Text("Forces Critical Shots each time you hit someone.");
+            ImGui::Checkbox("No Grenade Cooldown", &grenade);
+            ImGui::Checkbox("Unlimited Ammo", &ammo);
+        }
+        if (ImGui::CollapsingHeader("Effects Mods")) {
+            ImGui::Checkbox("Force Weakness Effects", &weakness);
+            ImGui::Text("Add effects which ruin your enemys stats.");
+            ImGui::Checkbox("Force Charm", &charm);
+            ImGui::Text("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)");
+            ImGui::Checkbox("Force Kill Damage Boost", &killboost);
+            ImGui::Text("Gives you damage boost after every kill.");
+            ImGui::Checkbox("Force Kill Speed Boost", &killboost);
+            ImGui::Text("Gives you speed boost after every kill.");
+            ImGui::Checkbox("No Fire and Toxic Effects", &fte);
+            ImGui::Text("Removes the burning and being intoxicated effect on you.");
+            ImGui::Checkbox("Force Electric Shock", &electric);
+            ImGui::Text("Adds the electric shock effect");
         }
         if (ImGui::CollapsingHeader("Visual Mods")) {
-            ImGui::Checkbox("Chams", &enemymarker);
-            ImGui::Text("Shows the enemy through walls.");
+            ImGui::Checkbox("Show marker", &enemymarker);
+            ImGui::Text("Shows the enemy after you aim at them.");
         }
         if (ImGui::CollapsingHeader("Game Mods")) {
             ImGui::Checkbox("Turret Godmode", &tgod);
             ImGui::Text("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does.");
             ImGui::Checkbox("Drone Godmode", &removedrone);
             ImGui::Text("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)");
+            ImGui::Checkbox("Force Weapons in Sandbox", &daterweapon);
+            ImGui::Text("You can equip normal weapons in sandbox.");
+            ImGui::Checkbox("Force Coin Drop", &coindrop);
+            ImGui::Text("Always drops coins when someone dies.");
         }
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
@@ -350,8 +399,6 @@ void DrawMenu(){
     }
 }
 
-
-
 void SetupImgui() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -360,6 +407,7 @@ void SetupImgui() {
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
     ImGui::GetStyle().ScaleAllSizes(5.0f);
+    ImGui::SetNextWindowSize(ImVec2((float) 500, (float) 0.0f));
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
@@ -411,13 +459,9 @@ void Modifications(){
 
     // hooks
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
-<<<<<<< HEAD
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&oldWeaponSounds);
-=======
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x438120C), (void*)isEditor, (void**)&old_isEditor);
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x2ADECFC), (void*)isDev, (void**)&old_isDev);
->>>>>>> c9903006dabc1592018232803a1714db77b7f467
-
 }
 
 void *hack_thread(void *arg) {
