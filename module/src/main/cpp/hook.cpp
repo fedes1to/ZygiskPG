@@ -35,15 +35,17 @@ ProcMap g_il2cppBaseMap;
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
-  removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, ezsuper, ezsuper1, currencycheck, crithit;  // etc...
+  removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, negCollectibles, ezsuper, ezsuper1, currencycheck, crithit,
+  blackMarket, couponClicker, setsClicker;  // etc...
 }gPatches;
 
 static int selectedScene = 0;
 const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rust", "Gluk", "Cube", "City", "Pool", "Ants", "Maze", "Arena", "Train", "Day_D", "Space", "Pizza", "Barge", "Pool2", "Winter", "Area52", "Castle", "Arena2", "Sniper", "Day_D2", "Matrix", "Heaven", "office", "Portal", "Hungry", "Bridge", "Gluk_2", "knife2", "Estate", "Glider", "Utopia", "School", "Gluk_3", "spleef1", "Slender", "Loading", "temple4", "sawmill", "Parkour", "pg_gold", "olympus", "Stadium", "ClanWar", "shipped", "Coliseum", "GGDScene", "Paradise", "valhalla", "Assault2", "Training", "Speedrun", "Hospital", "Hungry_2", "mine_new", "LevelArt", "facility", "office_z", "Pumpkins2", "red_light", "BioHazard", "ChatScene", "impositor", "PromScene", "New_tutor", "Cementery", "AppCenter", "aqua_park", "Aztec_old", "ClanWarV2", "toy_story", "checkmate", "CustomInfo", "tokyo_3019", "new_hangar", "Pool_night", "china_town", "FortAttack", "Ghost_town", "Area52Labs", "Ice_Palace", "Arena_Mine", "SkinEditor", "North_Pole", "Ghost_town2", "Arena_Swamp", "ToyFactory3", "NuclearCity", "space_ships", "FortDefence", "Two_Castles", "Ships_Night", "RacingTrack", "Coliseum_MP", "Underwater2", "ChooseLevel", "Sky_islands", "Menu_Custom", "Secret_Base", "white_house", "ProfileShop", "Arena_Space", "Cube_portals", "ClosingScene", "Mars_Station", "Arena_Castle", "checkmate_22", "Hungry_Night", "Sky_islands2", "Death_Escape", "Arena_Hockey", "WinterIsland", "Dust_entering", "pizza_sandbox", "alien_planet2", "LevelComplete", "COLAPSED_CITY", "ClanTankBuild", "train_robbery", "space_updated", "AfterBanScene", "corporate_war", "ships_updated", "templ4_winter", "Pool_entering", "supermarket_2", "DuelArenaSpace", "LoadAnotherApp", "checkmate_22.0", "Paradise_Night", "Slender_Multy2", "Code_campaign3", "Spleef_Arena_1", "infernal_forge", "china_town_day", "islands_sniper", "FortFieldBuild", "monster_hunter", "paladin_castle", "Spleef_Arena_2", "Bota_campaign4", "CampaignLoading", "Developer_Scene", "christmas_train", "Space_campaign3", "Ice_Palace_Duel", "clan_fortress01", "Christmas_Town3", "orbital_station", "Duel_ghost_town", "Swamp_campaign3", "WalkingFortress", "office_christmas", "Spooky_Lunapark3", "knife3_christmas", "Portal_Campaign4", "Arena_Underwater", "emperors_palace2", "hurricane_shrine", "Castle_campaign3", "christmas_town_22", "CampaignChooseBox", "Christmas_Dinner2", "Dungeon_dead_city", "aqua_park_sandbox", "Stadium_deathmatch", "AuthorizationScene", "sky_islands_updated", "LevelToCompleteProm", "sky_islands_sandbox", "AuthenticationScene", "NuclearCity_entering", "DownloadAssetBundles", "red_light_team_fight", "freeplay_city_summer", "four_seasons_updated", "tokyo_3018_campaign4", "COLAPSED_CITY_sniper", "ice_palace_christmas", "LoveIsland_deathmatch", "cubic_arena_campaign4", "Christmas_Town_Night3", "toy_factory_christmas", "battle_royale_arcade_2", "Dungeon_magical_valley", "Death_Escape_campaign4", "battle_royale_arcade_3", "battle_royale_09_summer", "WalkingFortress_campaign4" };
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
 gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodapplied,
-removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
-crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor;
+removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, negativeCollectibles, collectiblesApplied, ezsuper, ezsuperApplied,
+crithit, crithitapplied, damage, charm, weakness,fte, enemymarker, enableEditor, itemParams, blackMarket, blackMarketApplied,
+couponClicker, couponClickerApplied, setsClicker, setsClickerApplied;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -122,7 +124,7 @@ void Patches() {
         removedroneapplied = false;
     }
 
-    //for removedrone
+    //for godmode
     if (god && !godapplied) {
         gPatches.godmode.Modify(); gPatches.godmode1.Modify();
         godapplied = true;
@@ -152,6 +154,16 @@ void Patches() {
         collectiblesApplied = false;
     }
 
+    //for collectibles (-)
+    if (negativeCollectibles && !collectiblesApplied) {
+        gPatches.negCollectibles.Modify();
+        collectiblesApplied = true;
+    } else if (!negativeCollectibles && collectiblesApplied)
+    {
+        gPatches.negCollectibles.Restore();
+        collectiblesApplied = false;
+    }
+
     if (ezsuper && !ezsuperApplied) {
         gPatches.ezsuper.Modify();  gPatches.ezsuper1.Modify();
         ezsuperApplied = true;
@@ -168,6 +180,33 @@ void Patches() {
     {
         gPatches.crithit.Restore();
         crithitapplied = false;
+    }
+
+    if (blackMarket && !blackMarketApplied) {
+        gPatches.blackMarket.Modify();
+        blackMarketApplied = true;
+    } else if (!blackMarket && blackMarketApplied)
+    {
+        gPatches.blackMarket.Restore();
+        blackMarketApplied = false;
+    }
+
+    if (couponClicker && !couponClickerApplied) {
+        gPatches.couponClicker.Modify();
+        couponClickerApplied = true;
+    } else if (!couponClicker && couponClickerApplied)
+    {
+        gPatches.couponClicker.Restore();
+        couponClickerApplied = false;
+    }
+
+    if (setsClicker && !setsClickerApplied) {
+        gPatches.setsClicker.Modify();
+        setsClickerApplied = true;
+    } else if (!setsClicker && setsClickerApplied)
+    {
+        gPatches.setsClicker.Restore();
+        setsClickerApplied = false;
     }
 }
 
@@ -222,20 +261,24 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x240) = 999999;//enemyMarkerTriangleCathetLength
         }
     }
+    oldWeaponSounds(obj);
 }
 
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
-    if (obj != nullptr){
-        // load level instance, even though i should hook a different function
-      /*  if (isLoadScenePressed)
-        {
-            LOGI("trying to load scene");
-            LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
-            isLoadScenePressed = false;
-        }*/
+    if (obj != nullptr && isLoadScenePressed){
+        // this update is always active, use it to call LoadScene or whatever
+        LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
     }
     old_PixelTime(obj);
+}
+
+int (*old_itemParamsInt)(void *obj);
+int itemParamsInt(void *obj) {
+    if (obj != nullptr && itemParams){
+        return 2000;
+    }
+    old_itemParamsInt(obj);
 }
 
 bool (*old_isEditor)(void *obj);
@@ -295,18 +338,26 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
+        ImGui::SetNextWindowSize(ImVec2(500, 500));
         ImGui::Begin("Pixel Gun 3D - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
             ImGui::Checkbox("Collectibles (Test)", &collectibles);
-            ImGui::Text("Sets the value of items to a specific number");
+            ImGui::Text("Sets the value of items to 2000");
+            ImGui::Checkbox("Negative Collectibles (Test)", &negativeCollectibles);
+            ImGui::Text("Sets the value of items to 2000");
             ImGui::Checkbox("Free Craftables", &cWear);
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
+            ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
+            ImGui::Text("Unlocks Clan Gadgets");
             ImGui::Checkbox("Free Lottery", &modKeys);
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
-            ImGui::Checkbox("Easy Super Cases", &ezsuper);
-            ImGui::Text("Grants the user a super case as soon as he opens any case.");
+            ImGui::Checkbox("Black Market Clicker", &blackMarket);
+            ImGui::Text("Go to black market and enjoy");
+            ImGui::Checkbox("Coupon Gems (Weapons)", &couponClicker);
+            ImGui::Checkbox("Coupon Gems (Sets)", &setsClicker);
+            ImGui::Text("Lets you click in gallery to get gems");
         }
         if (ImGui::CollapsingHeader("Player Mods")) {
             ImGui::Checkbox("Godmode", &god);
@@ -403,20 +454,21 @@ void Modifications(){
     gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
-    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"00FA80D2C0035FD6");
+    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"00FA80D2C0035FD6"); // 2000 0x3BBD870
+    gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"603E8012C0035FD6"); // -500 0x3BBD870
     gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
     gPatches.crithit = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1714718,"200080D2C0035FD6");//NextHitCritical
+    gPatches.blackMarket = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1595AE0,"200080D2C0035FD6");
+    gPatches.couponClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD567C,"200080D2C0035FD6");
+    gPatches.setsClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD609C,"200080D2C0035FD6");
 
     // hooks
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
-<<<<<<< HEAD
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&oldWeaponSounds);
-=======
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x438120C), (void*)isEditor, (void**)&old_isEditor);
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x2ADECFC), (void*)isDev, (void**)&old_isDev);
->>>>>>> c9903006dabc1592018232803a1714db77b7f467
 
 }
 
