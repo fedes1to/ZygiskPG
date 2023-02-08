@@ -32,22 +32,6 @@ ProcMap g_il2cppBaseMap;
 
 #define GamePackageName "com.pixel.gun3d"
 
-// defined this here so we can get g_il2cppBaseMap.pathname inside the method without it getting called twice
-monoString *CreateIl2cppString(const char *str)
-{
-    dlerror();
-    auto handle = dlopen(g_il2cppBaseMap.pathname.c_str(), RTLD_LAZY);
-    LOGW("got past getting the handle, trying to get the symbol now...");
-    const char* openerror = dlerror();
-    if(openerror)
-    {
-        LOGE(OBFUSCATE("Error Opening Lib: %s"), openerror);
-        return nullptr;
-    }
-    monoString *(*il2cpp_string_new)(const char *) = (monoString *(*)(const char *))dlsym(handle, OBFUSCATE("il2cpp_string_new"));
-    return il2cpp_string_new(str);
-}
-
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch vd2, tutorial, tutorial1, vd1, gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,

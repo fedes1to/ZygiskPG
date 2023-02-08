@@ -32,6 +32,8 @@ struct monoArray
     }
 };
 
+ProcMap il2cppMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
+
 /*
 This struct represents a C# string. Credits to caoyin.
 It is pretty straight forward. If you have this in a dump,
@@ -163,6 +165,22 @@ struct monoDictionary {
         return size;
     }
 };
+
+// defined this here so we can get g_il2cppBaseMap.pathname inside the method without it getting called twice
+monoString *CreateIl2cppString(const char *str)
+{
+    dlerror();
+    LOGW("trying to get the library...");
+    auto handle = dlopen(il2cppMap.pathname.c_str(), RTLD_LAZY);
+    const char* openerror = dlerror();
+    if(openerror)
+    {
+        LOGE(OBFUSCATE("Error Opening Lib: %s"), openerror);
+        return nullptr;
+    }
+    monoString *(*il2cpp_string_new)(const char *) = (monoString *(*)(const char *))dlsym(handle, OBFUSCATE("il2cpp_string_new"));
+    return il2cpp_string_new(str);
+}
 
 int GetObscuredIntValue(uint64_t location){
     int cryptoKey = *(int *)location;
