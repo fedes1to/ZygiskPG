@@ -35,7 +35,8 @@ ProcMap g_il2cppBaseMap;
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
-  removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, ezsuper, ezsuper1, currencycheck, crithit;  // etc...
+  removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, negCollectibles, ezsuper, ezsuper1, currencycheck, crithit,
+  blackMarket, couponClicker, setsClicker;  // etc...
 }gPatches;
 
 static int selectedScene = 0;
@@ -44,7 +45,8 @@ bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnl
 gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodapplied,
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
 crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
-doublejump, catspam, coindrop, sandbox;
+doublejump, catspam, coindrop, itemParams, blackMarket, blackMarketApplied, couponClicker, couponClickerApplied, setsClicker, setsClickerApplied,
+negativeCollectibles;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -123,7 +125,7 @@ void Patches() {
         removedroneapplied = false;
     }
 
-    //for removedrone
+    //for godmode
     if (god && !godapplied) {
         gPatches.godmode.Modify(); gPatches.godmode1.Modify();
         godapplied = true;
@@ -143,6 +145,16 @@ void Patches() {
         collectiblesApplied = false;
     }
 
+    //for collectibles (-)
+    if (negativeCollectibles && !collectiblesApplied) {
+        gPatches.negCollectibles.Modify();
+        collectiblesApplied = true;
+    } else if (!negativeCollectibles && collectiblesApplied)
+    {
+        gPatches.negCollectibles.Restore();
+        collectiblesApplied = false;
+    }
+
     if (ezsuper && !ezsuperApplied) {
         gPatches.ezsuper.Modify();  gPatches.ezsuper1.Modify();
         ezsuperApplied = true;
@@ -159,6 +171,33 @@ void Patches() {
     {
         gPatches.crithit.Restore();
         crithitapplied = false;
+    }
+
+    if (blackMarket && !blackMarketApplied) {
+        gPatches.blackMarket.Modify();
+        blackMarketApplied = true;
+    } else if (!blackMarket && blackMarketApplied)
+    {
+        gPatches.blackMarket.Restore();
+        blackMarketApplied = false;
+    }
+
+    if (couponClicker && !couponClickerApplied) {
+        gPatches.couponClicker.Modify();
+        couponClickerApplied = true;
+    } else if (!couponClicker && couponClickerApplied)
+    {
+        gPatches.couponClicker.Restore();
+        couponClickerApplied = false;
+    }
+
+    if (setsClicker && !setsClickerApplied) {
+        gPatches.setsClicker.Modify();
+        setsClickerApplied = true;
+    } else if (!setsClicker && setsClickerApplied)
+    {
+        gPatches.setsClicker.Restore();
+        setsClickerApplied = false;
     }
 }
 
@@ -262,16 +301,19 @@ void WeaponSounds(void* obj){
 
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
-    if (obj != nullptr){
-        // load level instance, even though i should hook a different function
-      /*  if (isLoadScenePressed)
-        {
-            LOGI("trying to load scene");
-            LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
-            isLoadScenePressed = false;
-        }*/
+    if (obj != nullptr && isLoadScenePressed){
+        // this update is always active, use it to call LoadScene or whatever
+        LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
     }
     old_PixelTime(obj);
+}
+
+int (*old_itemParamsInt)(void *obj);
+int itemParamsInt(void *obj) {
+    if (obj != nullptr && itemParams){
+        return 2000;
+    }
+    old_itemParamsInt(obj);
 }
 
 bool (*old_isEditor)(void *obj);
@@ -335,12 +377,21 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
-           // ImGui::Checkbox("Collectibles (Test)", &collectibles);
-          //  ImGui::Text("Sets the value of items to a specific number");
+            ImGui::Checkbox("Collectibles (Test)", &collectibles);
+            ImGui::Text("Sets the value of items to 2000");
+            ImGui::Checkbox("Negative Collectibles (Test)", &negativeCollectibles);
+            ImGui::Text("Sets the value of items to 2000");
             ImGui::Checkbox("Free Craftables", &cWear);
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
+            ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
+            ImGui::Text("Unlocks Clan Gadgets");
             ImGui::Checkbox("Free Lottery", &modKeys);
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
+            ImGui::Checkbox("Black Market Clicker", &blackMarket);
+            ImGui::Text("Go to black market and enjoy");
+            ImGui::Checkbox("Coupon Gems (Weapons)", &couponClicker);
+            ImGui::Checkbox("Coupon Gems (Sets)", &setsClicker);
+            ImGui::Text("Lets you click in gallery to get gems");
         }
         if (ImGui::CollapsingHeader("Player Mods")) {
             ImGui::Checkbox("Godmode", &god);
@@ -451,11 +502,15 @@ void Modifications(){
     gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
-    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"00FA80D2C0035FD6");
+    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"00FA80D2C0035FD6"); // 2000 0x3BBD870
+    gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"603E8012C0035FD6"); // -500 0x3BBD870
     gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
     gPatches.crithit = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1714718,"200080D2C0035FD6");//NextHitCritical
+    gPatches.blackMarket = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1595AE0,"200080D2C0035FD6");
+    gPatches.couponClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD567C,"200080D2C0035FD6");
+    gPatches.setsClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD609C,"200080D2C0035FD6");
 
     // hooks
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
