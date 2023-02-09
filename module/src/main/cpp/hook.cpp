@@ -55,15 +55,16 @@ gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodappl
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
 crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, catspam, coindrop, itemParams, blackMarket, blackMarketApplied, couponClicker, couponClickerApplied, setsClicker, setsClickerApplied,
-negativeCollectibles, nullcollectibles, nullcollectiblesApplied;
+negativeCollectibles, nullcollectibles, nullcollectiblesApplied, isDiscordPressed;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
 void(*LoadLevel)(monoString* key);
+void(*OpenURL)(monoString* url);
 void Pointers() {
     SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x4340BE0);
-    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C );
-
+    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C);
+    OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x43807DC);
 }
 
 void Patches() {
@@ -324,6 +325,10 @@ void PixelTime(void *obj) {
         // this update is always active, use it to call LoadScene or whatever
         LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
         isLoadScenePressed = false;
+    } else if (obj != nullptr && isDiscordPressed)
+    {
+        OpenURL(CreateIl2cppString("https://discord.gg/dmaBN3MzNJ"));
+        isDiscordPressed = false;
     }
     old_PixelTime(obj);
 }
@@ -469,6 +474,11 @@ void DrawMenu(){
                 LOGI("%s", sceneList[selectedScene]);
                 isLoadScenePressed = true;
             }
+            if (ImGui::Button("Open Discord Invite"))
+            {
+                isDiscordPressed = true;
+            }
+            ImGui::Text("Make sure to join the discord for updates");
         }
         Patches();
         ImGui::End();
