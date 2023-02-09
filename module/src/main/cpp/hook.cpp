@@ -36,7 +36,7 @@ struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
   removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, negCollectibles, ezsuper, ezsuper1, currencycheck, crithit,
-  blackMarket, couponClicker, setsClicker;  // etc...
+  blackMarket, couponClicker, setsClicker, anticheet, anticheet2 , anticheet1;  // etc...
 }gPatches;
 
 static int selectedScene = 0;
@@ -44,9 +44,11 @@ const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rus
 bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
 gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodapplied,
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
-crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
+crithit, crithitapplied, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, catspam, coindrop, itemParams, blackMarket, blackMarketApplied, couponClicker, couponClickerApplied, setsClicker, setsClickerApplied,
-negativeCollectibles;
+negativeCollectibles,anticheet,anticheetapplied;
+
+float damage;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -199,43 +201,36 @@ void Patches() {
         gPatches.setsClicker.Restore();
         setsClickerApplied = false;
     }
+
+    if (anticheet && !anticheetapplied) {
+        gPatches.anticheet.Modify(); gPatches.anticheet1.Modify(); gPatches.anticheet2.Modify();
+        anticheetapplied = true;
+    } else if (!anticheet && anticheetapplied)
+    {
+        gPatches.anticheet.Restore(); gPatches.anticheet1.Restore(); gPatches.anticheet2.Restore();
+        anticheetapplied = false;
+    }
 }
 
 void(*oldWeaponSounds)(void* obj);
 void WeaponSounds(void* obj){
     if(obj != nullptr){
-        if(damage){
-            *(float*)((uint64_t) obj + 0x200) = 200;//poisonDamageMultiplier
-            *(float*)((uint64_t) obj + 0x21C) = 200;//curseDamageMultiplier
-            *(float*)((uint64_t) obj + 0x168) = 200;//curseDamageMultiplier
-            *(bool*)((uint64_t) obj + 0x200) = true;//isHeadshotDamageIncreased
-            *(float*)((uint64_t) obj + 0x274) = 200;//increasedHeadshotDamageMultiplier
-            *(bool*)((uint64_t) obj + 0x278) = false;//isReducedHeadshotDamage
-            *(float*)((uint64_t) obj + 0x27C) = 0;//reducedHeadshotDamageMultiplier
-            *(float*)((uint64_t) obj + 0x388) = 999;//shotgunMaxDamageDistance
-            *(float*)((uint64_t) obj + 0x38C) = 999;//shotgunMinDamageCoef
-            *(float*)((uint64_t) obj + 0x390) = 999;//shotgunOverDamageDistance
-            *(float*)((uint64_t) obj + 0x394) = 999;//shotgunOverDamageCoef
+        if(damage != NULL){
+            *(float*)((uint64_t) obj + 0x388) = damage;//shotgunMaxDamageDistance
+            *(float*)((uint64_t) obj + 0x38C) = damage;//shotgunMinDamageCoef
+            *(float*)((uint64_t) obj + 0x390) = damage;//shotgunOverDamageDistance
+            *(float*)((uint64_t) obj + 0x394) = damage;//shotgunOverDamageCoef
         }
 
         if(killboost){
             *(bool*)((uint64_t) obj + 0x3F8) = true;//isIncreasedDamageFromKill
-            *(bool*)((uint64_t) obj + 0x3FC) = true;//damageMultiplier
+            *(float*)((uint64_t) obj + 0x3FC) = 2;//damageMultiplier
             *(int*)((uint64_t) obj + 0x400) = 999;//maxStackIncreasedDamage
         }
 
         if(charm){
             *(bool*)((uint64_t) obj + 0x260) = true;//isCharm
-            *(float*)((uint64_t) obj + 0x264) = 9999;//charmTime
-        }
-
-        if(weakness){
-            *(bool*)((uint64_t) obj + 0x26C) = true;//isWeaknessEffect
-            *(float*)((uint64_t) obj + 0x26C) = 999;//weaknessEffectTime
-            *(bool*)((uint64_t) obj + 0x254) = true;//isBlindEffect
-            *(float*)((uint64_t) obj + 0x25C) = 999;//isBlindEffectTime
-            *(int*)((uint64_t) obj + 0x258) = 999; //blindEffect
-            *(bool*)((uint64_t) obj + 0x220) = true;//isSlowdown
+            *(float*)((uint64_t) obj + 0x264) = 99999;//charmTime
         }
 
         if(fte){
@@ -254,7 +249,7 @@ void WeaponSounds(void* obj){
 
         if(electric){
             *(bool*)((uint64_t) obj + 0x404) = true;//isElectricShock
-            *(float*)((uint64_t) obj + 0x408) = 99999;//teammateDamageBoostBuffTime
+            *(float*)((uint64_t) obj + 0x408) = 99999;//electricShockCoeff
             *(float*)((uint64_t) obj + 0x40C) = 99999;//electricShockTime
         }
 
@@ -278,10 +273,6 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x5B8) = 9999;//grenadeUseTime
         }
 
-        if(catspam){
-            *(bool*)((uint64_t) obj + 0x640) = false;//is3CatSpam
-            *(bool*)((uint64_t) obj + 0x641) = true;//for3CatSpam
-        }
 
         if(damage){
             *(bool*)((uint64_t) obj + 0x42F) = true;//isDoubleJump
@@ -374,6 +365,7 @@ void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin("Pixel Gun 3D 23.0.1 Mod Menu (0.1) - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
+        ImGui::Checkbox("Anticheat", &anticheet);
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
@@ -399,21 +391,20 @@ void DrawMenu(){
             ImGui::Checkbox("Force Double Jump", &doublejump);
         }
         if (ImGui::CollapsingHeader("Weapon Mods")) {
-            ImGui::Checkbox("One Shot Kill", &damage);
-            ImGui::Text("Kills any entity instantly.");
+            ImGui::SliderFloat("Damage Buff",&damage, 0.0f, 15.0f);
+            ImGui::Text("Amplifys the damage.");
             ImGui::Checkbox("Force Critical Hits", &crithit);
             ImGui::Text("Forces Critical Shots each time you hit someone.");
             ImGui::Checkbox("No Grenade Cooldown", &grenade);
             ImGui::Checkbox("Unlimited Ammo", &ammo);
         }
         if (ImGui::CollapsingHeader("Effects Mods")) {
-            ImGui::Checkbox("Force Weakness Effects", &weakness);
             ImGui::Text("Add effects which ruin your enemys stats.");
             ImGui::Checkbox("Force Charm", &charm);
             ImGui::Text("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)");
             ImGui::Checkbox("Force Kill Damage Boost", &killboost);
             ImGui::Text("Gives you damage boost after every kill.");
-            ImGui::Checkbox("Force Kill Speed Boost", &killboost);
+            ImGui::Checkbox("Force Kill Speed Boost", &kspeedboost);
             ImGui::Text("Gives you speed boost after every kill.");
             ImGui::Checkbox("No Fire and Toxic Effects", &fte);
             ImGui::Text("Removes the burning and being intoxicated effect on you.");
@@ -511,6 +502,9 @@ void Modifications(){
     gPatches.blackMarket = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1595AE0,"200080D2C0035FD6");
     gPatches.couponClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD567C,"200080D2C0035FD6");
     gPatches.setsClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD609C,"200080D2C0035FD6");
+    gPatches.anticheet = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x16585AC,"1F2003D5C0035FD6");//find leaveroom and nop the argumentless ingameconnections if you cant find it kys
+    gPatches.anticheet1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x42FF234,"1F2003D5C0035FD6");//find leaveroom and nop the argumentless ingameconnections if you cant find it kys
+    gPatches.anticheet2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4A49E0C,"1F2003D5C0035FD6");//find leaveroom and nop the argumentless ingameconnections if you cant find it kys
 
     // hooks
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
