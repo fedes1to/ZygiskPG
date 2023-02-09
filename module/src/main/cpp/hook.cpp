@@ -42,7 +42,7 @@
 monoString* CreateIl2cppString(const char* str)
 {
     static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
-    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + 0x43F5F10);
+    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43F5F10")));
     int* startIndex = 0;
     int* length = (int *)strlen(str);
     return CreateIl2cppString(str, startIndex, length);
@@ -347,11 +347,13 @@ void DrawMenu(){
         }
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
-            if (ImGui::InputText("ID", str0, IM_ARRAYSIZE(str0)))
-            {
-                isOpenKeyboard = true;
+            if (ImGui::InputText("", str0, IM_ARRAYSIZE(str0))) {
+                if (ImGui::IsItemHovered())
+                {
+                    OpenKeyboard(CreateIl2cppString(""), (int *)(0), (bool *)(false));
+                }
             }
-            if (ImGui::Button) {
+            if (ImGui::Button("Change ID")) {
                 changeID = true;
             }
             ImGui::Text("Sets account ID to whatever value is up there");
