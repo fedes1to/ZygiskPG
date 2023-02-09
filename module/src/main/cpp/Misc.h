@@ -70,7 +70,7 @@ uintptr_t string2Offset(const char *c) {
 }
 
 #define HOOK(offset, ptr, orig) hook((void *)(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE(offset))), (void *)ptr, (void **)&orig)
-#define PATCH(offset, hex) patchOffset(targetLibName, g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), true)
+#define PATCH(offset, hex) patchOffset(string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), true)
 #define PATCH_SWITCH(offset, hex, boolean) patchOffset(string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), boolean)
 #define RESTORE(offset) patchOffset(string2Offset(OBFUSCATE(offset)), "", false)
 
