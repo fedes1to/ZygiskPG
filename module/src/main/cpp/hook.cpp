@@ -346,9 +346,9 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader("Misc Mods"))
         {
             if (ImGui::InputText("", str0, IM_ARRAYSIZE(str0))) {
-                if (ImGui::IsItemHovered())
+                if (ImGui::IsItemFocused())
                 {
-                    OpenKeyboard(CreateIl2cppString(""), (int *)(0), (bool *)(false));
+                    isOpenKeyboard = true;
                 }
             }
             if (ImGui::Button("Change ID")) {
