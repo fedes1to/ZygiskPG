@@ -268,13 +268,11 @@ void Patches() {
     PATCH_SWITCH("0x1BC8EB8", "C0035FD6", tgod);
     PATCH_SWITCH("0x1BCE010", "C0035FD6", tgod);
     PATCH_SWITCH("0x1BCE2A8", "C0035FD6", tgod);
-    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);
+    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     PATCH_SWITCH("0x47551D8", "C0035FD6", removedrone);
     PATCH_SWITCH("0x3ED22F4", "00FA80D2C0035FD6", collectibles);
     PATCH_SWITCH("0x3ED22F4", "603E8012C0035FD6", negativeCollectibles);
     PATCH_SWITCH("0x3ED22F4", "000080D2C0035FD6", nullcollectibles);
-    PATCH_SWITCH("0x39CE814", "200080D2C0035FD6", ezsuper);
-    PATCH_SWITCH("0x39CE860", "200080D2C0035FD6", ezsuper);
     PATCH_SWITCH("0x1714718", "200080D2C0035FD6", crithit);
     PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
     PATCH_SWITCH("0x1DD567C", "200080D2C0035FD6", couponClicker);
@@ -387,6 +385,8 @@ void SetupImgui() {
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
     ImGui::GetStyle().ScaleAllSizes(6.0f);
+    ImGui::SetWindowFontScale(6.0f);
+    io.Fonts->AddFontFromFileTTF("myfontfile.ttf", 20.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
