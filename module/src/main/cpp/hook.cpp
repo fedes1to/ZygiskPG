@@ -1,4 +1,3 @@
-#include "hook.h"
 #include <cstring>
 #include <cstdio>
 #include <unistd.h>
@@ -23,6 +22,8 @@
 #include "KittyMemory/KittyUtils.h"
 #include"Includes/Dobby/dobbyForHooks.h"
 #include "Include/Unity.h"
+#include "Misc.h"
+#include "hook.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
