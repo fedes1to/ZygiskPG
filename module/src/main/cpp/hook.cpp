@@ -26,6 +26,18 @@
 
 #define GamePackageName "com.pixel.gun3d"
 
+/*
+ *
+ * LIST OF NOTES:
+ * GAMEMODES LIST: 丂丛万世丝七丒与丈, GameMode.cs << DONT TRUST THIS, ITS 丈下东与三丆下丛丄
+ * 丒丘丁丄丂丑丛丄东, ItemReward.cs (Scripts\\Store\\MainStore\\ItemReward.cs)
+ * 丒下丗丈丕三丌丏不, ProgressUpdater.Currency.cs (Scripts\\ServerProgressSync\\ProgressUpdater.Currency.cs)
+ * 丐三丐丄丝丅丈丄丞, OfferData.cs (Scripts/OfferPacks/OfferData.cs)
+ * SCENEINFO IS SceneInfo, FULLY OBFUSCATED
+ * SCENEINFO 且与丒与丈下丈丁一 = AddMode(GameMode)
+ *
+ */
+
 monoString* CreateIl2cppString(const char* str)
 {
     static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
@@ -49,7 +61,7 @@ gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodappl
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
 crithit, crithitapplied, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, catspam, coindrop, itemParams, blackMarket, blackMarketApplied, couponClicker, couponClickerApplied, setsClicker, setsClickerApplied,
-negativeCollectibles,anticheet,anticheetapplied, nullcollectibles, nullcollectiblesApplied, isDiscordPressed;
+negativeCollectibles,anticheet,anticheetapplied, nullcollectibles, nullcollectiblesApplied, isDiscordPressed, isKaxzWeps;
 
 float damage;
 
@@ -346,6 +358,24 @@ bool isDev(void *obj) {
     }
 }
 
+bool (*old_canBuy)(void *obj);
+bool canBuy(void *obj) {
+    if (isKaxzWeps)
+    {
+        return true;
+    }
+    return old_canBuy(obj);
+}
+
+bool (*old_isEvent)(void *obj);
+bool isEvent(void *obj) {
+    if (isKaxzWeps)
+    {
+        return false;
+    }
+    return old_isEvent(obj);
+}
+
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
         return 0;
@@ -415,6 +445,8 @@ void DrawMenu(){
             ImGui::Checkbox("Force Critical Hits", &crithit);
             ImGui::Text("Forces Critical Shots each time you hit someone.");
             ImGui::Checkbox("Unlimited Ammo", &ammo);
+            ImGui::Checkbox("Edit Weapon Info", &isKaxzWeps);
+            ImGui::Text("Edits weapon info for every weapon");
         }
         if (ImGui::CollapsingHeader("Effects Mods")) {
             ImGui::Text("Add effects which ruin your enemys stats.");
@@ -533,6 +565,8 @@ void Modifications(){
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x438120C", isEditor, old_isEditor);
     HOOK("0x2ADECFC", isDev, old_isDev);
+    HOOK("0x48F0500", isEvent, old_isEvent);
+    HOOK("0x48F182C", canBuy, old_canBuy);
 }
 
 void *hack_thread(void *arg) {
