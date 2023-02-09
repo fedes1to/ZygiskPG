@@ -24,6 +24,7 @@
 #include "Include/Unity.h"
 #include "Misc.h"
 #include "hook.h"
+#include "Include/Roboto-Regular.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -377,7 +378,7 @@ void SetupImgui() {
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
     ImGui::GetStyle().ScaleAllSizes(6.0f);
-    io.Fonts->AddFontFromFileTTF("Include/Roboto-Regular.ttf", 20.0f);
+    io.Fonts->AddFontFromMemoryTTF(Roboto_Regular, 30, 30.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
