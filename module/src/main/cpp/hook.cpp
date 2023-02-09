@@ -42,7 +42,7 @@
 monoString* CreateIl2cppString(const char* str)
 {
     static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
-    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + 0x43F5F10);
+    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43F5F10")));
     int* startIndex = 0;
     int* length = (int *)strlen(str);
     return CreateIl2cppString(str, startIndex, length);
@@ -64,10 +64,10 @@ void (*LoadLevel) (monoString* key);
 void (*OpenURL) (monoString* url);
 void (*OpenKeyboard) (monoString* text, int* keyboardType, bool* autoCorrection);
 void Pointers() {
-    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C);
-    OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x43807DC);
-    OpenKeyboard = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + 0x435E2D4);
-    SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x2ECDA10);
+    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
+    OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
+    OpenKeyboard = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435E2D4")));
+    SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2ECDA10")));
 }
 
 void(*oldWeaponSounds)(void* obj);
@@ -159,7 +159,7 @@ void PixelTime(void *obj) {
         OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/fkdDephdS6")));
         isDiscordPressed = false;
     } else if (obj != nullptr && changeID) {
-        SetString(CreateIl2cppString("AccountCreated"), CreateIl2cppString("Solotov#2160"));
+        SetString(CreateIl2cppString(OBFUSCATE("AccountCreated")), CreateIl2cppString(OBFUSCATE("Solotov#2160")));
     } else if (obj != nullptr && isOpenKeyboard) {
         OpenKeyboard(CreateIl2cppString(""), (int *)(0), (bool *)(false));
     }
@@ -377,6 +377,7 @@ void SetupImgui() {
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
     ImGui::GetStyle().ScaleAllSizes(6.0f);
+    io.Fonts->AddFontFromFileTTF("Include/Roboto-Regular.ttf", 20.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
