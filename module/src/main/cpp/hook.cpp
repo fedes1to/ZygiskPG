@@ -36,7 +36,7 @@ struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
   removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, negCollectibles, ezsuper, ezsuper1, currencycheck, crithit,
-  blackMarket, couponClicker, setsClicker;  // etc...
+  blackMarket, couponClicker, setsClicker, nullcollectibles;  // etc...
 }gPatches;
 
 static int selectedScene = 0;
@@ -46,7 +46,7 @@ gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodappl
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
 crithit, crithitapplied, damage, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, catspam, coindrop, itemParams, blackMarket, blackMarketApplied, couponClicker, couponClickerApplied, setsClicker, setsClickerApplied,
-negativeCollectibles;
+negativeCollectibles, nullcollectibles, nullcollectiblesApplied;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
@@ -153,6 +153,16 @@ void Patches() {
     {
         gPatches.negCollectibles.Restore();
         collectiblesApplied = false;
+    }
+
+    //for collectibles (0)
+    if (nullcollectibles && !nullcollectiblesApplied) {
+        gPatches.nullcollectibles.Modify();
+        nullcollectiblesApplied = true;
+    } else if (!nullcollectibles && nullcollectiblesApplied)
+    {
+        gPatches.nullcollectibles.Restore();
+        nullcollectiblesApplied = false;
     }
 
     if (ezsuper && !ezsuperApplied) {
@@ -377,10 +387,6 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
-            ImGui::Checkbox("Collectibles (Test)", &collectibles);
-            ImGui::Text("Sets the value of items to 2000");
-            ImGui::Checkbox("Negative Collectibles (Test)", &negativeCollectibles);
-            ImGui::Text("Sets the value of items to 2000");
             ImGui::Checkbox("Free Craftables", &cWear);
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
             ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
@@ -392,6 +398,15 @@ void DrawMenu(){
             ImGui::Checkbox("Coupon Gems (Weapons)", &couponClicker);
             ImGui::Checkbox("Coupon Gems (Sets)", &setsClicker);
             ImGui::Text("Lets you click in gallery to get gems");
+            if (ImGui::CollapsingHeader("Risky Mods"))
+            {
+                ImGui::Checkbox("Collectibles (Test)", &collectibles);
+                ImGui::Text("Sets the value of items to 2000");
+                ImGui::Checkbox("Null Collectibles (Test)", &nullcollectibles);
+                ImGui::Text("Sets the value of items to 0");
+                ImGui::Checkbox("Negative Collectibles (Test)", &negativeCollectibles);
+                ImGui::Text("Sets the value of items to -500");
+            }
         }
         if (ImGui::CollapsingHeader("Player Mods")) {
             ImGui::Checkbox("Godmode", &god);
@@ -457,8 +472,7 @@ void SetupImgui() {
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
-    ImGui::GetStyle().ScaleAllSizes(5.0f);
-    ImGui::SetNextWindowSize(ImVec2((float) 500, (float) 0.0f));
+    ImGui::GetStyle().ScaleAllSizes(6.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
@@ -504,6 +518,7 @@ void Modifications(){
     gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
     gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"00FA80D2C0035FD6"); // 2000 0x3BBD870
     gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"603E8012C0035FD6"); // -500 0x3BBD870
+    gPatches.nullcollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"000080D2C0035FD6");
     gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
