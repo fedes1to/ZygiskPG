@@ -378,8 +378,7 @@ void SetupImgui() {
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
     ImGui::GetStyle().ScaleAllSizes(6.0f);
-    ImGui::SetWindowFontScale(6.0f);
-    io.Fonts->AddFontFromFileTTF("myfontfile.ttf", 20.0f);
+    io.Fonts->AddFontFromFileTTF("Include/Roboto-Regulaar.ttf", 20.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
