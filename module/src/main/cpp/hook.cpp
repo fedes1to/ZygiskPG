@@ -59,7 +59,6 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps;
 
 float damage;
 
-// specify pointers to call here
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
 void (*OpenURL) (monoString* url);
@@ -79,12 +78,12 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x38C) = damage;//shotgunMinDamageCoef
             *(float*)((uint64_t) obj + 0x390) = damage;//shotgunOverDamageDistance
             *(float*)((uint64_t) obj + 0x394) = damage;//shotgunOverDamageCoef
+            *(float*)((uint64_t) obj + 0x3FC) = damage;//damageMultiplier
         }
 
         if(killboost){
             *(bool*)((uint64_t) obj + 0x3F8) = true;//isIncreasedDamageFromKill
-            *(float*)((uint64_t) obj + 0x3FC) = 2;//damageMultiplier
-            *(int*)((uint64_t) obj + 0x400) = 999;//maxStackIncreasedDamage
+            *(int*)((uint64_t) obj + 0x400) = 3;//maxStackIncreasedDamage
         }
 
         if(charm){
@@ -132,8 +131,7 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x5B8) = 9999;//grenadeUseTime
         }
 
-
-        if(damage){
+        if(doublejump){
             *(bool*)((uint64_t) obj + 0x42F) = true;//isDoubleJump
         }
 
@@ -195,24 +193,6 @@ bool isDev(void *obj) {
     }
 }
 
-bool (*old_canBuy)(void *obj);
-bool canBuy(void *obj) {
-    if (isKaxzWeps)
-    {
-        return true;
-    }
-    return old_canBuy(obj);
-}
-
-bool (*old_isEvent)(void *obj);
-bool isEvent(void *obj) {
-    if (isKaxzWeps)
-    {
-        return false;
-    }
-    return old_isEvent(obj);
-}
-
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
         return 0;
@@ -222,12 +202,12 @@ int isGame(JNIEnv *env, jstring appDataDir) {
     if (sscanf(app_data_dir, "/data/%*[^/]/%d/%s", &user, package_name) != 2) {
         if (sscanf(app_data_dir, "/data/%*[^/]/%s", package_name) != 1) {
             package_name[0] = '\0';
-            LOGW("can't parse %s", app_data_dir);
+            LOGW(OBFUSCATE("can't parse %s"), app_data_dir);
             return 0;
         }
     }
     if (strcmp(package_name, GamePackageName) == 0) {
-        LOGI("detect game: %s", package_name);
+        LOGI(OBFUSCATE("detect game: %s"), package_name);
         game_data_dir = new char[strlen(app_data_dir) + 1];
         strcpy(game_data_dir, app_data_dir);
         env->ReleaseStringUTFChars(appDataDir, app_data_dir);
@@ -253,8 +233,6 @@ void Hooks() {
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x438120C", isEditor, old_isEditor);
     HOOK("0x2ADECFC", isDev, old_isDev);
-    HOOK("0x48F0500", isEvent, old_isEvent);
-    HOOK("0x48F182C", canBuy, old_canBuy);
 }
 
 void Patches() {
@@ -269,7 +247,7 @@ void Patches() {
     PATCH_SWITCH("0x1BC8EB8", "C0035FD6", tgod);
     PATCH_SWITCH("0x1BCE010", "C0035FD6", tgod);
     PATCH_SWITCH("0x1BCE2A8", "C0035FD6", tgod);
-    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
+    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);
     PATCH_SWITCH("0x47551D8", "C0035FD6", removedrone);
     PATCH_SWITCH("0x3ED22F4", "00FA80D2C0035FD6", collectibles);
     PATCH_SWITCH("0x3ED22F4", "603E8012C0035FD6", negativeCollectibles);
@@ -278,91 +256,78 @@ void Patches() {
     PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
     PATCH_SWITCH("0x1DD567C", "200080D2C0035FD6", couponClicker);
     PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
-    PATCH("0x206D13C", "C0035FD6"); // currency check
+    PATCH("0x206D13C", "C0035FD6");
 }
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin("Pixel Gun 3D 23.0.1 Mod Menu (0.1a) - chr1s#4191 && fedesito#0052 && ohmyfajett#3500");
-        if (ImGui::Button("Join Discord"))
+        ImGui::Begin(OBFUSCATE("ZygiskPG 0.1a (23.0.1) - chr1s#4191 && fedesito#0052 && ohmyfajett#3500"));
+        if (ImGui::Button(OBFUSCATE("Join Discord")))
         {
             isDiscordPressed = true;
         }
         ImGui::Text("Its Recommended to join the discord server for mod updates etc.");
-        if (ImGui::CollapsingHeader("Account Mods")) {
-            ImGui::Checkbox("Max Level", &maxLevel);
+        if (ImGui::CollapsingHeader(OBFUSCATE("Account Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
             ImGui::Checkbox("Free Craftables", &cWear);
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
-            ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
-            ImGui::Text("Unlocks Clan Gadgets");
-            ImGui::Checkbox("Free Lottery", &modKeys);
+            ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
-            //ImGui::Checkbox("Black Market Clicker", &blackMarket); doesn't work
-        //    ImGui::Text("Go to black market and enjoy");
-            ImGui::Checkbox("Infinite Gems ", &couponClicker);
+            ImGui::Checkbox(OBFUSCATE("Infinite Gems"), &couponClicker);
             ImGui::Text("Go into gallery and spam click on the weapons to get gems.");
-          //  ImGui::Checkbox("Coupon Gems (Sets)", &setsClicker); doesn't work
         }
-        if (ImGui::CollapsingHeader("Player Mods")) {
-            ImGui::Checkbox("Godmode", &god);
+        if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
             ImGui::Text("Makes you invincible (others can kill you but you won't die and just become invisible)");
-            ImGui::Checkbox("Force Double Jump", &doublejump);
+            ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
         }
-        if (ImGui::CollapsingHeader("Weapon Mods")) {
-            ImGui::SliderFloat("Damage Buff",&damage, 0.0f, 15.0f);
+        if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
+            ImGui::SliderFloat(OBFUSCATE("Damage Buff"),&damage, 0.0f, 15.0f);
             ImGui::Text("Amplifys the damage. (Anything above 8 might kick after a few kills)");
-            ImGui::Checkbox("Force Critical Hits", &crithit);
+            ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
             ImGui::Text("Forces Critical Shots each time you hit someone.");
-            ImGui::Checkbox("Unlimited Ammo", &ammo);
-            ImGui::Checkbox("Edit Weapon Info", &isKaxzWeps);
-            ImGui::Text("Edits weapon info for every weapon");
+            ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
         }
-        if (ImGui::CollapsingHeader("Effects Mods")) {
-            ImGui::Text("Add effects which ruin your enemys stats.");
-            ImGui::Checkbox("Force Charm", &charm);
+        if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
             ImGui::Text("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)");
-            ImGui::Checkbox("Force Kill Damage Boost", &killboost);
+            ImGui::Checkbox(OBFUSCATE("Force Kill Damage Boost"), &killboost);
             ImGui::Text("Gives you damage boost after every kill.");
-            ImGui::Checkbox("No Fire and Toxic Effects", &fte);
+            ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
             ImGui::Text("Removes the burning and being intoxicated effect on you.");
-            ImGui::Checkbox("Force Electric Shock", &electric);
+            ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
             ImGui::Text("Adds the electric shock effect");
         }
-        if (ImGui::CollapsingHeader("Visual Mods")) {
-            ImGui::Checkbox("Show marker", &enemymarker);
-            ImGui::Text("Shows the enemy after you aim at them.");
+        if (ImGui::CollapsingHeader(OBFUSCATE("Visual Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
+            ImGui::Text("Shows the enemy after you shoot them once.");
         }
-        if (ImGui::CollapsingHeader("Game Mods")) {
-            ImGui::Checkbox("Turret Godmode", &tgod);
+        if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
             ImGui::Text("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does.");
-            ImGui::Checkbox("Drone Godmode", &removedrone);
+            ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
             ImGui::Text("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)");
-            ImGui::Checkbox("Force Weapons in Sandbox", &daterweapon);
-            ImGui::Text("You can equip normal weapons in sandbox.");
-            ImGui::Checkbox("Force Coin Drop", &coindrop);
+            ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
             ImGui::Text("Always drops coins when someone dies.");
         }
-        if (ImGui::CollapsingHeader("Misc Mods"))
+        if (ImGui::CollapsingHeader(OBFUSCATE("Misc Mods")))
         {
-            ImGui::Checkbox("Spoof Editor", &enableEditor);
+            ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
             ImGui::Text("Makes the game think its on the Unity Editor");
-            ImGui::ListBox("Select Scene", &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
-            if (ImGui::Button("Load Scene")) {
+            ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
+            if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                 isLoadScenePressed = true;
             }
-            if (ImGui::Button("Change ID")) {
-                changeID = true;
-            }
         }
-        if (ImGui::CollapsingHeader("Bannable Mods"))
+        if (ImGui::CollapsingHeader(OBFUSCATE("Bannable Mods")))
         {
-            ImGui::Checkbox("Collectibles", &collectibles);
+            ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
             ImGui::Text("Sets the value of items to 2000");
-            ImGui::Checkbox("Null Collectibles", &nullcollectibles);
+            ImGui::Checkbox(OBFUSCATE("Null Collectibles"), &nullcollectibles);
             ImGui::Text("Sets the value of items to 0");
-            ImGui::Checkbox("Negative Collectibles", &negativeCollectibles);
+            ImGui::Checkbox(OBFUSCATE("Negative Collectibles"), &negativeCollectibles);
             ImGui::Text("Sets the value of items to -500");
         }
         Patches();
