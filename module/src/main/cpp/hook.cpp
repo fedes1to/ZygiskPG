@@ -26,8 +26,6 @@
 
 #define GamePackageName "com.pixel.gun3d"
 
-
-
 monoString* CreateIl2cppString(const char* str)
 {
     static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
@@ -506,17 +504,17 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 void Modifications(){
 
     // hex patches
-    gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap,string2Offset(0x1C26554),"A0F08FD2C0035FD6");
+    gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
     gPatches.uWear = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x257B7B4,"802580D2C0035FD6");
     gPatches.cWear1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87C14,"802580D2C0035FD6");
-    gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AF),"802580D2C0035FD6");
+    gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AFC,"802580D2C0035FD6");
     gPatches.gadgetUnlock = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2C54AFC,"00008052C0035FD6");
     gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
-    gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//Min)usLive
-    gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//Min)usLive
-    gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//Min)usLiveReal
-    gPatches.removedrone = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4755120,"C0035FD6");//dea)r future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
-    gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dea)r future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
+    gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//MinusLive
+    gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//MinusLive
+    gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//MinusLiveReal
+    gPatches.removedrone = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4755120,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
+    gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
     gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"00FA80D2C0035FD6"); // 2000
@@ -524,23 +522,17 @@ void Modifications(){
     gPatches.nullcollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"000080D2C0035FD6"); // 0
     gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
-    gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//Cur)rencyUpdater the method with int, possible bypass?
+    gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
     gPatches.crithit = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1714718,"200080D2C0035FD6");//NextHitCritical
     gPatches.blackMarket = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1595AE0,"200080D2C0035FD6");
     gPatches.couponClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD567C,"200080D2C0035FD6");
     gPatches.setsClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD609C,"200080D2C0035FD6");
-    gPatches.anticheet = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x16585AC,"1F2003D5C0035FD6");//find leaveroom and nop the argumentless ingameconnections if you cant find it kys
-    gPatches.anticheet1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x42FF234,"1F2003D5C0035FD6");//find leaveroom and nop the argumentless ingameconnections if you cant find it kys
-    gPatches.anticheet2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4A49E0C,"1F2003D5C0035FD6");//find leaveroom and nop the argumentless ingameconnections if you cant find it kys
 
     // hooks
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x438120C", isEditor, old_isEditor);
     HOOK("0x2ADECFC", isDev, old_isDev);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&oldWeaponSounds);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x438120C), (void*)isEditor, (void**)&old_isEditor);
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x2ADECFC), (void*)isDev, (void**)&old_isDev);
 }
 
 void *hack_thread(void *arg) {

@@ -38,6 +38,11 @@ void hook(void *offset, void* ptr, void **orig)
     DobbyHook(offset, ptr, orig);
 }
 
+void patchOffset(void *offset, const char hex)
+{
+    // your dogshit code goes here
+}
+
 uintptr_t string2Offset(const char *c) {
     int base = 16;
     // See if this function catches all possibilities.
@@ -58,5 +63,6 @@ uintptr_t string2Offset(const char *c) {
 }
 
 #define HOOK(offset, ptr, orig) hook((void *)(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE(offset))), (void *)ptr, (void **)&orig)
+#define PATCH(offset, hex) patchOffset(targetLibName, g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), true)
 
 #endif //ZygiskImGui_HOOK_H
