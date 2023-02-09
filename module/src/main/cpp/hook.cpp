@@ -48,21 +48,13 @@ monoString* CreateIl2cppString(const char* str)
     return CreateIl2cppString(str, startIndex, length);
 }
 
-struct GlobalPatches {
-    // let's assume we have patches for these functions for whatever game
-    MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
-  removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, negCollectibles, ezsuper, ezsuper1, currencycheck, crithit,
-  blackMarket, couponClicker, setsClicker, anticheet, anticheet2 , anticheet1, nullcollectibles;  // etc...
-}gPatches;
-
 static int selectedScene = 0;
 const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rust", "Gluk", "Cube", "City", "Pool", "Ants", "Maze", "Arena", "Train", "Day_D", "Space", "Pizza", "Barge", "Pool2", "Winter", "Area52", "Castle", "Arena2", "Sniper", "Day_D2", "Matrix", "Heaven", "office", "Portal", "Hungry", "Bridge", "Gluk_2", "knife2", "Estate", "Glider", "Utopia", "School", "Gluk_3", "spleef1", "Slender", "Loading", "temple4", "sawmill", "Parkour", "pg_gold", "olympus", "Stadium", "ClanWar", "shipped", "Coliseum", "GGDScene", "Paradise", "valhalla", "Assault2", "Training", "Speedrun", "Hospital", "Hungry_2", "mine_new", "LevelArt", "facility", "office_z", "Pumpkins2", "red_light", "BioHazard", "ChatScene", "impositor", "PromScene", "New_tutor", "Cementery", "AppCenter", "aqua_park", "Aztec_old", "ClanWarV2", "toy_story", "checkmate", "CustomInfo", "tokyo_3019", "new_hangar", "Pool_night", "china_town", "FortAttack", "Ghost_town", "Area52Labs", "Ice_Palace", "Arena_Mine", "SkinEditor", "North_Pole", "Ghost_town2", "Arena_Swamp", "ToyFactory3", "NuclearCity", "space_ships", "FortDefence", "Two_Castles", "Ships_Night", "RacingTrack", "Coliseum_MP", "Underwater2", "ChooseLevel", "Sky_islands", "Menu_Custom", "Secret_Base", "white_house", "ProfileShop", "Arena_Space", "Cube_portals", "ClosingScene", "Mars_Station", "Arena_Castle", "checkmate_22", "Hungry_Night", "Sky_islands2", "Death_Escape", "Arena_Hockey", "WinterIsland", "Dust_entering", "pizza_sandbox", "alien_planet2", "LevelComplete", "COLAPSED_CITY", "ClanTankBuild", "train_robbery", "space_updated", "AfterBanScene", "corporate_war", "ships_updated", "templ4_winter", "Pool_entering", "supermarket_2", "DuelArenaSpace", "LoadAnotherApp", "checkmate_22.0", "Paradise_Night", "Slender_Multy2", "Code_campaign3", "Spleef_Arena_1", "infernal_forge", "china_town_day", "islands_sniper", "FortFieldBuild", "monster_hunter", "paladin_castle", "Spleef_Arena_2", "Bota_campaign4", "CampaignLoading", "Developer_Scene", "christmas_train", "Space_campaign3", "Ice_Palace_Duel", "clan_fortress01", "Christmas_Town3", "orbital_station", "Duel_ghost_town", "Swamp_campaign3", "WalkingFortress", "office_christmas", "Spooky_Lunapark3", "knife3_christmas", "Portal_Campaign4", "Arena_Underwater", "emperors_palace2", "hurricane_shrine", "Castle_campaign3", "christmas_town_22", "CampaignChooseBox", "Christmas_Dinner2", "Dungeon_dead_city", "aqua_park_sandbox", "Stadium_deathmatch", "AuthorizationScene", "sky_islands_updated", "LevelToCompleteProm", "sky_islands_sandbox", "AuthenticationScene", "NuclearCity_entering", "DownloadAssetBundles", "red_light_team_fight", "freeplay_city_summer", "four_seasons_updated", "tokyo_3018_campaign4", "COLAPSED_CITY_sniper", "ice_palace_christmas", "LoveIsland_deathmatch", "cubic_arena_campaign4", "Christmas_Town_Night3", "toy_factory_christmas", "battle_royale_arcade_2", "Dungeon_magical_valley", "Death_Escape_campaign4", "battle_royale_arcade_3", "battle_royale_09_summer", "WalkingFortress_campaign4" };
-bool maxLevel, levelApplied, cWear, cWearApplied, uWear, uWearApplied, gadgetUnlock,
-gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodapplied,
-removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
-crithit, crithitapplied, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
-doublejump, catspam, coindrop, itemParams, blackMarket, blackMarketApplied, couponClicker, couponClickerApplied, setsClicker, setsClickerApplied,
-negativeCollectibles,anticheet,anticheetapplied, nullcollectibles, nullcollectiblesApplied, isDiscordPressed, isKaxzWeps;
+bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
+removedrone, god, ammo, collectibles, ezsuper,
+crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
+doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
+negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps;
 
 float damage;
 
@@ -74,162 +66,6 @@ void Pointers() {
     SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4340BE0")));
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
-}
-
-void Patches() {
-    PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);
-    PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
-
-    // for maxLevel
-    if (maxLevel && !levelApplied) {
-        gPatches.maxLevel.Modify();
-        levelApplied = true;
-    } else if (!maxLevel && levelApplied) {
-        gPatches.maxLevel.Restore();
-        levelApplied = false;
-    }
-
-    //for uWear
-    if (uWear && !uWearApplied) {
-        gPatches.uWear.Modify();
-
-    } else if (!uWear && uWearApplied) {
-        gPatches.uWear.Restore();
-        uWearApplied = false;
-    }
-
-    //for gadgetUnlock
-    if (gadgetUnlock && !gadgetUnlockApplied) {
-        gPatches.gadgetUnlock.Modify();
-        gadgetUnlockApplied = true;
-    } else if (!gadgetUnlock && gadgetUnlockApplied)
-    {
-        gPatches.gadgetUnlock.Restore();
-        gadgetUnlockApplied = false;
-    }
-
-    //for cWear
-    if (cWear && !cWearApplied) {
-        gPatches.cWear1.Modify(); gPatches.cWear2.Modify();
-        cWearApplied = true;
-    } else if (!cWear && cWearApplied) {
-        gPatches.cWear1.Restore(); gPatches.cWear2.Restore();
-        cWearApplied = false;
-    }
-
-    //for modKeys
-    if (modKeys && !modKeysApplied) {
-        gPatches.modKeys.Modify();
-        modKeysApplied = true;
-    } else if (!modKeys && modKeysApplied)
-    {
-        gPatches.modKeys.Restore();
-        modKeysApplied = false;
-    }
-
-    //for turret godmode
-    if (tgod && !tgodapplied) {
-        gPatches.tgod.Modify(); gPatches.tgod1.Modify(); gPatches.tgod2.Modify(); gPatches.tgod3.Modify();
-        tgodapplied = true;
-    } else if (!tgod && tgodapplied)
-    {
-        gPatches.tgod.Restore(); gPatches.tgod1.Restore(); gPatches.tgod2.Restore(); gPatches.tgod3.Restore();
-        tgodapplied = false;
-    }
-
-    //for removedrone
-    if (removedrone && !removedroneapplied) {
-        gPatches.removedrone.Modify(); gPatches.removedrone1.Modify();
-        removedroneapplied = true;
-    } else if (!removedrone && removedroneapplied)
-    {
-        gPatches.removedrone.Restore(); gPatches.removedrone1.Restore();
-        removedroneapplied = false;
-    }
-
-    //for collectibles
-    if (collectibles && !collectiblesApplied) {
-        gPatches.collectibles.Modify();
-        collectiblesApplied = true;
-    } else if (!collectibles && collectiblesApplied)
-    {
-        gPatches.collectibles.Restore();
-        collectiblesApplied = false;
-    }
-
-    //for collectibles (-)
-    if (negativeCollectibles && !collectiblesApplied) {
-        gPatches.negCollectibles.Modify();
-        collectiblesApplied = true;
-    } else if (!negativeCollectibles && collectiblesApplied)
-    {
-        gPatches.negCollectibles.Restore();
-        collectiblesApplied = false;
-    }
-
-    //for collectibles (0)
-    if (nullcollectibles && !nullcollectiblesApplied) {
-        gPatches.nullcollectibles.Modify();
-        nullcollectiblesApplied = true;
-    } else if (!nullcollectibles && nullcollectiblesApplied)
-    {
-        gPatches.nullcollectibles.Restore();
-        nullcollectiblesApplied = false;
-    }
-
-    if (ezsuper && !ezsuperApplied) {
-        gPatches.ezsuper.Modify();  gPatches.ezsuper1.Modify();
-        ezsuperApplied = true;
-    } else if (!ezsuper && ezsuperApplied)
-    {
-        gPatches.ezsuper.Restore();  gPatches.ezsuper1.Restore();
-        ezsuperApplied = false;
-    }
-
-    if (crithit && !crithitapplied) {
-        gPatches.crithit.Modify();
-        crithitapplied = true;
-    } else if (!crithit && crithitapplied)
-    {
-        gPatches.crithit.Restore();
-        crithitapplied = false;
-    }
-
-    if (blackMarket && !blackMarketApplied) {
-        gPatches.blackMarket.Modify();
-        blackMarketApplied = true;
-    } else if (!blackMarket && blackMarketApplied)
-    {
-        gPatches.blackMarket.Restore();
-        blackMarketApplied = false;
-    }
-
-    if (couponClicker && !couponClickerApplied) {
-        gPatches.couponClicker.Modify();
-        couponClickerApplied = true;
-    } else if (!couponClicker && couponClickerApplied)
-    {
-        gPatches.couponClicker.Restore();
-        couponClickerApplied = false;
-    }
-
-    if (setsClicker && !setsClickerApplied) {
-        gPatches.setsClicker.Modify();
-        setsClickerApplied = true;
-    } else if (!setsClicker && setsClickerApplied)
-    {
-        gPatches.setsClicker.Restore();
-        setsClickerApplied = false;
-    }
-
-    if (anticheet && !anticheetapplied) {
-        gPatches.anticheet.Modify(); gPatches.anticheet1.Modify(); gPatches.anticheet2.Modify();
-        anticheetapplied = true;
-    } else if (!anticheet && anticheetapplied)
-    {
-        gPatches.anticheet.Restore(); gPatches.anticheet1.Restore(); gPatches.anticheet2.Restore();
-        anticheetapplied = false;
-    }
 }
 
 void(*oldWeaponSounds)(void* obj);
@@ -404,6 +240,42 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
     return;
 }
 
+void Hooks() {
+    // hooks
+    HOOK("0x4051E70", PixelTime, old_PixelTime);
+    HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
+    HOOK("0x438120C", isEditor, old_isEditor);
+    HOOK("0x2ADECFC", isDev, old_isDev);
+    HOOK("0x48F0500", isEvent, old_isEvent);
+    HOOK("0x48F182C", canBuy, old_canBuy);
+}
+
+void Patches() {
+    PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
+    PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
+    PATCH_SWITCH("0x2F87C14", "802580D2C0035FD6", cWear);
+    PATCH_SWITCH("0x2F87AFC", "802580D2C0035FD6", cWear);
+    PATCH_SWITCH("0x2C54AFC", "00008052C0035FD6", gadgetUnlock);
+    PATCH_SWITCH("0x48EF240", "603E8012C0035FD6", modKeys);
+    PATCH_SWITCH("0x1BC8EB8", "C0035FD6", tgod);
+    PATCH_SWITCH("0x1BCE010", "C0035FD6", tgod);
+    PATCH_SWITCH("0x1BCE2A8", "C0035FD6", tgod);
+    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);
+    PATCH_SWITCH("0x47551D8", "C0035FD6", removedrone);
+    PATCH_SWITCH("0x3ED22F4", "00FA80D2C0035FD6", collectibles);
+    PATCH_SWITCH("0x3ED22F4", "603E8012C0035FD6", negativeCollectibles);
+    PATCH_SWITCH("0x3ED22F4", "000080D2C0035FD6", nullcollectibles);
+    PATCH_SWITCH("0x39CE814", "200080D2C0035FD6", ezsuper);
+    PATCH_SWITCH("0x39CE860", "200080D2C0035FD6", ezsuper);
+    PATCH_SWITCH("0x1714718", "200080D2C0035FD6", crithit);
+    PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
+    PATCH_SWITCH("0x1DD567C", "200080D2C0035FD6", couponClicker);
+    PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
+    PATCH("0x206D13C", "C0035FD6"); // currency check
+}
+
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
@@ -526,44 +398,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     return old_eglSwapBuffers(dpy, surface);
 }
 
-
-void Modifications(){
-
-    // hex patches
-
-    gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
-    gPatches.uWear = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x257B7B4,"802580D2C0035FD6");
-    gPatches.cWear1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87C14,"802580D2C0035FD6");
-    gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AFC,"802580D2C0035FD6");
-    gPatches.gadgetUnlock = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2C54AFC,"00008052C0035FD6");
-    gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
-    gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//MinusLive
-    gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//MinusLive
-    gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//MinusLiveReal
-    gPatches.removedrone = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4755120,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
-    gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
-    //gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
-   // gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
-    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"00FA80D2C0035FD6"); // 2000
-    gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"603E8012C0035FD6"); // -500
-    gPatches.nullcollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"000080D2C0035FD6"); // 0
-    gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
-    gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
-    gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
-    gPatches.crithit = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1714718,"200080D2C0035FD6");//NextHitCritical
-    gPatches.blackMarket = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1595AE0,"200080D2C0035FD6");
-    gPatches.couponClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD567C,"200080D2C0035FD6");
-    gPatches.setsClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD609C,"200080D2C0035FD6");
-
-    // hooks
-    HOOK("0x4051E70", PixelTime, old_PixelTime);
-    HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
-    HOOK("0x438120C", isEditor, old_isEditor);
-    HOOK("0x2ADECFC", isDev, old_isDev);
-    HOOK("0x48F0500", isEvent, old_isEvent);
-    HOOK("0x48F182C", canBuy, old_canBuy);
-}
-
 void *hack_thread(void *arg) {
     do {
         sleep(1);
@@ -572,7 +406,7 @@ void *hack_thread(void *arg) {
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
     Pointers();
-    Modifications();
+    Hooks();
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
