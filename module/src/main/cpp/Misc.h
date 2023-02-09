@@ -43,7 +43,7 @@ void patchOffset(uint64_t offset, std::string hexBytes, bool isOn) {
     if (!patch.isValid()) {
         return;
     }
-    if (isOn && patch.get_CurrBytes() != patch.get_OrigBytes()) {
+    if (isOn && patch.get_CurrBytes() == patch.get_OrigBytes()) {
         patch.Modify();
     } else if (!isOn && patch.get_CurrBytes() != patch.get_OrigBytes()) {
         patch.Restore();
