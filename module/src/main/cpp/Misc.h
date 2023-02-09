@@ -9,7 +9,7 @@
 #include "KittyMemory/KittyMemory.h"
 #include "KittyMemory/KittyScanner.h"
 #include "KittyMemory/MemoryPatch.h"
-#include "Include/Obfuscate.h"
+#include "Include/obfuscate.h"
 
 using KittyMemory::ProcMap;
 using KittyScanner::RegisterNativeFn;
