@@ -1,9 +1,9 @@
 ext {
     moduleLibraryName = "ZygiskPG"
     magiskModuleId = "ZygiskPG"
-    moduleName = "ZygiskPG"
-    moduleAuthor = "chr1s & fedes1to"
+    moduleName = "Pixel Gun 3D Mod Menu - ZygiskPG"
+    moduleAuthor = "chr1s, fedes1to and NitrogenDioxide\nCredits to : oobbb - module, jmpews - Dobby, MJx0 - KittyMemory, ocornut - ImGui"
     moduleDescription = "Mod Menu for PG3D 23.0.1"
-    moduleVersion = "v1.0.0"
+    moduleVersion = "v0.1a"
     moduleVersionCode = 1
 }

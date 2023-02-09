@@ -21,22 +21,27 @@
 #include "KittyMemory/MemoryPatch.h"
 #include "KittyMemory/KittyScanner.h"
 #include "KittyMemory/KittyUtils.h"
-#include "Include/obfuscate.h"
-#include "Includes/Dobby/dobbyForHooks.h"
+#include"Includes/Dobby/dobbyForHooks.h"
 #include "Include/Unity.h"
 
-using KittyMemory::ProcMap;
-using KittyScanner::RegisterNativeFn;
-
-ProcMap g_il2cppBaseMap;
-
 #define GamePackageName "com.pixel.gun3d"
+
+
+
+monoString* CreateIl2cppString(const char* str)
+{
+    static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
+    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + 0x43F5F10);
+    int* startIndex = 0;
+    int* length = (int *)strlen(str);
+    return CreateIl2cppString(str, startIndex, length);
+}
 
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
   removedrone, godmode, godmode1, ammo, ammo1, removedrone1, collectibles, negCollectibles, ezsuper, ezsuper1, currencycheck, crithit,
-  blackMarket, couponClicker, setsClicker, anticheet, anticheet2 , anticheet1;  // etc...
+  blackMarket, couponClicker, setsClicker, anticheet, anticheet2 , anticheet1, nullcollectibles;  // etc...
 }gPatches;
 
 static int selectedScene = 0;
@@ -46,17 +51,18 @@ gadgetUnlockApplied, isLoadScenePressed, modKeys, modKeysApplied, tgod, tgodappl
 removedrone, removedroneapplied, god, godapplied, ammo, ammoapplied, collectibles, collectiblesApplied, ezsuper, ezsuperApplied,
 crithit, crithitapplied, charm, weakness,fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, catspam, coindrop, itemParams, blackMarket, blackMarketApplied, couponClicker, couponClickerApplied, setsClicker, setsClickerApplied,
-negativeCollectibles,anticheet,anticheetapplied;
+negativeCollectibles,anticheet,anticheetapplied, nullcollectibles, nullcollectiblesApplied, isDiscordPressed;
 
 float damage;
 
 // specify pointers to call here
 void(*SetString)(monoString* key, monoString* value);
 void(*LoadLevel)(monoString* key);
+void(*OpenURL)(monoString* url);
 void Pointers() {
     SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x4340BE0);
-    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C );
-
+    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C);
+    OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x43807DC);
 }
 
 void Patches() {
@@ -155,6 +161,16 @@ void Patches() {
     {
         gPatches.negCollectibles.Restore();
         collectiblesApplied = false;
+    }
+
+    //for collectibles (0)
+    if (nullcollectibles && !nullcollectiblesApplied) {
+        gPatches.nullcollectibles.Modify();
+        nullcollectiblesApplied = true;
+    } else if (!nullcollectibles && nullcollectiblesApplied)
+    {
+        gPatches.nullcollectibles.Restore();
+        nullcollectiblesApplied = false;
     }
 
     if (ezsuper && !ezsuperApplied) {
@@ -292,9 +308,14 @@ void WeaponSounds(void* obj){
 
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
-    if (obj != nullptr && isLoadScenePressed){
+    if (obj != nullptr && isLoadScenePressed) {
         // this update is always active, use it to call LoadScene or whatever
         LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
+        isLoadScenePressed = false;
+    } else if (obj != nullptr && isDiscordPressed)
+    {
+        OpenURL(CreateIl2cppString("https://discord.gg/fkdDephdS6"));
+        isDiscordPressed = false;
     }
     old_PixelTime(obj);
 }
@@ -364,26 +385,26 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin("Pixel Gun 3D 23.0.1 Mod Menu (0.1) - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
-        ImGui::Checkbox("Anticheat", &anticheet);
+        ImGui::Begin("Pixel Gun 3D 23.0.1 Mod Menu (0.1a) - chr1s#4191 && fedesito#0052 && ohmyfajett#3500");
+        if (ImGui::Button("Join Discord"))
+        {
+            isDiscordPressed = true;
+        }
+        ImGui::Text("Its Recommended to join the discord server for mod updates etc.");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
-            ImGui::Checkbox("Collectibles (Test)", &collectibles);
-            ImGui::Text("Sets the value of items to 2000");
-            ImGui::Checkbox("Negative Collectibles (Test)", &negativeCollectibles);
-            ImGui::Text("Sets the value of items to 2000");
             ImGui::Checkbox("Free Craftables", &cWear);
             ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
             ImGui::Checkbox("Gadget Unlocker", &gadgetUnlock);
             ImGui::Text("Unlocks Clan Gadgets");
             ImGui::Checkbox("Free Lottery", &modKeys);
             ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
-            ImGui::Checkbox("Black Market Clicker", &blackMarket);
-            ImGui::Text("Go to black market and enjoy");
-            ImGui::Checkbox("Coupon Gems (Weapons)", &couponClicker);
-            ImGui::Checkbox("Coupon Gems (Sets)", &setsClicker);
-            ImGui::Text("Lets you click in gallery to get gems");
+            //ImGui::Checkbox("Black Market Clicker", &blackMarket); doesn't work
+        //    ImGui::Text("Go to black market and enjoy");
+            ImGui::Checkbox("Infinite Gems ", &couponClicker);
+            ImGui::Text("Go into gallery and spam click on the weapons to get gems.");
+          //  ImGui::Checkbox("Coupon Gems (Sets)", &setsClicker); doesn't work
         }
         if (ImGui::CollapsingHeader("Player Mods")) {
             ImGui::Checkbox("Godmode", &god);
@@ -392,10 +413,9 @@ void DrawMenu(){
         }
         if (ImGui::CollapsingHeader("Weapon Mods")) {
             ImGui::SliderFloat("Damage Buff",&damage, 0.0f, 15.0f);
-            ImGui::Text("Amplifys the damage.");
+            ImGui::Text("Amplifys the damage. (Anything above 8 might kick after a few kills)");
             ImGui::Checkbox("Force Critical Hits", &crithit);
             ImGui::Text("Forces Critical Shots each time you hit someone.");
-            ImGui::Checkbox("No Grenade Cooldown", &grenade);
             ImGui::Checkbox("Unlimited Ammo", &ammo);
         }
         if (ImGui::CollapsingHeader("Effects Mods")) {
@@ -404,8 +424,6 @@ void DrawMenu(){
             ImGui::Text("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)");
             ImGui::Checkbox("Force Kill Damage Boost", &killboost);
             ImGui::Text("Gives you damage boost after every kill.");
-            ImGui::Checkbox("Force Kill Speed Boost", &kspeedboost);
-            ImGui::Text("Gives you speed boost after every kill.");
             ImGui::Checkbox("No Fire and Toxic Effects", &fte);
             ImGui::Text("Removes the burning and being intoxicated effect on you.");
             ImGui::Checkbox("Force Electric Shock", &electric);
@@ -436,6 +454,15 @@ void DrawMenu(){
                 isLoadScenePressed = true;
             }
         }
+        if (ImGui::CollapsingHeader("Bannable Mods"))
+        {
+            ImGui::Checkbox("Collectibles", &collectibles);
+            ImGui::Text("Sets the value of items to 2000");
+            ImGui::Checkbox("Null Collectibles", &nullcollectibles);
+            ImGui::Text("Sets the value of items to 0");
+            ImGui::Checkbox("Negative Collectibles", &negativeCollectibles);
+            ImGui::Text("Sets the value of items to -500");
+        }
         Patches();
         ImGui::End();
     }
@@ -448,8 +475,7 @@ void SetupImgui() {
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
-    ImGui::GetStyle().ScaleAllSizes(5.0f);
-    ImGui::SetNextWindowSize(ImVec2((float) 500, (float) 0.0f));
+    ImGui::GetStyle().ScaleAllSizes(6.0f);
 }
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
@@ -480,24 +506,25 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 void Modifications(){
 
     // hex patches
-    gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
+    gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap,string2Offset(0x1C26554),"A0F08FD2C0035FD6");
     gPatches.uWear = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x257B7B4,"802580D2C0035FD6");
     gPatches.cWear1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87C14,"802580D2C0035FD6");
-    gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AFC,"802580D2C0035FD6");
+    gPatches.cWear2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87AF),"802580D2C0035FD6");
     gPatches.gadgetUnlock = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2C54AFC,"00008052C0035FD6");
     gPatches.modKeys = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x48EF240,"603E8012C0035FD6");
-    gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//MinusLive
-    gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//MinusLive
-    gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//MinusLiveReal
-    gPatches.removedrone = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4755120,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
-    gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
+    gPatches.tgod = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BC8EB8,"C0035FD6");//Min)usLive
+    gPatches.tgod1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE010,"C0035FD6");//Min)usLive
+    gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//Min)usLiveReal
+    gPatches.removedrone = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4755120,"C0035FD6");//dea)r future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
+    gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dea)r future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
-    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"00FA80D2C0035FD6"); // 2000 0x3BBD870
-    gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3BBD870,"603E8012C0035FD6"); // -500 0x3BBD870
+    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"00FA80D2C0035FD6"); // 2000
+    gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"603E8012C0035FD6"); // -500
+    gPatches.nullcollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"000080D2C0035FD6"); // 0
     gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
-    gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
+    gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//Cur)rencyUpdater the method with int, possible bypass?
     gPatches.crithit = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1714718,"200080D2C0035FD6");//NextHitCritical
     gPatches.blackMarket = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1595AE0,"200080D2C0035FD6");
     gPatches.couponClicker = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1DD567C,"200080D2C0035FD6");
@@ -507,7 +534,10 @@ void Modifications(){
     gPatches.anticheet2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4A49E0C,"1F2003D5C0035FD6");//find leaveroom and nop the argumentless ingameconnections if you cant find it kys
 
     // hooks
-    DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x4051E70), (void*)PixelTime, (void**)&old_PixelTime);
+    HOOK("0x4051E70", PixelTime, old_PixelTime);
+    HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
+    HOOK("0x438120C", isEditor, old_isEditor);
+    HOOK("0x2ADECFC", isDev, old_isDev);
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x17139E8), (void*)WeaponSounds, (void**)&oldWeaponSounds);
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x438120C), (void*)isEditor, (void**)&old_isEditor);
     DobbyHook((void*)(g_il2cppBaseMap.startAddress + 0x2ADECFC), (void*)isDev, (void**)&old_isDev);
