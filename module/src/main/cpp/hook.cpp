@@ -32,6 +32,15 @@ ProcMap g_il2cppBaseMap;
 
 #define GamePackageName "com.pixel.gun3d"
 
+monoString* CreateIl2cppString(const char* str)
+{
+    static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
+    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + 0x43F5F10);
+    int* startIndex = 0;
+    int* length = (int *)strlen(str);
+    return CreateIl2cppString(str, startIndex, length);
+}
+
 struct GlobalPatches {
     // let's assume we have patches for these functions for whatever game
     MemoryPatch gadgetUnlock, uWear, cWear2, cWear1, modKeys, maxLevel, unban, tgod, tgod1, tgod2, tgod3, rgod, rgod1,
@@ -311,9 +320,10 @@ void WeaponSounds(void* obj){
 
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
-    if (obj != nullptr && isLoadScenePressed){
+    if (obj != nullptr && isLoadScenePressed) {
         // this update is always active, use it to call LoadScene or whatever
         LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
+        isLoadScenePressed = false;
     }
     old_PixelTime(obj);
 }
@@ -516,9 +526,9 @@ void Modifications(){
     gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
-    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"00FA80D2C0035FD6"); // 2000
-    gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"603E8012C0035FD6"); // -500
-    gPatches.nullcollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87D98,"000080D2C0035FD6"); // 0
+    gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"00FA80D2C0035FD6"); // 2000
+    gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"603E8012C0035FD6"); // -500
+    gPatches.nullcollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"000080D2C0035FD6"); // 0
     gPatches.ezsuper = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE814,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.ezsuper1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x39CE860,"200080D2C0035FD6");//GameEventProgressBar ints
     gPatches.currencycheck = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x206D13C,"C0035FD6");//CurrencyUpdater the method with int, possible bypass?
