@@ -2,7 +2,7 @@ ext {
     moduleLibraryName = "ZygiskPG"
     magiskModuleId = "ZygiskPG"
     moduleName = "ZygiskPG"
-    moduleAuthor = "chr1s & fedes1to"
+    moduleAuthor = "chr1s, fedes1to and NitrogenDioxide"
     moduleDescription = "Mod Menu for PG3D 23.0.1"
     moduleVersion = "v1.0.0"
     moduleVersionCode = 1

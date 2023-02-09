@@ -398,7 +398,7 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin("Pixel Gun 3D 23.0.1 Mod Menu (0.1) - chr1s#4191 && fedesito#0052 - https://discord.gg/dmaBN3MzNJ");
+        ImGui::Begin("Pixel Gun 3D 23.0.1 Mod Menu (0.1) - chr1s#4191, fedesito#0052 && ohmyfajett#3500 - https://discord.gg/dmaBN3MzNJ");
         if (ImGui::CollapsingHeader("Account Mods")) {
             ImGui::Checkbox("Max Level", &maxLevel);
             ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
