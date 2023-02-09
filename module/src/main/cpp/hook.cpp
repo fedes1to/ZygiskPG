@@ -71,9 +71,9 @@ void(*SetString)(monoString* key, monoString* value);
 void(*LoadLevel)(monoString* key);
 void(*OpenURL)(monoString* url);
 void Pointers() {
-    SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x4340BE0);
-    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x46F498C);
-    OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + 0x43807DC);
+    SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4340BE0")));
+    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
+    OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
 }
 
 void Patches() {
