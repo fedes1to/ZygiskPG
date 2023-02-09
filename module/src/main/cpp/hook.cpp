@@ -79,6 +79,7 @@ void Pointers() {
 void Patches() {
     PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
+
     // for maxLevel
     if (maxLevel && !levelApplied) {
         gPatches.maxLevel.Modify();

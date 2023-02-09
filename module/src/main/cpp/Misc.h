@@ -24,8 +24,9 @@ void hook(void *offset, void* ptr, void **orig)
 std::vector<MemoryPatch> memoryPatches;
 std::vector<uint64_t> offsetVector;
 
-void patchOffset(uint64_t offset, std::string hexBytes, bool isOn)
-{
+// Patching a offset with switch.
+void patchOffset(uint64_t offset, std::string hexBytes, bool isOn) {
+
     MemoryPatch patch = MemoryPatch::createWithHex(g_il2cppBaseMap, offset, hexBytes);
 
     //Check if offset exists in the offsetVector
@@ -37,6 +38,15 @@ void patchOffset(uint64_t offset, std::string hexBytes, bool isOn)
         memoryPatches.push_back(patch);
         offsetVector.push_back(offset);
         //LOGI(OBFUSCATE("Added"));
+    }
+
+    if (!patch.isValid()) {
+        return;
+    }
+    if (isOn) {
+        patch.Modify();
+    } else {
+        patch.Restore();
     }
 }
 
