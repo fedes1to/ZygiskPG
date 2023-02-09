@@ -27,6 +27,11 @@ android {
             version "3.18.1"
         }
     }
+    buildTypes{
+        release {
+            minifyEnabled true
+        }
+    }
 }
 
 repositories {
