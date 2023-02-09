@@ -155,7 +155,7 @@ void PixelTime(void *obj) {
         isLoadScenePressed = false;
     } else if (obj != nullptr && isDiscordPressed)
     {
-        OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/fkdDephdS6")));
+        OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/g3pjD5M3BZ")));
         isDiscordPressed = false;
     } else if (obj != nullptr && changeID) {
         SetString(CreateIl2cppString(OBFUSCATE("AccountCreated")), CreateIl2cppString(OBFUSCATE("Solotov#2160")));
