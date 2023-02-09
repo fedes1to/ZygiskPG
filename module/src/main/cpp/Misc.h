@@ -21,9 +21,23 @@ void hook(void *offset, void* ptr, void **orig)
     DobbyHook(offset, ptr, orig);
 }
 
-void patchOffset(void *offset, const char hex)
+std::vector<MemoryPatch> memoryPatches;
+std::vector<uint64_t> offsetVector;
+
+void patchOffset(uint64_t offset, std::string hexBytes, bool isOn)
 {
-    // your dogshit code goes here
+    MemoryPatch patch = MemoryPatch::createWithHex(g_il2cppBaseMap, offset, hexBytes);
+
+    //Check if offset exists in the offsetVector
+    if (std::find(offsetVector.begin(), offsetVector.end(), offset) != offsetVector.end()) {
+        //LOGE(OBFUSCATE("Already exists"));
+        std::vector<uint64_t>::iterator itr = std::find(offsetVector.begin(), offsetVector.end(), offset);
+        patch = memoryPatches[std::distance(offsetVector.begin(), itr)]; //Get index of memoryPatches vector
+    } else {
+        memoryPatches.push_back(patch);
+        offsetVector.push_back(offset);
+        //LOGI(OBFUSCATE("Added"));
+    }
 }
 
 uintptr_t string2Offset(const char *c) {
@@ -47,5 +61,7 @@ uintptr_t string2Offset(const char *c) {
 
 #define HOOK(offset, ptr, orig) hook((void *)(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE(offset))), (void *)ptr, (void **)&orig)
 #define PATCH(offset, hex) patchOffset(targetLibName, g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), true)
+#define PATCH_SWITCH(offset, hex, boolean) patchOffset(string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), boolean)
+#define RESTORE(offset) patchOffset(string2Offset(OBFUSCATE(offset)), "", false)
 
 #endif //ZYGISKPG_MISC_H

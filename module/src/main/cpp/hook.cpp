@@ -77,6 +77,8 @@ void Pointers() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
     // for maxLevel
     if (maxLevel && !levelApplied) {
         gPatches.maxLevel.Modify();
@@ -142,16 +144,6 @@ void Patches() {
     {
         gPatches.removedrone.Restore(); gPatches.removedrone1.Restore();
         removedroneapplied = false;
-    }
-
-    //for godmode
-    if (god && !godapplied) {
-        gPatches.godmode.Modify(); gPatches.godmode1.Modify();
-        godapplied = true;
-    } else if (!god && godapplied)
-    {
-        gPatches.godmode.Restore(); gPatches.godmode1.Restore();
-        godapplied = false;
     }
 
     //for collectibles
@@ -537,6 +529,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 void Modifications(){
 
     // hex patches
+
     gPatches.maxLevel = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1C26554,"A0F08FD2C0035FD6");
     gPatches.uWear = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x257B7B4,"802580D2C0035FD6");
     gPatches.cWear1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x2F87C14,"802580D2C0035FD6");
@@ -548,8 +541,8 @@ void Modifications(){
     gPatches.tgod2 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x1BCE2A8,"C0035FD6");//MinusLiveReal
     gPatches.removedrone = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x4755120,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
     gPatches.removedrone1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x47551D8,"C0035FD6");//dear future self, if this game ever updates kys (find gadgetinfo by using analyze on an older vers, and then analyze gadgetinfo and find it (hopefully) )
-    gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
-    gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
+    //gPatches.godmode = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x476323C,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
+   // gPatches.godmode1 = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3C958B0,"1F2003D5C0035FD6");//dear future self, if this game ever updates kys (get the saltedint chinese bullshit name, find it and try to find the class around those fields. )
     gPatches.collectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"00FA80D2C0035FD6"); // 2000
     gPatches.negCollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"603E8012C0035FD6"); // -500
     gPatches.nullcollectibles = MemoryPatch::createWithHex(g_il2cppBaseMap, 0x3ED22F4,"000080D2C0035FD6"); // 0
