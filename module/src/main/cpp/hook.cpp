@@ -49,13 +49,19 @@ monoString* CreateIl2cppString(const char* str)
     return CreateIl2cppString(str, startIndex, length);
 }
 
+void* webInstance()
+{
+    static void*(*webInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16E25C4")));
+    return webInstance();
+}
+
 static int selectedScene = 0;
 const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rust", "Gluk", "Cube", "City", "Pool", "Ants", "Maze", "Arena", "Train", "Day_D", "Space", "Pizza", "Barge", "Pool2", "Winter", "Area52", "Castle", "Arena2", "Sniper", "Day_D2", "Matrix", "Heaven", "office", "Portal", "Hungry", "Bridge", "Gluk_2", "knife2", "Estate", "Glider", "Utopia", "School", "Gluk_3", "spleef1", "Slender", "Loading", "temple4", "sawmill", "Parkour", "pg_gold", "olympus", "Stadium", "ClanWar", "shipped", "Coliseum", "GGDScene", "Paradise", "valhalla", "Assault2", "Training", "Speedrun", "Hospital", "Hungry_2", "mine_new", "LevelArt", "facility", "office_z", "Pumpkins2", "red_light", "BioHazard", "ChatScene", "impositor", "PromScene", "New_tutor", "Cementery", "AppCenter", "aqua_park", "Aztec_old", "ClanWarV2", "toy_story", "checkmate", "CustomInfo", "tokyo_3019", "new_hangar", "Pool_night", "china_town", "FortAttack", "Ghost_town", "Area52Labs", "Ice_Palace", "Arena_Mine", "SkinEditor", "North_Pole", "Ghost_town2", "Arena_Swamp", "ToyFactory3", "NuclearCity", "space_ships", "FortDefence", "Two_Castles", "Ships_Night", "RacingTrack", "Coliseum_MP", "Underwater2", "ChooseLevel", "Sky_islands", "Menu_Custom", "Secret_Base", "white_house", "ProfileShop", "Arena_Space", "Cube_portals", "ClosingScene", "Mars_Station", "Arena_Castle", "checkmate_22", "Hungry_Night", "Sky_islands2", "Death_Escape", "Arena_Hockey", "WinterIsland", "Dust_entering", "pizza_sandbox", "alien_planet2", "LevelComplete", "COLAPSED_CITY", "ClanTankBuild", "train_robbery", "space_updated", "AfterBanScene", "corporate_war", "ships_updated", "templ4_winter", "Pool_entering", "supermarket_2", "DuelArenaSpace", "LoadAnotherApp", "checkmate_22.0", "Paradise_Night", "Slender_Multy2", "Code_campaign3", "Spleef_Arena_1", "infernal_forge", "china_town_day", "islands_sniper", "FortFieldBuild", "monster_hunter", "paladin_castle", "Spleef_Arena_2", "Bota_campaign4", "CampaignLoading", "Developer_Scene", "christmas_train", "Space_campaign3", "Ice_Palace_Duel", "clan_fortress01", "Christmas_Town3", "orbital_station", "Duel_ghost_town", "Swamp_campaign3", "WalkingFortress", "office_christmas", "Spooky_Lunapark3", "knife3_christmas", "Portal_Campaign4", "Arena_Underwater", "emperors_palace2", "hurricane_shrine", "Castle_campaign3", "christmas_town_22", "CampaignChooseBox", "Christmas_Dinner2", "Dungeon_dead_city", "aqua_park_sandbox", "Stadium_deathmatch", "AuthorizationScene", "sky_islands_updated", "LevelToCompleteProm", "sky_islands_sandbox", "AuthenticationScene", "NuclearCity_entering", "DownloadAssetBundles", "red_light_team_fight", "freeplay_city_summer", "four_seasons_updated", "tokyo_3018_campaign4", "COLAPSED_CITY_sniper", "ice_palace_christmas", "LoveIsland_deathmatch", "cubic_arena_campaign4", "Christmas_Town_Night3", "toy_factory_christmas", "battle_royale_arcade_2", "Dungeon_magical_valley", "Death_Escape_campaign4", "battle_royale_arcade_3", "battle_royale_09_summer", "WalkingFortress_campaign4" };
 bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
 removedrone, god, ammo, collectibles, ezsuper, changeID, isOpenKeyboard,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
-negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps;
+negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps, webLevel;
 
 float damage;
 
@@ -63,11 +69,18 @@ void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
 void (*OpenURL) (monoString* url);
 void (*OpenKeyboard) (monoString* TextUnformatted, int* keyboardType, bool* autoCorrection);
+void (*setLevel) (void* instance, int* value);
+void (*setCurrency) (void* instance, int* value, monoString* currency);
+void (*setCurrency2) (void* instance, int* value, monoString* currency);
+
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
     OpenKeyboard = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435E2D4")));
     SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2ECD530")));
+    setLevel = (void(*) (void*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F675C")));
+    setCurrency = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16EFED4")));
+    setCurrency2 = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F0094")));
 }
 
 void(*oldWeaponSounds)(void* obj);
@@ -161,6 +174,14 @@ void PixelTime(void *obj) {
         SetString(CreateIl2cppString(OBFUSCATE("AccountCreated")), CreateIl2cppString(OBFUSCATE("Solotov#2160")));
     } else if (obj != nullptr && isOpenKeyboard) {
         OpenKeyboard(CreateIl2cppString(""), (int *)(0), (bool *)(false));
+    } else if (obj != nullptr && webLevel)
+    {
+    //  setLevel(webInstance(), (int*)(65));
+        setCurrency(webInstance(), (int*)(9999), CreateIl2cppString("GemsCurrency"));
+        setCurrency(webInstance(), (int*)(9999), CreateIl2cppString("Coins"));
+        setCurrency2(webInstance(), (int*)(9999), CreateIl2cppString("GemsCurrency"));
+        setCurrency2(webInstance(), (int*)(9999), CreateIl2cppString("Coins"));
+        webLevel = false;
     }
     old_PixelTime(obj);
 }
@@ -277,6 +298,10 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
             ImGui::Checkbox(OBFUSCATE("Infinite Gems"), &couponClicker);
             ImGui::TextUnformatted(OBFUSCATE("Go into gallery and spam click on the weapons to get gems."));
+            if (ImGui::Button("Set Acc 65"))
+            {
+                webLevel = true;
+            }
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
