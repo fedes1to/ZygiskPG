@@ -40,6 +40,13 @@
  *
  */
 
+/*
+ *
+ * COMPILE SETTINGS:
+ * - BIGSEX: EXPERIMENTAL FEATURES, NOT FINAL AND SHOULDN'T BE BUILT UNTIL WORKING FINE
+ *
+ */
+
 monoString* CreateIl2cppString(const char* str)
 {
     static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
@@ -82,6 +89,31 @@ void Pointers() {
     setCurrency = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16EFED4")));
     setCurrency2 = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F0094")));
 }
+
+// 0x435FA0C <- offset for gameobject.tag
+// 0x434733C <- offset for object.name
+
+#ifdef BIGSEX
+monoString* (*old_getTag)(void *obj);
+monoString* getTag(void *obj) {
+    if (obj != nullptr && god) {
+        if (old_getTag(obj) == CreateIl2cppString("DeadCollider")) {
+            return CreateIl2cppString("Default");
+        }
+    }
+    return old_getTag(obj);
+}
+
+monoString* (*old_getName)(void *obj);
+monoString* getName(void *obj) {
+    if (obj != nullptr && god) {
+        if (old_getName(obj) == CreateIl2cppString("DeadCollider")) {
+            return CreateIl2cppString("Default");
+        }
+    }
+    return old_getName(obj);
+}
+#endif
 
 void(*oldWeaponSounds)(void* obj);
 void WeaponSounds(void* obj){
@@ -254,6 +286,10 @@ void Hooks() {
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x438120C", isEditor, old_isEditor);
     HOOK("0x2ADECFC", isDev, old_isDev);
+#ifdef BIGSEX
+    HOOK("0x435FA0C", getTag, old_getTag);
+    HOOK("0x434733C", getName, old_getName);
+#endif
 }
 
 void Patches() {
