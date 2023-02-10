@@ -236,6 +236,16 @@ bool isEditor(void *obj) {
     }
 }
 
+bool (*old_isDebug)(void *obj);
+bool isDebug(void *obj) {
+    if (enableEditor)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 bool (*old_isDev)(void *obj);
 bool isDev(void *obj) {
     if (enableEditor)
@@ -287,6 +297,7 @@ void Hooks() {
     HOOK("0x438120C", isEditor, old_isEditor);
     HOOK("0x2ADECFC", isDev, old_isDev);
 #ifdef BIGSEX
+    HOOK("0x4343410", isDebug, old_isDebug);
     HOOK("0x435FA0C", getTag, old_getTag);
     HOOK("0x434733C", getName, old_getName);
 #endif
