@@ -57,6 +57,12 @@ crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost,
 doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
 negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps;
 
+#ifdef BIGSEX
+bool changeId;
+const char* idList[] = { "fedesito#0052", "chr1s#4191", "ohmyfajett#3500", "ZygiskPG FTW", "cool", "Developer_Scene" };
+static int id = 0;
+#endif
+
 float damage;
 
 void (*SetString) (monoString* key, monoString* value);
@@ -157,11 +163,14 @@ void PixelTime(void *obj) {
     {
         OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/g3pjD5M3BZ")));
         isDiscordPressed = false;
-    } else if (obj != nullptr && changeID) {
-        SetString(CreateIl2cppString(OBFUSCATE("AccountCreated")), CreateIl2cppString(OBFUSCATE("Solotov#2160")));
     } else if (obj != nullptr && isOpenKeyboard) {
         OpenKeyboard(CreateIl2cppString(""), (int *)(0), (bool *)(false));
     }
+#ifdef BIGSEX
+    else if (obj != nullptr && changeId) {
+        SetString(CreateIl2cppString("AccountCreated"), CreateIl2cppString(idList[id]));
+    }
+#endif
     old_PixelTime(obj);
 }
 
@@ -321,6 +330,15 @@ void DrawMenu(){
                 isLoadScenePressed = true;
             }
         }
+#ifdef BIGSEX
+        if (ImGui::CollapsingHeader(OBFUSCATE("ID Mods")))
+        {
+            ImGui::ListBox(OBFUSCATE("Preset IDs"), &id, idList, IM_ARRAYSIZE(idList), 4);
+            if (ImGui::Button(OBFUSCATE("Change ID"))) {
+                changeId = true;
+            }
+        }
+#endif
         if (ImGui::CollapsingHeader(OBFUSCATE("Bannable Mods")))
         {
             ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
