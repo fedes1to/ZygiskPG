@@ -28,6 +28,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
 include_directories(KittyMemory)
+include_directories(Include)
 include_directories(Includes)
 include_directories(ImGui)
 include_directories(ImGui/backends)
