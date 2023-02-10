@@ -61,7 +61,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
 removedrone, god, ammo, collectibles, ezsuper, changeID, isOpenKeyboard,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
-negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps, webLevel;
+negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps, webLevel, wepSkins;
 
 float damage;
 
@@ -177,10 +177,6 @@ void PixelTime(void *obj) {
     } else if (obj != nullptr && webLevel)
     {
     //  setLevel(webInstance(), (int*)(65));
-        setCurrency(webInstance(), (int*)(9999), CreateIl2cppString("GemsCurrency"));
-        setCurrency(webInstance(), (int*)(9999), CreateIl2cppString("Coins"));
-        setCurrency2(webInstance(), (int*)(9999), CreateIl2cppString("GemsCurrency"));
-        setCurrency2(webInstance(), (int*)(9999), CreateIl2cppString("Coins"));
         webLevel = false;
     }
     old_PixelTime(obj);
@@ -277,7 +273,9 @@ void Patches() {
     PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
     PATCH_SWITCH("0x1DD567C", "200080D2C0035FD6", couponClicker);
     PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
+    PATCH_SWITCH("0x42679A0", "200080D2C0035FD6", wepSkins);
     PATCH("0x206D13C", "C0035FD6");
+    PATCH("0x3C962E4", "C0035FD6");
 }
 
 void DrawMenu(){
@@ -294,6 +292,8 @@ void DrawMenu(){
             ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
             ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
             ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
+            ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
+            ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
             ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
             ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
             ImGui::Checkbox(OBFUSCATE("Infinite Gems"), &couponClicker);
