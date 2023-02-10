@@ -62,7 +62,7 @@ float damage;
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
 void (*OpenURL) (monoString* url);
-void (*OpenKeyboard) (monoString* text, int* keyboardType, bool* autoCorrection);
+void (*OpenKeyboard) (monoString* TextUnformatted, int* keyboardType, bool* autoCorrection);
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
@@ -267,55 +267,55 @@ void DrawMenu(){
         {
             isDiscordPressed = true;
         }
-        ImGui::Text("Its Recommended to join the discord server for mod updates etc.");
+        ImGui::TextUnformatted("Its Recommended to join the discord server for mod updates etc.");
         if (ImGui::CollapsingHeader(OBFUSCATE("Account Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
-            ImGui::Text("Gives the player Max Level after you complete a match. (Use this after you get Level 3)");
-            ImGui::Checkbox("Free Craftables", &cWear);
-            ImGui::Text("Unlocks Craftables (Only works on Wear and Gadgets)");
+            ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
+            ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
+            ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
             ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
-            ImGui::Text("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)");
+            ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
             ImGui::Checkbox(OBFUSCATE("Infinite Gems"), &couponClicker);
-            ImGui::Text("Go into gallery and spam click on the weapons to get gems.");
+            ImGui::TextUnformatted(OBFUSCATE("Go into gallery and spam click on the weapons to get gems."));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
-            ImGui::Text("Makes you invincible (others can kill you but you won't die and just become invisible)");
+            ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
             ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
             ImGui::SliderFloat(OBFUSCATE("Damage Buff"),&damage, 0.0f, 15.0f);
-            ImGui::Text("Amplifys the damage. (Anything above 8 might kick after a few kills)");
+            ImGui::TextUnformatted(OBFUSCATE("Amplifys the damage. (Anything above 8 might kick after a few kills)"));
             ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
-            ImGui::Text("Forces Critical Shots each time you hit someone.");
+            ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
             ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
-            ImGui::Text("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)");
+            ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
             ImGui::Checkbox(OBFUSCATE("Force Kill Damage Boost"), &killboost);
-            ImGui::Text("Gives you damage boost after every kill.");
+            ImGui::TextUnformatted(OBFUSCATE("Gives you damage boost after every kill."));
             ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
-            ImGui::Text("Removes the burning and being intoxicated effect on you.");
+            ImGui::TextUnformatted(OBFUSCATE("Removes the burning and being intoxicated effect on you."));
             ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
-            ImGui::Text("Adds the electric shock effect");
+            ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Visual Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
-            ImGui::Text("Shows the enemy after you shoot them once.");
+            ImGui::TextUnformatted(OBFUSCATE("Shows the enemy after you shoot them once."));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
-            ImGui::Text("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does.");
+            ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
             ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
-            ImGui::Text("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)");
+            ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
             ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
-            ImGui::Text("Always drops coins when someone dies.");
+            ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Misc Mods")))
         {
             ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
-            ImGui::Text("Makes the game think its on the Unity Editor");
+            ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
             ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
             if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                 isLoadScenePressed = true;
@@ -324,11 +324,11 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader(OBFUSCATE("Bannable Mods")))
         {
             ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
-            ImGui::Text("Sets the value of items to 2000");
+            ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to 2000"));
             ImGui::Checkbox(OBFUSCATE("Null Collectibles"), &nullcollectibles);
-            ImGui::Text("Sets the value of items to 0");
+            ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to 0"));
             ImGui::Checkbox(OBFUSCATE("Negative Collectibles"), &negativeCollectibles);
-            ImGui::Text("Sets the value of items to -500");
+            ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to -500"));
         }
         Patches();
         ImGui::End();
