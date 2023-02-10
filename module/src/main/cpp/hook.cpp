@@ -68,7 +68,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
 removedrone, god, ammo, collectibles, ezsuper, changeID, isOpenKeyboard,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
-negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps, webLevel;
+negativeCollectibles, nullcollectibles, isDiscordPressed, isKaxzWeps, webLevel, blindness;
 
 float damage;
 
@@ -167,9 +167,14 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x428) = true;//isDaterWeapon
         }
 
+        if(blindness){
+            *(bool*)((uint64_t) obj + 0x254) = true;//blindness
+            *(float*)((uint64_t) obj + 0x25C) = 99999;//blindness
+        }
+
         if(crithit){
             *(float*)((uint64_t) obj + 0x438) = 9999;//criticalHitCoef
-            *(float*)((uint64_t) obj + 0x434) = 100;//criticalHitChance
+            *(float*)((uint64_t) obj + 0x434) = 9999;//criticalHitChance
         }
 
         if(grenade){
@@ -236,26 +241,6 @@ bool isEditor(void *obj) {
     }
 }
 
-bool (*old_isDebug)(void *obj);
-bool isDebug(void *obj) {
-    if (enableEditor)
-    {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool (*old_isDev)(void *obj);
-bool isDev(void *obj) {
-    if (enableEditor)
-    {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
         return 0;
@@ -294,8 +279,6 @@ void Hooks() {
     // hooks
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
-    HOOK("0x438120C", isEditor, old_isEditor);
-    HOOK("0x2ADECFC", isDev, old_isDev);
 #ifdef BIGSEX
     HOOK("0x4343410", isDebug, old_isDebug);
     HOOK("0x435FA0C", getTag, old_getTag);
@@ -324,13 +307,15 @@ void Patches() {
     PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
     PATCH_SWITCH("0x1DD567C", "200080D2C0035FD6", couponClicker);
     PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
+    PATCH_SWITCH("0x438120C", "200080D2C0035FD6", enableEditor);
+    PATCH_SWITCH("0x2ADECFC", "200080D2C0035FD6", enableEditor);
     PATCH("0x206D13C", "C0035FD6");
 }
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG 0.1a (23.0.1) - chr1s#4191 && fedesito#0052 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG 1.0a (23.0.1) - chr1s#4191 && fedesito#0052 && ohmyfajett#3500"));
         if (ImGui::Button(OBFUSCATE("Join Discord")))
         {
             isDiscordPressed = true;
@@ -345,10 +330,6 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
             ImGui::Checkbox(OBFUSCATE("Infinite Gems"), &couponClicker);
             ImGui::TextUnformatted(OBFUSCATE("Go into gallery and spam click on the weapons to get gems."));
-            if (ImGui::Button("Set Acc 65"))
-            {
-                webLevel = true;
-            }
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
