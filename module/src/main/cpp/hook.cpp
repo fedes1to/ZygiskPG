@@ -25,9 +25,8 @@
 #include "Misc.h"
 #include "hook.h"
 #include "Include/Roboto-Regular.h"
-#include "Include/Vector3.h"
-#include "Include/Quaternion.h"
-#include "Include/System.h"
+#include "Vector3.h"
+#include "Quaternion.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -76,7 +75,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
 removedrone, god, ammo, collectibles, ezsuper, changeID, isOpenKeyboard,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
-negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange, kaze;
+negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange;
 
 float damage;
 
@@ -134,21 +133,6 @@ monoString* getName(void *obj) {
         }
     }
     return old_getName(obj);
-}
-
-monoString* (*old_getName_Anim)(void *obj);
-monoString* getName_Anim(void *obj) {
-    return old_getName_Anim(obj);
-}
-
-float (*old_getSpeed_Anim)(void *obj);
-float getSpeed_Anim(void *obj) {
-    if (obj != nullptr && kaze) {
-        if (old_getName(obj) == CreateIl2cppString("Reload")) {
-            return 99;
-        }
-    }
-    return old_getSpeed_Anim(obj);
 }
 #endif
 
@@ -319,8 +303,6 @@ void Hooks() {
 #ifdef BIGSEX
     HOOK("0x435FA0C", getTag, old_getTag);
     HOOK("0x434733C", getName, old_getName);
-    HOOK("0x255C5E4", getName_Anim, old_getName_Anim);
-    HOOK("0x255C4DC", getSpeed_Anim, old_getSpeed_Anim);
 #endif
 }
 
@@ -384,8 +366,6 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
             ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
             ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
-            ImGui::Checkbox(OBFUSCATE("Instant Reload"), &kaze);
-            ImGui::TextUnformatted(OBFUSCATE("Instantly reload any weapon"));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
