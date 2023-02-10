@@ -75,7 +75,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
 removedrone, god, ammo, collectibles, ezsuper, changeID, isOpenKeyboard,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
-negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins;
+negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange;
 
 float damage;
 
@@ -213,6 +213,10 @@ void WeaponSounds(void* obj){
         if(coindrop){
             *(bool*)((uint64_t) obj + 0x318) = true;//isCoinDrop
             *(float*)((uint64_t) obj + 0x31C) = 9999;//coinDropChance
+        }
+
+        if(kniferange){
+
         }
     }
     oldWeaponSounds(obj);
