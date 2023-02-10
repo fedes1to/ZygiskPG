@@ -25,6 +25,8 @@
 #include "Misc.h"
 #include "hook.h"
 #include "Include/Roboto-Regular.h"
+#include "Vector3.h"
+#include "Quaternion.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -37,6 +39,11 @@
  * 丐三丐丄丝丅丈丄丞, OfferData.cs (Scripts/OfferPacks/OfferData.cs)
  * SCENEINFO IS SceneInfo, FULLY OBFUSCATED
  * SCENEINFO 且与丒与丈下丈丁一 = AddMode(GameMode)
+ *
+ * 0x43ADAE0 PhotonNetwork.SetMasterClient(Player masterClientPlayer)
+ * 世丏丞丁丌丙丝丏丝 Player/PhotonPlayer
+ * 世丏丞丁丌丙丝丏丝.三万万一丐与丐一下 LocalPlayer (0x43A6504 get)
+ * 0x43ACB28 Instantiate()
  *
  */
 
@@ -80,6 +87,14 @@ void (*setLevel) (void* instance, int* value);
 void (*setCurrency) (void* instance, int* value, monoString* currency);
 void (*setCurrency2) (void* instance, int* value, monoString* currency);
 
+#ifdef BIGSEX
+bool (*SetMasterClient) (void* masterClientPlayer);
+void (*DestroyAll) ();
+void* (*get_LocalPlayer) ();
+// public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
+void* (*Instantiate) (monoString* prefabName, Vector3 position, Quaternion rotation);
+#endif
+
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
@@ -88,6 +103,12 @@ void Pointers() {
     setLevel = (void(*) (void*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F675C")));
     setCurrency = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16EFED4")));
     setCurrency2 = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F0094")));
+#ifdef BIGSEX
+    SetMasterClient = (bool(*)(void*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADAE0"));
+    get_LocalPlayer = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6504"));
+    DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
+    Instantiate = (void*(*)(monoString*, Vector3, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ACB28"));
+#endif
 }
 
 // 0x435FA0C <- offset for gameobject.tag
@@ -276,7 +297,6 @@ void Hooks() {
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
 #ifdef BIGSEX
-    HOOK("0x4343410", isDebug, old_isDebug);
     HOOK("0x435FA0C", getTag, old_getTag);
     HOOK("0x434733C", getName, old_getName);
 #endif
@@ -373,6 +393,17 @@ void DrawMenu(){
             if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                 isLoadScenePressed = true;
             }
+#ifdef BIGSEX
+            if (ImGui::Button(OBFUSCATE("Become god"))) {
+                SetMasterClient(get_LocalPlayer());
+            }
+            if (ImGui::Button(OBFUSCATE("Kill yourself"))) {
+                DestroyAll();
+            }
+            if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
+                Instantiate(CreateIl2cppString(OBFUSCATE("ConnectScene/SelectMap")), Vector3::Zero(), Quaternion::Identity());
+            }
+#endif
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Bannable Mods")))
         {
