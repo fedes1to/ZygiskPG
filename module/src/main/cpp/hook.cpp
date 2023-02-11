@@ -122,38 +122,11 @@ void Pointers() {
     DestroyPlayerObjects = (void (*)(void *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADF9C"));
     PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (monoArray<void**>*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6814"));
     DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
-    Instantiate = (void*(*)(monoString*, Vector3, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ACB28"));
-
-    Collider = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x200000B"));
 #endif
 }
 
 // 0x435FA0C <- offset for gameobject.tag
 // 0x434733C <- offset for object.name
-
-#ifdef BIGSEX
-
-monoString* (*old_getName)(void *obj);
-monoString* getName(void *obj) {
-    if (obj != nullptr && god) {
-        if (old_getName(obj) == CreateIl2cppString("DamageCollider") || old_getName(obj) == CreateIl2cppString("FallCollider") || old_getName(obj) == CreateIl2cppString("PenaltyCollider")) {
-            return CreateIl2cppString("Default");
-        }
-    }
-    return old_getName(obj);
-}
-
-bool (*old_isTrigger) (void *obj);
-bool isTrigger(void *obj) {
-    /*if (obj != nullptr && god) {
-        if (old_getName(obj) == CreateIl2cppString("DamageCollider") || old_getName(obj) == CreateIl2cppString("FallCollider") || old_getName(obj) == CreateIl2cppString("PenaltyCollider")) {
-            return false;
-        }
-    }*/
-    return old_isTrigger(obj);
-}
-
-#endif
 
 void* (*old_WeaponManager)(void *obj);
 void* WeaponManager(void *obj) {
@@ -435,9 +408,6 @@ void Hooks() {
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x4BCA3D4", WeaponManager, old_WeaponManager);
-#ifdef BIGSEX
-    HOOK("0x434733C", getName, old_getName);
-#endif
 }
 
 void Patches() {
