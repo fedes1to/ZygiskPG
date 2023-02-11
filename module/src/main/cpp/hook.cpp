@@ -351,7 +351,7 @@ void PixelTime(void *obj) {
         }
         if (gems) {
             setSomething(webInstance(), CreateIl2cppString("GemsCurrency"), (int *)(amountws), (int *)(12));
-            coins = false;
+            gems = false;
         }
         if (clsilver) {
             setSomething(webInstance(), CreateIl2cppString("ClanSilver"), (int *)(amountws), (int *)(12));
@@ -502,7 +502,7 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Go into gallery and spam click on the weapons to get gems."));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
-            ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 1000000);
+            ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 100000);
             ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will."));
             if (ImGui::Button(OBFUSCATE("Coins"))) {
                 coins = true;
