@@ -25,8 +25,8 @@
 #include "Misc.h"
 #include "hook.h"
 #include "Include/Roboto-Regular.h"
-#include "Vector3.h"
-#include "Quaternion.h"
+#include "Include/Vector3.h"
+#include "Include/Quaternion.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -75,9 +75,11 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
 removedrone, god, ammo, collectibles, ezsuper, changeID, isOpenKeyboard,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
-negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange;
+negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange, expbull,
+spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed;
 
-float damage;
+float damage, rimpulseme, rimpulse;
+int reflection;
 
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
@@ -87,10 +89,13 @@ void (*setLevel) (void* instance, int* value);
 void (*setCurrency) (void* instance, int* value, monoString* currency);
 void (*setCurrency2) (void* instance, int* value, monoString* currency);
 
-#ifdef BIGSEX
 bool (*SetMasterClient) (void* masterClientPlayer);
-void (*DestroyAll) ();
 void* (*get_LocalPlayer) ();
+void (*DestroyPlayerObjects)(void *player);
+monoArray<void**> *(*PhotonNetwork_playerListothers)();
+
+#ifdef BIGSEX
+void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
 void* (*Instantiate) (monoString* prefabName, Vector3 position, Quaternion rotation);
 #endif
@@ -103,9 +108,12 @@ void Pointers() {
     setLevel = (void(*) (void*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F675C")));
     setCurrency = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16EFED4")));
     setCurrency2 = (void(*) (void*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F0094")));
-#ifdef BIGSEX
     SetMasterClient = (bool(*)(void*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADAE0"));
     get_LocalPlayer = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6504"));
+    DestroyPlayerObjects = (void (*)(void *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADF9C"));
+    PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (monoArray<void**>*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6814"));
+
+#ifdef BIGSEX
     DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
     Instantiate = (void*(*)(monoString*, Vector3, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ACB28"));
 #endif
@@ -216,50 +224,130 @@ void WeaponSounds(void* obj){
         }
 
         if(kniferange){
-
+            *(bool*)((uint64_t) obj +0x346) = true;//isFrostSword
+            *(float*)((uint64_t) obj + 0x348) = 5;//frostDamageMultiplier
+            *(float*)((uint64_t) obj + 0x34C) = 999999;//frostRadius
         }
+
+        if(ammo){
+            *(int*)((uint64_t) obj + 0x19C) = 99;//countShots
+        }
+
+        if(expbull){
+            *(bool*)((uint64_t) obj + 0x1A5) = true;//bulletExplode
+        }
+
+        if(railbull){
+            *(bool*)((uint64_t) obj + 0x1BC) = true;//railgun
+            *(bool*)((uint64_t) obj + 0x1C8) = false;//railgunStopAtWall
+        }
+
+        if(jumpdisable){
+            *(bool*)((uint64_t) obj + 0x20E) = true;//jumpDisabler
+            *(float*)((uint64_t) obj + 0x210) = 999999;//jumpDisableTime
+        }
+
+        if(speedup){
+            *(bool*)((uint64_t) obj + 0x220) = true;//isSlowdown
+            *(float*)((uint64_t) obj + 0x224) = MAXFLOAT;//slowdownCoeff
+            *(float*)((uint64_t) obj + 0x228) = 999999;//slowdownTime
+        }
+
+        if(slowdown){
+            *(bool*)((uint64_t) obj + 0x220) = true;//isSlowdown
+            *(float*)((uint64_t) obj + 0x224) = -999999999999999;//slowdownCoeff
+            *(float*)((uint64_t) obj + 0x228) = 999999;//slowdownTime
+        }
+
+        if(headmagnify){
+            *(bool*)((uint64_t) obj + 0x24C) = true;//isHeadMagnifierisHeadMagnifier
+            *(float*)((uint64_t) obj + 0x250) = 999999;//headMagnifierTime
+        }
+
+        if(reflection != NULL){
+            *(int*)((uint64_t) obj + 0x1B8) = reflection;//countReflectionRay
+        }
+
+        if(speed){
+            *(float*)((uint64_t) obj + 0x60C) = 999999;//speedModifier
+        }
+
+      /*  if(spleef){
+            *(bool*)((uint64_t) obj + 0x424) = true;//isSpleef
+        }*/
+
+        if(recoilandspread){
+            *(float*)((uint64_t) obj + 0x104) = 0;//maxKoofZoom
+            *(float*)((uint64_t) obj + 0x108) = 0;//upKoofFireZoom
+            *(float*)((uint64_t) obj + 0x10C) = 0;//downKoofFirstZoom
+            *(float*)((uint64_t) obj + 0x10C) = 0;//downKoofZoom
+            *(float*)((uint64_t) obj + 0x8C) = 0;//maxKoof
+            *(float*)((uint64_t) obj + 0x90) = 0;//tekKoof
+            *(float*)((uint64_t) obj + 0x94) = 0;//upKoofFire
+            *(float*)((uint64_t) obj + 0x98) = 0;//downKoofFirst
+            *(float*)((uint64_t) obj + 0x9C) = 0;//downKoof
+            *(float*)((uint64_t) obj + 0xA4) = 0;//timerForTekKoofVisual
+            *(float*)((uint64_t) obj + 0xA8) = 0;//timerForTekKoofVisualByFireRate
+            *(float*)((uint64_t) obj + 0xA8) = 0;//timerForTekKoofVisualByFireRate
+            *(float*)((uint64_t) obj + 0xAC) = 0;//timeForTekKoofVisual
+            *(Vector2*)((uint64_t) obj + 0x84) = Vector2(0, 0);//startZone
+        }
+
+        if(quickscope){
+            *(float*)((uint64_t) obj + 0xF8) = 9999;//scopeSpeed
+        }
+
+        if(rimpulse != NULL){
+            *(float*)((uint64_t) obj + 0x150) = rimpulse;//bazookaImpulseRadius
+            *(float*)((uint64_t) obj + 0x148) = rimpulse;//bazookaExplosionRadius
+        }
+
+        if(rimpulseme != NULL){
+            *(float*)((uint64_t) obj + 0x14C) = rimpulse;//bazookaExplosionRadiusSelf
+        }
+        /*void* ItemRecord = *(void**)((uint64_t) obj + 0x648);
+        if(ItemRecord != nullptr){
+            if(spleef){
+                *(bool*)((uint64_t) obj + 0x6D) = true;//isSpleef
+            }
+        }*/
     }
     oldWeaponSounds(obj);
 }
 
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
-    if (obj != nullptr && isLoadScenePressed) {
-        // this update is always active, use it to call LoadScene or whatever
-        LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
-        isLoadScenePressed = false;
-    } else if (obj != nullptr && isDiscordPressed)
-    {
-        OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/g3pjD5M3BZ")));
-        isDiscordPressed = false;
-    } else if (obj != nullptr && changeID) {
-        SetString(CreateIl2cppString(OBFUSCATE("AccountCreated")), CreateIl2cppString(OBFUSCATE("Solotov#2160")));
-    } else if (obj != nullptr && isOpenKeyboard) {
-        OpenKeyboard(CreateIl2cppString(""), (int *)(0), (bool *)(false));
-    } else if (obj != nullptr && webLevel)
-    {
-    //  setLevel(webInstance(), (int*)(65));
-        webLevel = false;
+    if (obj != nullptr) {
+        if (isLoadScenePressed) {
+            LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
+            isLoadScenePressed = false;
+        }
+        if (isDiscordPressed) {
+            OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/g3pjD5M3BZ")));
+            isDiscordPressed = false;
+        }
+        if (changeID) {
+            SetString(CreateIl2cppString(OBFUSCATE("AccountCreated")), CreateIl2cppString(OBFUSCATE("Solotov#2160")));
+        }
+        if (isOpenKeyboard) {
+            OpenKeyboard(CreateIl2cppString(""), (int *) (0), (bool *) (false));
+        }
+        if (webLevel) {
+            //  setLevel(webInstance(), (int*)(65));
+            webLevel = false;
+        }
+
+        if(destroy){
+            auto photonplayers = PhotonNetwork_playerListothers();
+            SetMasterClient(get_LocalPlayer());
+            for (int i = 0; i < photonplayers->getLength(); ++i) {
+                auto photonplayer = photonplayers->getPointer()[i];
+                DestroyPlayerObjects(photonplayer);
+            }
+            destroy = false;
+        }
     }
     old_PixelTime(obj);
-}
-
-int (*old_itemParamsInt)(void *obj);
-int itemParamsInt(void *obj) {
-    if (obj != nullptr && itemParams){
-        return 2000;
-    }
-    old_itemParamsInt(obj);
-}
-
-bool (*old_isEditor)(void *obj);
-bool isEditor(void *obj) {
-    if (enableEditor)
-    {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 int isGame(JNIEnv *env, jstring appDataDir) {
@@ -307,7 +395,7 @@ void Hooks() {
 }
 
 void Patches() {
-    PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
     PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
@@ -318,7 +406,7 @@ void Patches() {
     PATCH_SWITCH("0x1BC8EB8", "C0035FD6", tgod);
     PATCH_SWITCH("0x1BCE010", "C0035FD6", tgod);
     PATCH_SWITCH("0x1BCE2A8", "C0035FD6", tgod);
-    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);
+    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     PATCH_SWITCH("0x47551D8", "C0035FD6", removedrone);
     PATCH_SWITCH("0x3ED22F4", "00FA80D2C0035FD6", collectibles);
     PATCH_SWITCH("0x3ED22F4", "603E8012C0035FD6", negativeCollectibles);
@@ -330,6 +418,9 @@ void Patches() {
     PATCH_SWITCH("0x438120C", "200080D2C0035FD6", enableEditor);
     PATCH_SWITCH("0x2ADECFC", "200080D2C0035FD6", enableEditor);
     PATCH_SWITCH("0x42679A0", "20080D02C0035FD6", wepSkins);
+    PATCH_SWITCH("0x14193E4", "200180922C0035FD6", ammo);
+    PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
+    PATCH_SWITCH("0x48F1E00", "200180922C0035FD6", speed);//ItemRecord.SpeedModifier
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
 }
@@ -337,7 +428,7 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG 1.0a (23.0.1) - chr1s#4191 && fedesito#0052 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && fedesito#0052 && ohmyfajett#3500"));
         if (ImGui::Button(OBFUSCATE("Join Discord")))
         {
             isDiscordPressed = true;
@@ -359,13 +450,27 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
             ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
             ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
+            //ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
-            ImGui::SliderFloat(OBFUSCATE("Damage Buff"),&damage, 0.0f, 15.0f);
-            ImGui::TextUnformatted(OBFUSCATE("Amplifys the damage. (Anything above 8 might kick after a few kills)"));
+            ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 15.0f);
+            ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 8 might kick after a few kills)"));
             ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
             ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
             ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
+            ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
+            ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
+            ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
+            ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
+            ImGui::SliderInt(OBFUSCATE("Reflection Rays"),&reflection, 0, 200);
+            ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
+            ImGui::Checkbox(OBFUSCATE("Infinite Knife Range"),&kniferange);
+            ImGui::TextUnformatted(OBFUSCATE("Allows you to kill all with a knife."));
+            ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"),&recoilandspread);
+            ImGui::SliderFloat(OBFUSCATE("Rocket Impulse for yourself"),&rimpulseme, 0.0f, 5000.0f);
+            ImGui::TextUnformatted(OBFUSCATE("Modifys the rocket jump power."));
+            ImGui::SliderFloat(OBFUSCATE("Rocket Impulse for others"),&rimpulse, 0.0f, 5000.0f);
+            ImGui::TextUnformatted(OBFUSCATE("Modifys the rocket impulse power. (It will throw players around)"));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
@@ -376,18 +481,37 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Removes the burning and being intoxicated effect on you."));
             ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
             ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+            ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+            ImGui::Checkbox(OBFUSCATE("Force Poisoning Effect"), &poison);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the poisoning effect (Will poison any player you shoot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
+            ImGui::TextUnformatted(OBFUSCATE("Adds a speed-up effect (Will speed up any player you shoot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
+            ImGui::TextUnformatted(OBFUSCATE("Adds a slow-down effect (Will freeze any player you shoot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the head magnifier effect (Will magnify the player's head for any player you shoot until they die)"));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Visual Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
             ImGui::TextUnformatted(OBFUSCATE("Shows the enemy after you shoot them once."));
+            ImGui::Checkbox(OBFUSCATE("Quick-Scope"), &quickscope);
+            ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Kill All"),&kniferange);
+            ImGui::TextUnformatted(OBFUSCATE("Just pull out your knife."));
             ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
             ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
             ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
             ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
             ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
             ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
+            if (ImGui::Button(OBFUSCATE("Crash Others"))) {
+                destroy = true;
+            }
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Misc Mods")))
         {
@@ -397,17 +521,12 @@ void DrawMenu(){
             if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                 isLoadScenePressed = true;
             }
-#ifdef BIGSEX
-            if (ImGui::Button(OBFUSCATE("Become god"))) {
+            /*if (ImGui::Button(OBFUSCATE("Become god"))) {
                 SetMasterClient(get_LocalPlayer());
-            }
-            if (ImGui::Button(OBFUSCATE("Kill yourself"))) {
-                DestroyAll();
             }
             if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
                 Instantiate(CreateIl2cppString(OBFUSCATE("ConnectScene/SelectMap")), Vector3::Zero(), Quaternion::Identity());
-            }
-#endif
+            }*/
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Bannable Mods")))
         {
