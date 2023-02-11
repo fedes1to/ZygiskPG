@@ -130,40 +130,42 @@ void Pointers() {
 
 void* (*old_WeaponManager)(void *obj);
 void* WeaponManager(void *obj) {
-    if (obj != nullptr && isAddWeapons) {
-        for (int i = 0; i < 300; i++) {
-            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+    if (obj != nullptr) {
+        if (isAddWeapons) {
+            for (int i = 0; i < 300; i++) {
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+            }
+            isAddWeapons = false;
+            LoadLevel(CreateIl2cppString("AppCenter"));
         }
-        isAddWeapons = false;
-        LoadLevel(CreateIl2cppString("AppCenter"));
-    }
-    if (obj != nullptr && isAddWeapons2) {
-        for (int i = 300; i < 500; i++) {
-            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+        if (isAddWeapons2) {
+            for (int i = 300; i < 500; i++) {
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+            }
+            isAddWeapons2 = false;
+            LoadLevel(CreateIl2cppString("AppCenter"));
         }
-        isAddWeapons2 = false;
-        LoadLevel(CreateIl2cppString("AppCenter"));
-    }
-    if (obj != nullptr && isAddWeapons3) {
-        for (int i = 500; i < 700; i++) {
-            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+        if (isAddWeapons3) {
+            for (int i = 500; i < 700; i++) {
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+            }
+            isAddWeapons3 = false;
+            LoadLevel(CreateIl2cppString("AppCenter"));
         }
-        isAddWeapons3 = false;
-        LoadLevel(CreateIl2cppString("AppCenter"));
-    }
-    if (obj != nullptr && isAddWeapons4) {
-        for (int i = 700; i < 900; i++) {
-            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+        if (isAddWeapons4) {
+            for (int i = 700; i < 900; i++) {
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+            }
+            isAddWeapons4 = false;
+            LoadLevel(CreateIl2cppString("AppCenter"));
         }
-        isAddWeapons4 = false;
-        LoadLevel(CreateIl2cppString("AppCenter"));
-    }
-    if (obj != nullptr && isAddWeapons5) {
-        for (int i = 900; i < 1186; i++) {
-            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+        if (isAddWeapons5) {
+            for (int i = 900; i < 1186; i++) {
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+            }
+            isAddWeapons5 = false;
+            LoadLevel(CreateIl2cppString("AppCenter"));
         }
-        isAddWeapons5 = false;
-        LoadLevel(CreateIl2cppString("AppCenter"));
     }
     return old_WeaponManager(obj);
 }
@@ -478,7 +480,7 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
             ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 1000000);
             ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
-            ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList, IM_ARRAYSIZE(sceneList), 4);
+            ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList, IM_ARRAYSIZE(curList), 4);
             if (ImGui::Button(OBFUSCATE("Add Currency"))) {
                 isAddCurPressed = true;
             }
