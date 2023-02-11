@@ -156,9 +156,8 @@ bool isTrigger(void *obj) {
 void* (*old_WeaponManager)(void *obj);
 void* WeaponManager(void *obj) {
     if (obj != nullptr && isAddWeapons) {
-        isAddWeapons = false;
-        for (int i = 0; i < 1186; i++) {
-            addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9));
+        for (int i = 0; i < 500; i++) {
+            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9));
         }
     }
     return old_WeaponManager(obj);
