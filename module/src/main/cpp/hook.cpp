@@ -499,7 +499,6 @@ void Patches() {
     PATCH_SWITCH("0x14193E4", "200180922C0035FD6", ammo);
     PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
     PATCH("0x206D13C", "C0035FD6");
-    PATCH("0x470DCD8", "1F2003D5C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
 }
 
@@ -639,7 +638,6 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Negative Collectibles"), &negativeCollectibles);
             ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to -500"));
         }
-#ifdef BIGSEX
         if (ImGui::CollapsingHeader(OBFUSCATE("Experimental Mods")))
         {
             ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
@@ -655,7 +653,6 @@ void DrawMenu(){
                 Instantiate(CreateIl2cppString(OBFUSCATE("ConnectScene/SelectMap")), Vector3::Zero(), Quaternion::Identity());
             }*/
         }
-#endif
         Patches();
         ImGui::End();
     }
