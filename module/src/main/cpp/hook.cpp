@@ -467,7 +467,7 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
             ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
-            ImGui::SliderInt(OBFUSCATE("Reflection Rays"),&reflection, 0, 200);
+            ImGui::SliderInt(OBFUSCATE("Reflection Rays"),&reflection, 0, 99999);
             ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
             ImGui::Checkbox(OBFUSCATE("Infinite Knife Range"),&kniferange);
             ImGui::TextUnformatted(OBFUSCATE("Allows you to kill all with a knife."));
@@ -476,8 +476,6 @@ void DrawMenu(){
         if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
             ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
-            ImGui::Checkbox(OBFUSCATE("Force Kill Damage Boost"), &killboost);
-            ImGui::TextUnformatted(OBFUSCATE("Gives you damage boost after every kill."));
             ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
             ImGui::TextUnformatted(OBFUSCATE("Removes the burning and being intoxicated effect on you."));
             ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
