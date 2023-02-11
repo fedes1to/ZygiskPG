@@ -303,15 +303,6 @@ void WeaponSounds(void* obj){
         if(quickscope){
             *(float*)((uint64_t) obj + 0xF8) = 9999;//scopeSpeed
         }
-
-        if(rimpulse != NULL){
-            *(float*)((uint64_t) obj + 0x150) = rimpulse;//bazookaImpulseRadius
-            *(float*)((uint64_t) obj + 0x148) = rimpulse;//bazookaExplosionRadius
-        }
-
-        if(rimpulseme != NULL){
-            *(float*)((uint64_t) obj + 0x14C) = rimpulse;//bazookaExplosionRadiusSelf
-        }
         /*void* ItemRecord = *(void**)((uint64_t) obj + 0x648);
         if(ItemRecord != nullptr){
             if(spleef){
@@ -432,6 +423,7 @@ void Patches() {
     PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
     PATCH_SWITCH("0x48F1E00", "200180922C0035FD6", speed);//ItemRecord.SpeedModifier
     PATCH("0x206D13C", "C0035FD6");
+    PATCH("0x470DCD8", "1F2003D5C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
 }
 
@@ -480,10 +472,6 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Infinite Knife Range"),&kniferange);
             ImGui::TextUnformatted(OBFUSCATE("Allows you to kill all with a knife."));
             ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"),&recoilandspread);
-            ImGui::SliderFloat(OBFUSCATE("Rocket Impulse for yourself"),&rimpulseme, 0.0f, 5000.0f);
-            ImGui::TextUnformatted(OBFUSCATE("Modifys the rocket jump power."));
-            ImGui::SliderFloat(OBFUSCATE("Rocket Impulse for others"),&rimpulse, 0.0f, 5000.0f);
-            ImGui::TextUnformatted(OBFUSCATE("Modifys the rocket impulse power. (It will throw players around)"));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
@@ -515,7 +503,7 @@ void DrawMenu(){
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Kill All"),&kniferange);
-            ImGui::TextUnformatted(OBFUSCATE("Just pull out your knife."));
+            ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
             ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
             ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
             ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
