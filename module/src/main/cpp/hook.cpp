@@ -30,6 +30,8 @@
 
 #define GamePackageName "com.pixel.gun3d"
 
+//dear future self, if this game ever updat
+
 /*
  *
  * LIST OF NOTES:
@@ -90,15 +92,18 @@ void (*OpenURL) (monoString* url);
 void (*OpenKeyboard) (monoString* TextUnformatted, int* keyboardType, bool* autoCorrection);
 void (*setSomething) (void* instance, monoString* currencyType, int* value, int* num);
 
+#ifdef BIGSEX
 bool (*SetMasterClient) (void* masterClientPlayer);
 void* (*get_LocalPlayer) ();
 void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
-
-#ifdef BIGSEX
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
 void* (*Instantiate) (monoString* prefabName, Vector3 position, Quaternion rotation);
+
+void* (*GetComponent) (void* gameObject, void* type);
+void* (*Collider) ();
+
 #endif
 
 void Pointers() {
@@ -107,14 +112,15 @@ void Pointers() {
     OpenKeyboard = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435E2D4")));
     SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2ECD530")));
     setSomething = (void(*) (void*, monoString*, int*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16EB844")));
+#ifdef BIGSEX
     SetMasterClient = (bool(*)(void*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADAE0"));
     get_LocalPlayer = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6504"));
     DestroyPlayerObjects = (void (*)(void *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADF9C"));
     PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (monoArray<void**>*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6814"));
-
-#ifdef BIGSEX
     DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
     Instantiate = (void*(*)(monoString*, Vector3, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ACB28"));
+
+    Collider = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x200000B"));
 #endif
 }
 
@@ -122,25 +128,27 @@ void Pointers() {
 // 0x434733C <- offset for object.name
 
 #ifdef BIGSEX
-monoString* (*old_getTag)(void *obj);
-monoString* getTag(void *obj) {
-    if (obj != nullptr && god) {
-        if (old_getTag(obj) == CreateIl2cppString("DeadCollider")) {
-            return CreateIl2cppString("Default");
-        }
-    }
-    return old_getTag(obj);
-}
 
 monoString* (*old_getName)(void *obj);
 monoString* getName(void *obj) {
     if (obj != nullptr && god) {
-        if (old_getName(obj) == CreateIl2cppString("DeadCollider")) {
+        if (old_getName(obj) == CreateIl2cppString("DamageCollider") || old_getName(obj) == CreateIl2cppString("FallCollider") || old_getName(obj) == CreateIl2cppString("PenaltyCollider")) {
             return CreateIl2cppString("Default");
         }
     }
     return old_getName(obj);
 }
+
+bool (*old_isTrigger) (void *obj);
+bool isTrigger(void *obj) {
+    /*if (obj != nullptr && god) {
+        if (old_getName(obj) == CreateIl2cppString("DamageCollider") || old_getName(obj) == CreateIl2cppString("FallCollider") || old_getName(obj) == CreateIl2cppString("PenaltyCollider")) {
+            return false;
+        }
+    }*/
+    return old_isTrigger(obj);
+}
+
 #endif
 
 void(*oldWeaponSounds)(void* obj);
@@ -392,7 +400,6 @@ void Hooks() {
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
 #ifdef BIGSEX
-    HOOK("0x435FA0C", getTag, old_getTag);
     HOOK("0x434733C", getName, old_getName);
 #endif
 }
@@ -543,6 +550,23 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Negative Collectibles"), &negativeCollectibles);
             ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to -500"));
         }
+#ifdef BIGSEX
+        if (ImGui::CollapsingHeader(OBFUSCATE("Experimental Mods")))
+        {
+            ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
+            ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
+            ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
+            if (ImGui::Button(OBFUSCATE("Load Scene"))) {
+                isLoadScenePressed = true;
+            }
+            /*if (ImGui::Button(OBFUSCATE("Become god"))) {
+                SetMasterClient(get_LocalPlayer());
+            }
+            if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
+                Instantiate(CreateIl2cppString(OBFUSCATE("ConnectScene/SelectMap")), Vector3::Zero(), Quaternion::Identity());
+            }*/
+        }
+#endif
         Patches();
         ImGui::End();
     }
