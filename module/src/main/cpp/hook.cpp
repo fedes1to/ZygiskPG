@@ -158,7 +158,7 @@ bool isTrigger(void *obj) {
 void* (*old_WeaponManager)(void *obj);
 void* WeaponManager(void *obj) {
     if (obj != nullptr && isAddWeapons) {
-        for (int i = 0; i < 1186; i++) {
+        for (int i = 0; i < 500; i++) {
             addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9));
         }
         isAddWeapons = false;
@@ -487,10 +487,6 @@ void DrawMenu(){
             ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
             ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
             ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
-            ImGui::ListBox(OBFUSCATE("Currency Type"), &selectedCur, curList, IM_ARRAYSIZE(curList), 4);
-            if (ImGui::Button(OBFUSCATE("Add Currency"))) {
-                isAddCurPressed = true;
-            }
             if (ImGui::Button(OBFUSCATE("Add All Weapons"))) {
                 isAddWeapons = true;
             }
