@@ -100,6 +100,7 @@ bool (*SetMasterClient) (void* masterClientPlayer);
 void* (*get_LocalPlayer) ();
 void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
+const char* playerList[] = {reinterpret_cast<const char *>(PhotonNetwork_playerListothers())};
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
 void* (*Instantiate) (monoString* prefabName, Vector3 position, Quaternion rotation);
@@ -138,6 +139,7 @@ void* WeaponManager(void *obj) {
             isAddWeapons = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
         }
+<<<<<<< Updated upstream
         if (isAddWeapons2) {
             for (int i = 300; i < 500; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
@@ -165,6 +167,39 @@ void* WeaponManager(void *obj) {
             }
             isAddWeapons5 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
+=======
+        isAddWeapons = false;
+        LoadLevel(CreateIl2cppString("AppCenter"));
+        isAddWeapons2 = true;
+    }
+    if (obj != nullptr && isAddWeapons2) {
+        for (int i = 300; i < 500; i++) {
+            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+        }
+        isAddWeapons2 = false;
+        LoadLevel(CreateIl2cppString("AppCenter"));
+        isAddWeapons3 = true;
+    }
+    if (obj != nullptr && isAddWeapons3) {
+        for (int i = 500; i < 700; i++) {
+            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+        }
+        isAddWeapons3 = false;
+        LoadLevel(CreateIl2cppString("AppCenter"));
+        isAddWeapons4 = true;
+    }
+    if (obj != nullptr && isAddWeapons4) {
+        for (int i = 700; i < 900; i++) {
+            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+        }
+        isAddWeapons4 = false;
+        LoadLevel(CreateIl2cppString("AppCenter"));
+        isAddWeapons5 = true;
+    }
+    if (obj != nullptr && isAddWeapons5) {
+        for (int i = 900; i < 1186; i++) {
+            addWeapon(obj, CreateIl2cppString(wepList[i]), (int*)(9999));
+>>>>>>> Stashed changes
         }
     }
     return old_WeaponManager(obj);
@@ -262,6 +297,12 @@ void WeaponSounds(void* obj){
         if(expbull){
             *(bool*)((uint64_t) obj + 0x1A5) = true;//bulletExplode
         }
+
+        if(shotbull){
+            *(bool*)((uint64_t) obj + 0x1A5) = true;
+        }
+
+        *(float*)((uint64_t) obj + 0xDC) = MAXFLOAT; // shootDistance
 
         if(railbull){
             *(bool*)((uint64_t) obj + 0x1BC) = true;//railgun
@@ -455,20 +496,8 @@ void DrawMenu(){
             ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
             ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
             ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
-            if (ImGui::Button(OBFUSCATE("Add All Weapons 1/5"))) {
+           if (ImGui::Button(OBFUSCATE("Add All Weapons"))) {
                 isAddWeapons = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Add All Weapons 2/5"))) {
-                isAddWeapons2 = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Add All Weapons 3/5"))) {
-                isAddWeapons3 = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Add All Weapons 4/5"))) {
-                isAddWeapons4 = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Add All Weapons 5/5"))) {
-                isAddWeapons5 = true;
             }
             ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
             ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
@@ -560,6 +589,7 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
             ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
             ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
+            ImGui::ListBox(OBFUSCATE("Players"), &selectedScene, sceneList, IM_ARRAYSIZE(), 4);
             if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                 isLoadScenePressed = true;
             }
