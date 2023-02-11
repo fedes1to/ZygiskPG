@@ -374,41 +374,9 @@ void PixelTime(void *obj) {
         if (isOpenKeyboard) {
             OpenKeyboard(CreateIl2cppString(""), (int *) (0), (bool *) (false));
         }
-        if (coins) {
-            setSomething(webInstance(), CreateIl2cppString("Coins"), (int *)(amountws), (int *)(12));
-            coins = false;
-        }
-        if (gems) {
-            setSomething(webInstance(), CreateIl2cppString("GemsCurrency"), (int *)(amountws), (int *)(12));
-            gems = false;
-        }
-        if (clsilver) {
-            setSomething(webInstance(), CreateIl2cppString("ClanSilver"), (int *)(amountws), (int *)(12));
-            clsilver = false;
-        }
-        if (clanlootboox) {
-            setSomething(webInstance(), CreateIl2cppString("ClanLootBoxPoints"), (int *)(amountws), (int *)(12));
-            clanlootboox = false;
-        }
-        if (pixelpass) {
-            setSomething(webInstance(), CreateIl2cppString("PixelPassCurrency"), (int *)(amountws), (int *)(12));
-            pixelpass = false;
-        }
-        if (craftcurrency) {
-            setSomething(webInstance(), CreateIl2cppString("CraftCurrency"), (int *)(amountws), (int *)(12));
-            craftcurrency = false;
-        }
-        if (pixelbucks) {
-            setSomething(webInstance(), CreateIl2cppString("PixelPassCurrency"), (int *)(amountws), (int *)(12));
-            pixelbucks = false;
-        }
-        if(roullette){
-            setSomething(webInstance(), CreateIl2cppString("RouletteAdsCurrency"), (int *)(amountws), (int *)(12));
-            roullette = false;
-        }
-        if(coupons){
-            setSomething(webInstance(), CreateIl2cppString("Coupons"), (int *)(amountws), (int *)(12));
-            coupons = false;
+        if (isAddCurPressed) {
+            setSomething(webInstance(), CreateIl2cppString(curList[selectedCur]), (int *)(amountws), (int *)(12));
+            isAddCurPressed = false;
         }
         if (webLevel) {
             //  setLevel(webInstance(), (int*)(65));
@@ -539,33 +507,10 @@ void DrawMenu(){
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
             ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 1000000);
-            ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will."));
-            if (ImGui::Button(OBFUSCATE("Coins"))) {
-                coins = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Gems"))) {
-                gems = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Clan Silver"))) {
-                clsilver = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Coupons"))) {
-                coupons = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Clan LootBox Points"))) {
-                clanlootboox = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Pixel Pass Currency"))) {
-                pixelpass = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Pixel Bucks"))) {
-                pixelbucks = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Craft Currency"))) {
-                craftcurrency = true;
-            }
-            if (ImGui::Button(OBFUSCATE("Roulette"))) {
-                roullette = true;
+            ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
+            ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList, IM_ARRAYSIZE(sceneList), 4);
+            if (ImGui::Button(OBFUSCATE("Add Currency"))) {
+                isAddCurPressed = true;
             }
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
