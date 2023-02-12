@@ -25,8 +25,6 @@
 #include "Misc.h"
 #include "hook.h"
 #include "Include/Roboto-Regular.h"
-#include "Include/Vector3.h"
-#include "Include/Quaternion.h"
 #include <iostream>
 #include <chrono>
 
@@ -86,12 +84,10 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, w
 spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
-bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex;
+bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate;
 
 float damage, rimpulseme, rimpulse, pspeed;
 int reflection, amountws;
-
-// BASIC UNITY FUNCTIONS
 
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
@@ -105,11 +101,264 @@ void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
-void* (*Instantiate) (monoString* prefabName, Vector3 position, Quaternion rotation);
+void* (*Instantiate) (monoString* prefabName, void* position, void* rotation, unsigned char group, void* data[]);
 void (*BuyStickerPack) (int* type);
 
+enum RPCList
+{
+    ActivateMechRPC,
+    AddBonusAfterKillPlayerRPC,
+    AddForceRPC,
+    AddFreezerRayWithLength,
+    AddPaticleBazeRPC,
+    AddPlayerInCapturePoint,
+    AddScoreDuckHuntRPC,
+    AddWeaponAfterKillPlayerRPC,
+    AdvancedEffectRPC,
+    AdvancedEffectWithSenderRPC,
+    ApplyDamageRPC,
+    ApplyDebuffRPC,
+    ChargeGunAnimation,
+    ClearScoreCommandInFlagGameRPC,
+    Collide,
+    CountKillsCommandSynch,
+    CreateChestRPC,
+    DeactivateMechRPC,
+    DestroyRpc,
+    GetInPlayerRPC,
+    ShowSelectedFortNotification,
+    fireFlash,
+    GetBonusRewardRPC,
+    ActivateGadgetRPC,
+    GetDamageRPC,
+    RespawnRPC,
+    Go,
+    GoBazaRPC,
+    GoMatchRPC,
+    HoleRPC,
+    ImDeadInHungerGamesRPC,
+    imDeath,
+    ImKilledRPC,
+    IsVisible_RPC,
+    KilledByRPC,
+    LikeRPC,
+    MakeBonusRPC,
+    MeKillRPC,
+    OpponentLeftGame,
+    PlayDestroyEffectRpc,
+    PlayerEffectRPC,
+    PlayMusic,
+    PlayPortalSoundRPC,
+    PlayZombieAttackRPC,
+    PlayZombieRunRPC,
+    plusCountKillsCommand,
+    CheckActivityRPC,
+    HitByVehicleRPC,
+    ReloadGun,
+    RemoveBonusRPC,
+    RemoveBonusWithRewardRPC,
+    RemovePlayerInCapturePoint,
+    ResumeMatchRPC,
+    RevengeRequestRPC,
+    SendBuffParameters,
+    SendChatMessageWithIcon,
+    SendSystemMessegeFromFlagAddScoreRPC,
+    SendSystemMessegeFromFlagDroppedRPC,
+    SendSystemMessegeFromFlagReturnedRPC,
+    SetArmorVisInvisibleRPC,
+    setBootsRPC,
+    SetBotHealthRPC,
+    setCapeRPC,
+    SetCaptureRPC,
+    SetEnemyArmor,
+    SetEnemyBoots,
+    SetEnemyCape,
+    SetEnemyHat,
+    SetEnemyMask,
+    SetEnemyPet,
+    SetEnemySkin,
+    SetEnemyWeapon,
+    SetGadgetEffectActiveRPC,
+    SetGadgetesRPC,
+    SetHatWithInvisebleRPC,
+    SetBigHeadRPC,
+    SetJetpackEnabledRPC,
+    SetJetpackParticleEnabledRPC,
+    SetMaskRPC,
+    SetMyClanTexture,
+    SetMySkin,
+    SetNickName,
+    SetNOCaptureRPC,
+    SetPixelBookID,
+    SetRocketActive,
+    SetRocketActiveWithCharge,
+    SetRocketStickedRPC,
+    SetTargetRPC,
+    SetVisibleFireEffectRpc,
+    SetWeaponRPC,
+    SetWeaponSkinRPC,
+    SetWearIsInvisibleRPC,
+    ShotRPC,
+    ShowBonuseParticleRPC,
+    ShowExplosion,
+    ShowMultyKillRPC,
+    SinchCapture,
+    SlowdownRPC,
+    StartFlashRPC,
+    StartGame,
+    StartMatchRPC,
+    StartNewRespanObjectRpc,
+    StartRocketRPC,
+    StartShootLoopRPC,
+    StartTurretRPC,
+    SynchCaptureCounter,
+    SynchCaptureCounterNewPlayer,
+    SynchGameRating,
+    SynchGameTimer,
+    SynchNamberSpawnZoneRPC,
+    SynchNumUpdateRPC,
+    SynchronizeTimeRPC,
+    SynchScoreCommandRPC,
+    SynchScoresCommandsNewPlayerRPC,
+    SynchScoresCommandsRPC,
+    SynchStartTimer,
+    SynhCommandRPC,
+    SynhCountKillsRPC,
+    SynhDeltaHealthRPC,
+    SynhHealthRPC,
+    SynhIsZoming,
+    SynhNameRPC,
+    SynhRanksRPC,
+    SynhScoreRPC,
+    SynhDeltaArmorRPC,
+    PropertyRPC,
+    winInHungerRPC,
+    SetPlayerUniqID,
+    SynchLivesItems,
+    RegisterPlayerRPC,
+    SetGamemodeRPC,
+    SetMapRPC,
+    StartGameRPC,
+    SetReadyRPC,
+    QuitFromSquadRPC,
+    ShowStartGameRPC,
+    StartTimerRPC,
+    KickPlayerRPC,
+    SynchCurrentCategory,
+    ResetVersusTimerRPC,
+    StartAirDropItemRPC,
+    MakeBetRPC,
+    GoTeamMatchRPC,
+    StartTeamMatchRPC,
+    SynchronizeMatchTimeRPC,
+    SetRocketActiveWithNumSmoke,
+    SynhDeathCountRPC,
+    GoRevengeMatchRPC,
+    EndRoundRPC,
+    SynchronizeGoTimeRPC,
+    SyncronizeTeamWins,
+    FireFlashDamagebleRPC,
+    SetMaxArmorAndHealthRPC,
+    SendEmojiRPC,
+    SynchGetGadgets,
+    SyncTramPosition,
+    UnregisterPlayerRPC,
+    SyncLastMoveTime,
+    RemoveTargetRPC,
+    AttackGateRPC,
+    ShotArtilleryRPC,
+    SetDestinationRPC,
+    SetEquipRPC,
+    ShowEndEventRPC,
+    ShowEndEventNotificationRPC,
+    PlayingInSquadRPC,
+    SynchCombatLevelRPC,
+    SendPetIdRPC,
+    SynchGameLeague,
+    ActiveChunkChangedRPC,
+    GetBonusRPC,
+    SetGliderRPC,
+    AddWeaponAfterBonusPreviewRPC,
+    RemoveWeaponPreviewRPC,
+    SetRoyaleAvatarRPC,
+    SetMapPositionSquadRPC,
+    PlayerInjuredRPC,
+    SynhHealthInjuredRPC,
+    PlayerInjuryHealedRPC,
+    SetLandingTrailRPC,
+    SetUserMapMarkerRPC,
+    RemoveUserMapMarkerRPC,
+    FlyOnGliderSynchRPC,
+    BattleRoyaleSquadMemberKilledRPC,
+    HealingByPlayerRPC,
+    PlayerInjuryHealingProgressRPC,
+    WinRequestRPC,
+    SetMyAvatar,
+    SetEnemyAvatar,
+    SetEquipTypeRPC,
+    SynchMinigunRotationRPC,
+    PlayZombieBeforeAttackRPC,
+    SendNewEmojiRPC,
+    SynchVehicleParamsRPC,
+    SendBattleEmojiRPC,
+    SynchVehicleColorRPC,
+    SendChangeMobRPC,
+    EnterInTrigger,
+    SynchWeaponModulesRPC,
+    SynchArmorModulesRPC,
+    SetModuleGadgetEffectActiveRPC,
+    CreateRocketRPC,
+    ShowEffectOnOtherPlayersRPC,
+    SetParticleToWeaponRPC,
+    RegenerateHealthMob,
+    SendKillMob,
+    SynhDeltaHealthFromWeaponRPC,
+    JumpDisableRPC,
+    SetPortalRPC,
+    ActivatePolymorphRPC,
+    DeactivatePolymorphRPC,
+    AlternativeMobAttack,
+    AlternativeMobShot,
+    DetonateKamikadze,
+    SetWeaponLevel,
+    MarkEnemy,
+    GetDamageToShieldRPC,
+    SendOnGroundEffect,
+    PluginRPC,
+    EnableTeleportEffectsRPC,
+    AddAmmoFromWeaponRPC,
+    KillerInvisiblityRPC,
+    SyncGadgetReflectorCoeffRPC,
+    SynchVipStatusRPC,
+    InviteToSquadRPC,
+    JoinSquadRPC,
+    InviteToSquadFailRPC,
+    SyncBreakableObjects,
+    FreeFallSynchRPC,
+    SyncCableCarRPC,
+    StartPlantingBomb,
+    ResetPlantingBomb,
+    StartDefusingBomb,
+    ResetDefusingBomb,
+    SetIsPaidTransport,
+    SyncOwnerTransport,
+    SyncCharIdRPC,
+    SyncTeammateRegenByMe
+};
+
+enum PhotonTargets
+{
+    All,
+    Others,
+    MasterClient,
+    AllBuffered,
+    OthersBuffered,
+    AllViaServer,
+    AllBufferedViaServer,
+    SeflViaServer
+};
+
 void* (*GetComponent) (void* gameObject, void* type);
-void* (*Collider) ();
 void (*SendChat) (void* obj, monoString* text, bool isClan, monoString* logoid);
 void (*EnableXray) (void* obj, bool enable);
 
@@ -118,10 +367,19 @@ void (*JoinToRoomPhotonAfterCheck) (void* obj);
 // Type
 void* (*Type$GetType)(void* type);
 
+// Vector3
+float (*Vector3$get_x)(void* vector3);
+
 // Component
 void* (*Component$get_gameObject)(void* component);
 void* (*Component$get_transform)(void* component);
 monoString* (*Component$get_tag)(void* component);
+
+// Transform
+void* (*Transform$get_position)(void* object);
+
+// Quaternion
+void* (*Quaternion$get_identity)();
 
 // GameObject
 bool (*GameObject$get_active)(void* gameObject);
@@ -130,6 +388,16 @@ void* (*GameObject$get_transform)(void* gameObject);
 
 // Camera
 void* (*Camera$get_Main)();
+
+// PhotonView
+void (*PhotonView$RPC)(void* ref, int* rpc, int* targets, void* args[]);
+
+// Player_move_c
+void* (Player_move_c$photonView)(void* ref) {
+    if (ref != nullptr) {
+        return *(void **) ((uint64_t) ref + 0x3C8);
+    }
+}
 
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
@@ -143,7 +411,8 @@ void Pointers() {
     get_LocalPlayer = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6504"));
     DestroyPlayerObjects = (void (*)(void *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADF9C"));
     PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (monoArray<void**>*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6814"));
-   // DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
+    // DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
+    Instantiate = (void*(*)(monoString*, void*, void*, unsigned char, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ACBE8"));
     EnableXray = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x470CF0C"));
     BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x40A8384")));
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38DA1B4")));
@@ -156,6 +425,9 @@ void Pointers() {
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F850")));
     GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F88C")));
     GameObject$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4346414")));
+    Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
+    Transform$get_position = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
+    PhotonView$RPC = (void(*)(void*, int*, int*, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
 }
 
 // 0x435FA0C <- offset for gameobject.tag
@@ -408,6 +680,27 @@ void(PlayerMoveC)(void* obj){
         if(ninjaJump){
             *(bool*)((uint64_t) obj + 0x599) = true;
         }
+
+        /*if (spoofMe) {
+            void* argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
+            PhotonView$RPC(Player_move_c$photonView(obj), (int*)RPCList::SetPixelBookID, (int*)PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), (int*)RPCList::SetNickName, (int*)PhotonTargets::All, argsForSetPixelBookID);
+            spoofMe = false;
+        }*/
+
+        if (playstantiate) {
+            SetMasterClient(get_LocalPlayer());
+            LOGE("instantiating");
+            void* skinName = *(void**)((uint64_t)obj+0x648);
+            void* pos = Transform$get_position(Component$get_transform(skinName));
+            Instantiate(CreateIl2cppString(OBFUSCATE("Ender")), pos, Quaternion$get_identity(), 0, nullptr);
+            LOGE("instantiated");
+            float x = *(float*)((uint64_t) pos + 0x0);
+            float y = *(float*)((uint64_t) pos + 0x4);
+            float z = *(float*)((uint64_t) pos + 0x8);
+            LOGE("pos: %f, %f, %f", x, y, z);
+            playstantiate = false;
+        }
     }
     oldPlayerMoveC(obj);
 }
@@ -578,6 +871,8 @@ void Hooks() {
 void Patches() {
     PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
     PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
     PATCH_SWITCH("0x2F87C14", "802580D2C0035FD6", cWear);
@@ -730,10 +1025,10 @@ void DrawMenu(){
             }
             /*if (ImGui::Button(OBFUSCATE("Become god"))) {
                 SetMasterClient(get_LocalPlayer());
-            }
-            if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
-                Instantiate(CreateIl2cppString(OBFUSCATE("ConnectScene/SelectMap")), Vector3::Zero(), Quaternion::Identity());
             }*/
+            if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
+                playstantiate = true;
+            }
         }
         Patches();
         ImGui::End();
