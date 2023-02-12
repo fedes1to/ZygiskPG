@@ -86,7 +86,7 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, w
 spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
-bypassName, isBuyEasterSticker;
+bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex;
 
 float damage, rimpulseme, rimpulse, pspeed;
 int reflection, amountws;
@@ -315,7 +315,10 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x1A6) = true; //isShotBull
         }
 
-        *(float*)((uint64_t) obj + 0xDC) = MAXFLOAT; // shootDistance
+        if(kniferangesex){
+            *(float*)((uint64_t) obj + 0xDC) = MAXFLOAT; // shootDistance
+            *(float*)((uint64_t) obj + 0x5F8) = MAXFLOAT; // range
+        }
 
         if(railbull){
             *(bool*)((uint64_t) obj + 0x1BC) = true;//railgun
@@ -377,7 +380,7 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0xF8) = 9999;//scopeSpeed
         }
 
-        if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}// try to make it without scope
+        if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}
         /*void* ItemRecord = *(void**)((uint64_t) obj + 0x648);
         if(ItemRecord != nullptr){
             if(spleef){
@@ -393,6 +396,14 @@ void(PlayerMoveC)(void* obj){
     if(obj != nullptr){
         if(spamchat){
             SendChat(obj, CreateIl2cppString("buy zygiskpg - https://discord.gg/ZVP2kuJXww"), false, CreateIl2cppString("0"));
+        }
+
+        if(xrayApplied){
+            EnableXray(obj, true);
+        }
+
+        if(ninjaJump){
+            *(bool*)((uint64_t) obj + 0x599) = true;
         }
     }
     oldPlayerMoveC(obj);
@@ -504,6 +515,14 @@ void PetEngine(void* obj){
     oldPetEngine(obj);
 }
 
+bool(*oldIsGadgetEnabled)(void* obj);
+bool IsGadgetEnabled(void* obj){
+    if(obj != nullptr && gadgetsEnabled){
+        return true;
+    }
+    oldIsGadgetEnabled(obj);
+}
+
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
         return 0;
@@ -547,6 +566,7 @@ void Hooks() {
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
     HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x15ECC04", UIInput, old_UIInput);
+    HOOK("0x474FEFC", IsGadgetEnabled, oldIsGadgetEnabled);
     //HOOK("0x3D37C34", PetGod, oldPetGod);c
     //HOOK("0x3D3A0A8", PetEngine, oldPetEngine);c
     //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
@@ -579,11 +599,10 @@ void Patches() {
     PATCH_SWITCH("0x14193E4", "200180922C0035FD6", ammo);
     PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
     PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
-
-
 }
 
 void DrawMenu(){
@@ -637,7 +656,7 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
             ImGui::SliderInt(OBFUSCATE("Reflection Rays"),&reflection, 0, 1000);
             ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
-            ImGui::Checkbox(OBFUSCATE("Infinite Knife Range"),&kniferange);
+            ImGui::Checkbox(OBFUSCATE("Infinite Knife Range"),&kniferangesex);
             ImGui::TextUnformatted(OBFUSCATE("Allows you to kill all with a knife."));
             ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"),&recoilandspread);
             ImGui::Checkbox(OBFUSCATE("Force Scope"),&scopef);
@@ -689,18 +708,11 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
             ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
             ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
+            ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
+            ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
             if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
                 destroy = true;
             }
-        }
-        if (ImGui::CollapsingHeader(OBFUSCATE("Bannable Mods")))
-        {
-            ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
-            ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to 2000"));
-            ImGui::Checkbox(OBFUSCATE("Null Collectibles"), &nullcollectibles);
-            ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to 0"));
-            ImGui::Checkbox(OBFUSCATE("Negative Collectibles"), &negativeCollectibles);
-            ImGui::TextUnformatted(OBFUSCATE("Sets the value of items to -500"));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Experimental Mods")))
         {
