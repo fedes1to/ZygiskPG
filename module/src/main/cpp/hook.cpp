@@ -991,7 +991,7 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
             ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
-            ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"), &shotBull);
+            ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"), &shotBull);//add it chris dont forget
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
             ImGui::SliderInt(OBFUSCATE("Reflection Rays"),&reflection, 0, 1000);
             ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
@@ -1005,9 +1005,7 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"),&polymorph);
             ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
             ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"),&harpoonBull);
-            ImGui::TextUnformatted(OBFUSCATE("Forces bullets to pull you to where you shoot"));
-            ImGui::Checkbox(OBFUSCATE("Force Dashes"),&dash);
-            ImGui::TextUnformatted(OBFUSCATE("Forces bullets to push you forward"));
+            ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
