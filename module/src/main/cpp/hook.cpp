@@ -125,6 +125,7 @@ monoString* (*Component$get_tag)(void* component);
 
 // GameObject
 bool (*GameObject$get_active)(void* gameObject);
+void (*GameObject$set_active)(void* gameObject, bool active);
 void* (*GameObject$get_transform)(void* gameObject);
 
 // Camera
@@ -153,6 +154,7 @@ void Pointers() {
     Component$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C54")));
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4D288E0")));
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F850")));
+    GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F88C")));
     GameObject$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4346414")));
 }
 
