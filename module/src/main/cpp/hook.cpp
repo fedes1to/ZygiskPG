@@ -92,22 +92,6 @@ float damage, rimpulseme, rimpulse, pspeed;
 int reflection, amountws;
 
 // BASIC UNITY FUNCTIONS
-class Camera {
-public:
-    static void* (*get_Main)();
-};
-
-class Component {
-public:
-    static void* (*get_gameObject)(void* component);
-    static void* (*get_transform)(void* component);
-    static monoString* (*get_tag)(void* component);
-};
-
-class Type {
-public:
-    static void* (*GetType)(void* type);
-};
 
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
@@ -131,6 +115,21 @@ void (*EnableXray) (void* obj, bool enable);
 
 void (*JoinToRoomPhotonAfterCheck) (void* obj);
 
+// Type
+void* (*Type$GetType)(void* type);
+
+// Component
+void* (*Component$get_gameObject)(void* component);
+void* (*Component$get_transform)(void* component);
+monoString* (*Component$get_tag)(void* component);
+
+// GameObject
+bool (*GameObject$get_active)(void* gameObject);
+void* (*GameObject$get_transform)(void* gameObject);
+
+// Camera
+void* (*Camera$get_Main)();
+
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
@@ -148,11 +147,13 @@ void Pointers() {
     BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x40A8384")));
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38DA1B4")));
     // UNITY FUNC
-    /*Camera::get_Main = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435A454")));
-    Component::get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C90")));
-    Component::get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375F80")));
-    Component::get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C54")));
-    Type::GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4D288E0")));*/
+    Camera$get_Main = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435A454")));
+    Component$get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C90")));
+    Component$get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375F80")));
+    Component$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C54")));
+    Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4D288E0")));
+    GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F850")));
+    GameObject$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4346414")));
 }
 
 // 0x435FA0C <- offset for gameobject.tag
