@@ -168,7 +168,7 @@ void WeaponManager(void *obj) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9999));
             }
             isAddWeapons5 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
+            LoadLevel(CreateIl2cppString("ClosingScene"));
         }
     }
     old_WeaponManager(obj);
