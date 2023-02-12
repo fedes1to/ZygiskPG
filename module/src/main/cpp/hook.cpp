@@ -602,7 +602,7 @@ void WeaponSounds(void* obj){
         }
 
         if(kniferange){
-            *(bool*)((uint64_t) obj +0x346) = true;//isFrostSword
+            *(bool*)((uint64_t) obj + 0x346) = true;//isFrostSword
             *(float*)((uint64_t) obj + 0x348) = 5;//frostDamageMultiplier
             *(float*)((uint64_t) obj + 0x34C) = 999999;//frostRadius
         }
@@ -714,7 +714,7 @@ void(PlayerMoveC)(void* obj){
         }
 
         if(ninjaJump){
-            *(bool*)((uint64_t) obj + 0x599) = true;
+            *(bool*)((uint64_t) obj + 0x599) = true;//brocken
         }
 
         /*if (spoofMe) {
@@ -985,6 +985,8 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
             ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
             ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
+            ImGui::Checkbox(OBFUSCATE("Silent Aim"),&snowstormbull);
+            ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
             ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
             ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
@@ -1000,8 +1002,6 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
             ImGui::Checkbox(OBFUSCATE("Force Portal Bullets"),&portalBull);
             ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot portal bullets."));
-            ImGui::Checkbox(OBFUSCATE("Force Snow Storm Bullets"),&snowstormbull);
-            ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot snows storm bullets."));
             ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"),&polymorph);
             ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
             ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"),&harpoonBull);
