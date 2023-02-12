@@ -27,6 +27,8 @@
 #include "Include/Roboto-Regular.h"
 #include "Include/Vector3.h"
 #include "Include/Quaternion.h"
+#include <iostream>
+#include <chrono>
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -131,12 +133,15 @@ void Pointers() {
 void (*old_WeaponManager)(void *obj);
 void WeaponManager(void *obj) {
     if (obj != nullptr) {
-        if (isAddWeapons) {//Fix This aswell
+        auto start = std::chrono::steady_clock::now();
+        auto delay = std::chrono::seconds(15);
+        if (isAddWeapons) {
             for (int i = 0; i < 300; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9999));
             }
             isAddWeapons = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
+            while (std::chrono::steady_clock::now() - start < delay) {}
             isAddWeapons2 = true;
         }
         if (isAddWeapons2) {
@@ -145,6 +150,7 @@ void WeaponManager(void *obj) {
             }
             isAddWeapons2 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
+            while (std::chrono::steady_clock::now() - start < delay) {}
             isAddWeapons3 = true;
         }
         if (isAddWeapons3) {
@@ -153,6 +159,7 @@ void WeaponManager(void *obj) {
             }
             isAddWeapons3 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
+            while (std::chrono::steady_clock::now() - start < delay) {}
             isAddWeapons4 = true;
         }
         if (isAddWeapons4) {
@@ -161,6 +168,7 @@ void WeaponManager(void *obj) {
             }
             isAddWeapons4 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
+            while (std::chrono::steady_clock::now() - start < delay) {}
             isAddWeapons5 = true;
         }
         if (isAddWeapons5) {
