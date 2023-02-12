@@ -86,10 +86,28 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, w
 spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
-bypassName;
+bypassName, isBuyEasterSticker;
 
 float damage, rimpulseme, rimpulse, pspeed;
 int reflection, amountws;
+
+// BASIC UNITY FUNCTIONS
+class Camera {
+public:
+    static void* (*get_Main)();
+};
+
+class Component {
+public:
+    static void* (*get_gameObject)(void* component);
+    static void* (*get_transform)(void* component);
+    static monoString* (*get_tag)(void* component);
+};
+
+class Type {
+public:
+    static void* (*GetType)(void* type);
+};
 
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
@@ -104,12 +122,14 @@ monoArray<void**> *(*PhotonNetwork_playerListothers)();
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
 void* (*Instantiate) (monoString* prefabName, Vector3 position, Quaternion rotation);
+void (*BuyStickerPack) (int* type);
 
 void* (*GetComponent) (void* gameObject, void* type);
 void* (*Collider) ();
 void (*SendChat) (void* obj, monoString* text, bool isClan, monoString* logoid);
 void (*EnableXray) (void* obj, bool enable);
 
+void (*JoinToRoomPhotonAfterCheck) (void* obj);
 
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
@@ -125,6 +145,14 @@ void Pointers() {
     PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (monoArray<void**>*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6814"));
    // DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
     EnableXray = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x470CF0C"));
+    BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x40A8384")));
+    JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38DA1B4")));
+    // UNITY FUNC
+    /*Camera::get_Main = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435A454")));
+    Component::get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C90")));
+    Component::get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375F80")));
+    Component::get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C54")));
+    Type::GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4D288E0")));*/
 }
 
 // 0x435FA0C <- offset for gameobject.tag
@@ -364,15 +392,43 @@ void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
     if(obj != nullptr){
         if(spamchat){
-            SendChat(obj, CreateIl2cppString("buy zygiskpg"), false, CreateIl2cppString("0"));
+            SendChat(obj, CreateIl2cppString("buy zygiskpg - https://discord.gg/ZVP2kuJXww"), false, CreateIl2cppString("0"));
         }
     }
     oldPlayerMoveC(obj);
 }
 
+void(*old_UIInput)(void* obj);
+void(UIInput)(void* obj){
+    if(obj != nullptr){
+        *(float*)((uint64_t) obj + 0x44) = 0;
+    }
+    old_UIInput(obj);
+}
+
+void(*old_HandleJoinRoomFromEnterPasswordBtnClicked)(void* obj, void* sender, void* args);
+void(HandleJoinRoomFromEnterPasswordBtnClicked)(void* obj, void* sender, void* args){
+    if(obj != nullptr){
+        JoinToRoomPhotonAfterCheck(obj);
+        return;
+    }
+    old_HandleJoinRoomFromEnterPasswordBtnClicked(obj, sender, args);
+}
+
+enum StickerType {
+    none = 0,
+    classic = 1,
+    winter = 2,
+    easter = 3
+};
+
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
     if (obj != nullptr) {
+        if (isBuyEasterSticker) {
+            isBuyEasterSticker = false;
+            BuyStickerPack((int*)StickerType::easter);
+        }
         if (isLoadScenePressed) {
             LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
             isLoadScenePressed = false;
@@ -489,6 +545,8 @@ void Hooks() {
    HOOK("0x4BCA3D4", WeaponManager, old_WeaponManager);
    // HOOK("0x41FD8D4", Speed, oldSpeed);CRASH
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
+    HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
+    HOOK("0x15ECC04", UIInput, old_UIInput);
     //HOOK("0x3D37C34", PetGod, oldPetGod);c
     //HOOK("0x3D3A0A8", PetEngine, oldPetEngine);c
     //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
@@ -651,6 +709,9 @@ void DrawMenu(){
             ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
             if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                 isLoadScenePressed = true;
+            }
+            if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
+                isBuyEasterSticker = true;
             }
             /*if (ImGui::Button(OBFUSCATE("Become god"))) {
                 SetMasterClient(get_LocalPlayer());

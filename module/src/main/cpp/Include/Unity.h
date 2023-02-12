@@ -750,12 +750,10 @@ Parameters:
 	- location: the location of the ObscuredFloat
 	- value: the value we're setting the ObscuredFloat to
 */
-void SetObscuredFloatValue(uint64_t location, float value)
-{
+void SetObscuredFloatValue(uint64_t location, float value) {
     int cryptoKey = *(int *) location;
 
-    union intfloat
-    {
+    union intfloat {
         int i;
         float f;
     };
