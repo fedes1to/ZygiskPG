@@ -84,7 +84,7 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, w
 spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
-bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash;
+bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash, spoofMe;
 
 float damage, rimpulseme, rimpulse, pspeed;
 int reflection, amountws;
@@ -368,7 +368,21 @@ void (*JoinToRoomPhotonAfterCheck) (void* obj);
 void* (*Type$GetType)(void* type);
 
 // Vector3
-float (*Vector3$get_x)(void* vector3);
+float (Vector3$get_x)(void* ref) {
+    if (ref != nullptr) {
+        return *(float *) ((uint64_t) ref + 0x0);
+    }
+}
+float (Vector3$get_y)(void* ref) {
+    if (ref != nullptr) {
+        return *(float *) ((uint64_t) ref + 0x4);
+    }
+}
+float (Vector3$get_z)(void* ref) {
+    if (ref != nullptr) {
+        return *(float *) ((uint64_t) ref + 0x8);
+    }
+}
 
 // Component
 void* (*Component$get_gameObject)(void* component);
@@ -390,12 +404,19 @@ void* (*GameObject$get_transform)(void* gameObject);
 void* (*Camera$get_Main)();
 
 // PhotonView
-void (*PhotonView$RPC)(void* ref, int* rpc, int* targets, void* args[]);
+void (*PhotonView$RPC)(void* ref, int rpc, int targets, monoString* args[]);
 
 // Player_move_c
 void* (Player_move_c$photonView)(void* ref) {
     if (ref != nullptr) {
         return *(void **) ((uint64_t) ref + 0x3C8);
+    }
+}
+
+
+void* (Player_move_c$skinName)(void* ref) {
+    if (ref != nullptr) {
+        return *(void **) ((uint64_t) ref + 0x648);
     }
 }
 
@@ -427,7 +448,7 @@ void Pointers() {
     GameObject$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4346414")));
     Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
     Transform$get_position = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
-    PhotonView$RPC = (void(*)(void*, int*, int*, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
+    PhotonView$RPC = (void(*)(void*, int, int, monoString*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
 }
 
 // 0x435FA0C <- offset for gameobject.tag
@@ -717,23 +738,23 @@ void(PlayerMoveC)(void* obj){
             *(bool*)((uint64_t) obj + 0x599) = true;//brocken
         }
 
-        /*if (spoofMe) {
-            void* argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
-            PhotonView$RPC(Player_move_c$photonView(obj), (int*)RPCList::SetPixelBookID, (int*)PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), (int*)RPCList::SetNickName, (int*)PhotonTargets::All, argsForSetPixelBookID);
+        if (spoofMe) {
+            monoString* argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID, PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetPixelBookID);
             spoofMe = false;
-        }*/
+        }
 
         if (playstantiate) {
             SetMasterClient(get_LocalPlayer());
             LOGE("instantiating");
-            void* skinName = *(void**)((uint64_t)obj+0x648);
+            void* skinName = Player_move_c$skinName(obj);
             void* pos = Transform$get_position(Component$get_transform(skinName));
-            Instantiate(CreateIl2cppString(OBFUSCATE("Ender")), pos, Quaternion$get_identity(), 0, nullptr);
+            Instantiate(CreateIl2cppString(OBFUSCATE("RacingCar")), pos, Quaternion$get_identity(), 0, nullptr);
             LOGE("instantiated");
-            float x = *(float*)((uint64_t) pos + 0x0);
-            float y = *(float*)((uint64_t) pos + 0x4);
-            float z = *(float*)((uint64_t) pos + 0x8);
+            float x = Vector3$get_x(pos);
+            float y = Vector3$get_y(pos);
+            float z = Vector3$get_z(pos);
             LOGE("pos: %f, %f, %f", x, y, z);
             playstantiate = false;
         }
