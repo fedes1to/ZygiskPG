@@ -86,7 +86,7 @@ isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelb
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
 bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash, spoofMe;
 
-float damage, rimpulseme, rimpulse, pspeed;
+float damage, rimpulseme, rimpulse, pspeed, snowstormbullval;
 int reflection, amountws;
 
 void (*SetString) (monoString* key, monoString* value);
@@ -559,7 +559,14 @@ void WeaponSounds(void* obj){
 
         if(snowstormbull){
             *(bool*)((uint64_t) obj + 0x2E4) = true;//snowStorm
-            *(float*)((uint64_t) obj + 0x2E8) = 10;//snowStormBonusMultiplier
+            *(float*)((uint64_t) obj + 0x2E8) = 6;//snowStormBonusMultiplier
+            if(snowstormbullval != NULL){
+                *(float*)((uint64_t) obj + 0xDC) = snowstormbullval; // shootDistance
+                *(float*)((uint64_t) obj + 0x5F8) = snowstormbullval; // range
+            }
+            else{
+                kniferangesex = true;
+            }
         }
 
         if(polymorph){
@@ -567,6 +574,7 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x2D8) = 999999999;//polymorphDuarationTime
             *(int*)((uint64_t) obj + 0x3B4) = 0;//polymorphType
             *(int*)((uint64_t) obj + 0x3B4) = 99999999;//polymorphMaxHealth
+            harpoonBull = true;
         }
 
         if(enemymarker){
@@ -640,7 +648,7 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x1A6) = true; //isShotBull
         }
 
-        if(kniferangesex){
+        if(kniferangesex && !kniferange){
             *(float*)((uint64_t) obj + 0xDC) = MAXFLOAT; // shootDistance
             *(float*)((uint64_t) obj + 0x5F8) = MAXFLOAT; // range
         }
@@ -998,7 +1006,7 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
             ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
             ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
-           // ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
+            ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
             ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 15.0f);
