@@ -102,7 +102,7 @@ void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
-void* (*Instantiate) (monoString* prefabName, void* position, void* rotation, unsigned char group, void* data[]);
+void* (*Instantiate) (monoString* prefabName, void* position, void* rotation, unsigned char group);
 void (*BuyStickerPack) (int* type);
 
 enum RPCList
@@ -434,7 +434,7 @@ void Pointers() {
     DestroyPlayerObjects = (void (*)(void *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ADF9C"));
     PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (monoArray<void**>*) (g_il2cppBaseMap.startAddress + string2Offset("0x43A6814"));
     // DestroyAll = (void(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43AE1C0"));
-    Instantiate = (void*(*)(monoString*, void*, void*, unsigned char, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ACBE8"));
+    Instantiate = (void*(*)(monoString*, void*, void*, unsigned char)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x43ACB28"));
     EnableXray = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x470CF0C"));
     BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x40A8384")));
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38DA1B4")));
@@ -750,8 +750,11 @@ void(PlayerMoveC)(void* obj){
             SetMasterClient(get_LocalPlayer());
             LOGE("instantiating");
             void* skinName = Player_move_c$skinName(obj);
+            LOGE("skinname is null: %s", std::to_string(skinName == nullptr).c_str());
             void* pos = Transform$get_position(Component$get_transform(skinName));
-            Instantiate(CreateIl2cppString(OBFUSCATE("RacingCar")), pos, Quaternion$get_identity(), 0, nullptr);
+            LOGE("pos is null: %s", std::to_string(pos == nullptr).c_str());
+            LOGE("getidentity is null: %s", std::to_string(Quaternion$get_identity() == nullptr).c_str());
+            Instantiate(CreateIl2cppString("RacingCar"), pos, Quaternion$get_identity(), 0);
             LOGE("instantiated");
             float x = Vector3$get_x(pos);
             float y = Vector3$get_y(pos);
@@ -942,6 +945,8 @@ void Patches() {
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
+    PATCH("0x3B4BA00", "200080D2C0035FD6");
+    PATCH("0x3B4BC40", "200080D2C0035FD6");
 }
 
 //effects controller : reload length(weaposounds and 3 strings) x
@@ -1082,6 +1087,9 @@ void DrawMenu(){
             }*/
             if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
                 playstantiate = true;
+            }
+            if (ImGui::Button(OBFUSCATE("Mask me"))) {
+                spoofMe = true;
             }
         }
         Patches();
