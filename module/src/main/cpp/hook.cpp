@@ -85,13 +85,13 @@ spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
 bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash,
-spoofMe, reload, curButtonPressedC, firerate;
+spoofMe, reload, curButtonPressedC, firerate, forceW;
 
 #ifdef BIGSEX
 bool isStartDebug;
 #endif
 
-float damage, rimpulseme, rimpulse, pspeed, snowstormbullval;
+float damage, rimpulseme, damage1, fovModifier, snowstormbullval, jumpHeight;
 int reflection, amountws;
 
 void (*SetString) (monoString* key, monoString* value);
@@ -567,7 +567,7 @@ void WeaponSounds(void* obj){
         if(portalBull){
             *(bool*)((uint64_t) obj + 0x3B4) = true;//portalGun
             *(bool*)((uint64_t) obj + 0x3B5) = true;//isPortalExplosion
-            *(int*)((uint64_t) obj + 0x3C0) = 1;//isPortalExplosion
+           // *(int*)((uint64_t) obj + 0x3C0) = 1;//isPortalExplosion
         }
 
         if(charm){
@@ -590,15 +590,11 @@ void WeaponSounds(void* obj){
         }
 
         if(snowstormbull){
-            *(bool*)((uint64_t) obj + 0x2E4) = true;//snowStorm
-            *(float*)((uint64_t) obj + 0x2E8) = 6;//snowStormBonusMultiplier
-            if(snowstormbullval != NULL){
+            *(bool*)((uint64_t) obj + 0x2E4) = true;//snowStormonusMultiplier
+            if(snowstormbullval != NULL && !kniferange){
+            *(float*)((uint64_t) obj + 0x2E8) = 6;//snowStormB
                 *(float*)((uint64_t) obj + 0xDC) = snowstormbullval; // shootDistance
                 *(float*)((uint64_t) obj + 0x5F8) = snowstormbullval; // range
-                kniferangesex = false;
-            }
-            else if(kniferange){
-                kniferangesex = true;
             }
         }
 
@@ -750,7 +746,7 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0xF8) = 9999;//scopeSpeed
         }
 
-        if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}
+       // if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}
         /*void* ItemRecord = *(void**)((uint64_t) obj + 0x648);
         if(ItemRecord != nullptr){
             if(spleef){
@@ -772,8 +768,12 @@ void(PlayerMoveC)(void* obj){
             EnableXray(obj, true);
         }
 
+        if(xray){
+            *(bool*)((uint64_t) obj + 0x708) = true; // search ZombiManager then its above
+        }
+
         if(ninjaJump){
-            FirstPersonControlSharp$set_ninjaJumpUsed(SkinName$firstPersonControl(Player_move_c$skinName(obj)), false);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetJetpackEnabledRPC, PhotonTargets::SeflViaServer, NULL);
         }
 
         if (spoofMe) {
@@ -877,33 +877,34 @@ void PixelTime(void *obj) {
     old_PixelTime(obj);
 }
 
-float (*oldSpeed)();
-float Speed(){
-    if(speed){
-        return 100;
-    }
-    else{
-        return 4;
-    }
-}
-
-void(*oldPetEngine)(void* obj);
-void PetEngine(void* obj){
-    if(obj != nullptr){
-        if(pspeed != NULL){
-            *(float*)((uint64_t) obj + 0x1B8) = pspeed;
-            *(float*)((uint64_t) obj + 0x1B4) = pspeed;
+void(*oldInGameConnection)(void* obj);
+void InGameConnection(void* obj){
+    if(obj != nullptr && forceW){
+        void* SceneInfo = *(void**)((uint64_t) obj + 0x30);
+        if(SceneInfo != nullptr){
+            LOGE("IT EXISTS");//check if its called cause i cant please
+            *(int*)((uint64_t) SceneInfo + 0x28) = 0;
         }
     }
-    oldPetEngine(obj);
+    oldInGameConnection(obj);
 }
 
-bool(*oldIsGadgetEnabled)(void* obj);
-bool IsGadgetEnabled(void* obj){
-    if(obj != nullptr && gadgetsEnabled){
-        return true;
+float (*old_get_fieldOfView)(void *instance);
+float get_fieldOfView(void *instance) {
+    if (instance != nullptr && fovModifier != NULL) {
+        return fovModifier;
     }
-    oldIsGadgetEnabled(obj);
+    return old_get_fieldOfView(instance);
+}
+
+void(*oldFirstPersonControlSharp)(void* obj);
+void FirstPersonControlSharp(void* obj){
+    if(obj != nullptr){
+       if(jumpHeight != NULL){
+           *(float*)((uint64_t) obj + 0x4A0) = jumpHeight;
+       }
+    }
+    oldFirstPersonControlSharp(obj);
 }
 
 int isGame(JNIEnv *env, jstring appDataDir) {
@@ -945,12 +946,12 @@ void Hooks() {
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x4BCA3D4", WeaponManager, old_WeaponManager);
-   // HOOK("0x41FD8D4", Speed, oldSpeed);CRASH
+    HOOK("0x4359378", get_fieldOfView, old_get_fieldOfView);
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
     HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x15ECC04", UIInput, old_UIInput);
-
-    //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
+    HOOK("0x2E49FB4", InGameConnection, oldInGameConnection);
+    HOOK("Update", FirstPersonControlSharp, oldFirstPersonControlSharp);
 }
 
 void Patches() {
@@ -958,11 +959,8 @@ void Patches() {
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);
-    PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
-    PATCH_SWITCH("0x4DF4DBC", "200080D2C0035FD6", ninjaJump);
-    PATCH_SWITCH("0x14ACE7C", "200080D2C0035FD6", gadgetsEnabled);
-    PATCH_SWITCH("0x14AC394", "200080D2C0035FD6", gadgetsEnabled);
-    PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
+   // PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x1AE6AC4", "200080D2C0035FD6", ninjaJump);
     PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
     PATCH_SWITCH("0x2F87C14", "802580D2C0035FD6", cWear);
     PATCH_SWITCH("0x2F87AFC", "802580D2C0035FD6", cWear);
@@ -985,10 +983,10 @@ void Patches() {
     PATCH_SWITCH("0x42679A0", "20080D02C0035FD6", wepSkins);
     PATCH_SWITCH("0x14193E4", "200180922C0035FD6", ammo);
     PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
-    PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump);
-    PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
-    PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
+   // PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
+    //PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
     PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);
+    PATCH_SWITCH("0x48F1E00", "00F0271EC0035FD6", speed);
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
@@ -1047,6 +1045,7 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
             ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
             ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
+            ImGui::SliderFloat(OBFUSCATE("Jump Height"),&jumpHeight, 0.0f, 360.0f);
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
             ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 10.0f);
@@ -1055,8 +1054,9 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
             ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
            // ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
-          //  ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
-            ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"),&snowstormbullval, 0.0f, 1000.0f);
+            ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
+            ImGui::TextUnformatted(OBFUSCATE("Reloads the gun almost instantly (Re-equip after enabling)"));
+            ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"),&snowstormbullval, 0.0f, 2000.0f);
             ImGui::Checkbox(OBFUSCATE("Silent Aim"),&snowstormbull);
             ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
             ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
@@ -1106,12 +1106,7 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Shows the enemy after you shoot them once."));
             ImGui::Checkbox(OBFUSCATE("Quick-Scope"), &quickscope);
             ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
-        }
-        if (ImGui::CollapsingHeader(OBFUSCATE("Pet Mods"))) {
-            //ImGui::Checkbox(OBFUSCATE("Godmode"), &pgod);
-           // ImGui::TextUnformatted(OBFUSCATE("Pets never die"));
-           // ImGui::SliderFloat(OBFUSCATE("Pet Speed"), &pspeed, 0.0f, 500.0f);
-
+            ImGui::SliderFloat(OBFUSCATE("Field Of View"),&fovModifier, 0.0, 360.0);
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
             ImGui::Checkbox(OBFUSCATE("Kill All"),&kniferange);
@@ -1125,6 +1120,8 @@ void DrawMenu(){
             ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
             ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
             ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+            //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
+            ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
             if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
                 destroy = true;
             }
@@ -1137,15 +1134,12 @@ void DrawMenu(){
             if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                 isLoadScenePressed = true;
             }
-            /*if (ImGui::Button(OBFUSCATE("Become god"))) {
-                SetMasterClient(get_LocalPlayer());
-            }*/
-            if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
+           /* if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
                 playstantiate = true;
             }
             if (ImGui::Button(OBFUSCATE("Mask me"))) {
                 spoofMe = true;
-            }
+            }*/
         }
         Patches();
         ImGui::End();
