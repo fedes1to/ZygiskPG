@@ -404,7 +404,22 @@ void* (*GameObject$get_transform)(void* gameObject);
 void* (*Camera$get_Main)();
 
 // PhotonView
-void (*PhotonView$RPC)(void* ref, int rpc, int targets, monoString* args[]);
+void (*PhotonView$RPC)(void* ref, int rpc, int targets, void* args[]);
+
+// FirstPersonControlSharp
+void (FirstPersonControlSharp$set_ninjaJumpUsed)(void* ref, bool used) {
+    if (ref != nullptr) {
+        *(bool *) ((uint64_t) ref + 0x101) = used;
+    }
+}
+
+// SkinName
+
+void* (SkinName$firstPersonControl)(void* ref) {
+    if (ref != nullptr) {
+        return *(void **) ((uint64_t) ref + 0x1C8);
+    }
+}
 
 // Player_move_c
 void* (Player_move_c$photonView)(void* ref) {
@@ -412,7 +427,6 @@ void* (Player_move_c$photonView)(void* ref) {
         return *(void **) ((uint64_t) ref + 0x3C8);
     }
 }
-
 
 void* (Player_move_c$skinName)(void* ref) {
     if (ref != nullptr) {
@@ -448,7 +462,7 @@ void Pointers() {
     GameObject$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4346414")));
     Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
     Transform$get_position = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
-    PhotonView$RPC = (void(*)(void*, int, int, monoString*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
+    PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
 }
 
 // 0x435FA0C <- offset for gameobject.tag
@@ -461,7 +475,7 @@ void WeaponManager(void *obj) {
         auto delay = std::chrono::seconds(15);
         if (isAddWeapons) {
             for (int i = 0; i < 300; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9999));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -470,7 +484,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons2) {
             for (int i = 300; i < 500; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9999));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons2 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -479,7 +493,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons3) {
             for (int i = 500; i < 700; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9999));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons3 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -488,7 +502,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons4) {
             for (int i = 700; i < 900; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9999));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons4 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -497,7 +511,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons5) {
             for (int i = 900; i < 1186; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (9999));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons5 = false;
             LoadLevel(CreateIl2cppString("ClosingScene"));
@@ -743,12 +757,13 @@ void(PlayerMoveC)(void* obj){
         }
 
         if(ninjaJump){
-            *(bool*)((uint64_t) obj + 0x599) = true;//brocken
+            FirstPersonControlSharp$set_ninjaJumpUsed(SkinName$firstPersonControl(Player_move_c$skinName(obj)), false);
         }
 
         if (spoofMe) {
-            monoString* argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
+            void* argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
             PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID, PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID, PhotonTargets::All, argsForSetPixelBookID);
             PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetPixelBookID);
             spoofMe = false;
         }
