@@ -84,7 +84,8 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, w
 spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
-bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash, spoofMe;
+bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash,
+spoofMe, reload, curButtonPressedC, firerate;
 
 float damage, rimpulseme, rimpulse, pspeed, snowstormbullval;
 int reflection, amountws;
@@ -514,6 +515,7 @@ void WeaponManager(void *obj) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons5 = false;
+            while (std::chrono::steady_clock::now() - start < delay) {}
             LoadLevel(CreateIl2cppString("ClosingScene"));
         }
     }
@@ -528,7 +530,6 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x38C) = damage;//shotgunMinDamageCoef
             *(float*)((uint64_t) obj + 0x390) = damage;//shotgunOverDamageDistance
             *(float*)((uint64_t) obj + 0x394) = damage;//shotgunOverDamageCoef
-            *(float*)((uint64_t) obj + 0x3FC) = damage;//damageMultiplier
         }
 
         if(gadgetdisabler){
@@ -565,20 +566,15 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x235) = true;//toxicImmunity
         }
 
-        if(dash){
-            *(bool*)((uint64_t) obj + 0x294) = true;//isDash
-            *(float*)((uint64_t) obj + 0x298) = 100;//dashMaxImpulse
-            *(float*)((uint64_t) obj + 0x29C) = 100;//dashDecaySpeed
-        }
-
         if(snowstormbull){
             *(bool*)((uint64_t) obj + 0x2E4) = true;//snowStorm
             *(float*)((uint64_t) obj + 0x2E8) = 6;//snowStormBonusMultiplier
             if(snowstormbullval != NULL){
                 *(float*)((uint64_t) obj + 0xDC) = snowstormbullval; // shootDistance
                 *(float*)((uint64_t) obj + 0x5F8) = snowstormbullval; // range
+                kniferangesex = false;
             }
-            else{
+            else if(kniferange){
                 kniferangesex = true;
             }
         }
@@ -595,9 +591,6 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x236) = true;//enemyMarker
             *(bool*)((uint64_t) obj + 0x238) = true;//enemyMarkerWhenShot
             *(bool*)((uint64_t) obj + 0x237) = true;//enemyMarkerWhenAiming
-          //  *(float*)((uint64_t) obj + 0x240) = 999;//enemyMarkerAngle
-           // *(float*)((uint64_t) obj + 0x240) = 0;//enemyMarketChargeTime
-          //  *(float*)((uint64_t) obj + 0x240) = 999999;//enemyMarkerTriangleCathetLength
         }
 
         if(electric){
@@ -659,7 +652,7 @@ void WeaponSounds(void* obj){
         }
 
         if(shotbull){
-            *(bool*)((uint64_t) obj + 0x1A6) = true; //isShotBull
+            *(bool*)((uint64_t) obj + 0x1A6) = true; //isShotGun
         }
 
         if(kniferangesex && !kniferange){
@@ -866,23 +859,6 @@ float Speed(){
     }
 }
 
-float (*oldPetGod)();
-float PetGod(){//丏丏世三下万丞上万
-    if(pgod){
-        return 999999;
-    }
-    else{
-        return 100;
-    }
-}
-
-float (*oldPetRespawnTime)();
-float PetRespawnTime(){
-    if(prespawn){
-        return 0;
-    }
-}
-
 void(*oldPetEngine)(void* obj);
 void PetEngine(void* obj){
     if(obj != nullptr){
@@ -940,14 +916,12 @@ void Hooks() {
     // hooks
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
-   HOOK("0x4BCA3D4", WeaponManager, old_WeaponManager);
+    HOOK("0x4BCA3D4", WeaponManager, old_WeaponManager);
    // HOOK("0x41FD8D4", Speed, oldSpeed);CRASH
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
     HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x15ECC04", UIInput, old_UIInput);
-    HOOK("0x474FEFC", IsGadgetEnabled, oldIsGadgetEnabled);
-    //HOOK("0x3D37C34", PetGod, oldPetGod);c
-    //HOOK("0x3D3A0A8", PetEngine, oldPetEngine);c
+
     //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
 }
 
@@ -981,12 +955,17 @@ void Patches() {
     PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
     PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump);
     PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
+    PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
+    PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
     PATCH("0x3B4BA00", "200080D2C0035FD6");
     PATCH("0x3B4BC40", "200080D2C0035FD6");
 }
+
+//effects controller : reload length(weaposounds and 3 strings) x
+//firerate : in player_move_c search SpeedsUpReloading and the func above is it
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -1014,11 +993,12 @@ void DrawMenu(){
             }
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
-            ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 1000000);
+            ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
             ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
             ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList, IM_ARRAYSIZE(curList), 4);
             if (ImGui::Button(OBFUSCATE("Add Currency"))) {
                 isAddCurPressed = true;
+                curButtonPressedC += 1;
             }
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
@@ -1029,11 +1009,14 @@ void DrawMenu(){
             ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
         }
         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
-            ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 15.0f);
-            ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 8 might kick after a few kills)"));
+            ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 10.0f);
+            ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
             ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
             ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
             ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
+           // ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
+          //  ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
+            ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"),&snowstormbullval, 0.0f, 1000.0f);
             ImGui::Checkbox(OBFUSCATE("Silent Aim"),&snowstormbull);
             ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
             ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
