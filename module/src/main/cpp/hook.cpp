@@ -87,6 +87,10 @@ isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBu
 bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash,
 spoofMe, reload, curButtonPressedC, firerate;
 
+#ifdef BIGSEX
+bool isStartDebug;
+#endif
+
 float damage, rimpulseme, rimpulse, pspeed, snowstormbullval;
 int reflection, amountws;
 
@@ -400,6 +404,8 @@ void* (*Quaternion$get_identity)();
 bool (*GameObject$get_active)(void* gameObject);
 void (*GameObject$set_active)(void* gameObject, bool active);
 void* (*GameObject$get_transform)(void* gameObject);
+void* (*GameObject$Instantiate)(void* original);
+void* (*GameObject$class)();
 
 // Camera
 void* (*Camera$get_Main)();
@@ -410,6 +416,7 @@ void (*PhotonView$RPC)(void* ref, int rpc, int targets, void* args[]);
 // FirstPersonControlSharp
 void (FirstPersonControlSharp$set_ninjaJumpUsed)(void* ref, bool used) {
     if (ref != nullptr) {
+        *(bool *) ((uint64_t) ref + 0x100) = used;
         *(bool *) ((uint64_t) ref + 0x101) = used;
     }
 }
@@ -434,6 +441,16 @@ void* (Player_move_c$skinName)(void* ref) {
         return *(void **) ((uint64_t) ref + 0x648);
     }
 }
+
+#ifdef BIGSEX
+// DebugLogWindow
+
+void* (*DebugLogWindow$get_debugLogWindow)();
+
+// Resources
+
+void* (*Resources$Load)(monoString* path);
+#endif
 
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
@@ -461,9 +478,15 @@ void Pointers() {
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F850")));
     GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F88C")));
     GameObject$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4346414")));
+    GameObject$Instantiate = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43608C8")));
+    GameObject$class = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x20000E0")));
     Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
     Transform$get_position = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
     PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
+#ifdef BIGSEX
+    Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
+    DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
+#endif
 }
 
 // 0x435FA0C <- offset for gameobject.tag
@@ -834,8 +857,13 @@ void PixelTime(void *obj) {
             //  setLevel(webInstance(), (int*)(65));
             webLevel = false;
         }
-
-
+#ifdef BIGSEX
+        if (isStartDebug) {
+            GameObject$Instantiate(Resources$Load(CreateIl2cppString(OBFUSCATE("NguiWindows/DebugWindow/AssetBundlesDebugPanel"))));
+            GameObject$set_active(Component$get_gameObject(DebugLogWindow$get_debugLogWindow()), true);
+            isStartDebug = false;
+        }
+#endif
         if(destroy){
             auto photonplayers = PhotonNetwork_playerListothers();
             SetMasterClient(get_LocalPlayer());
@@ -930,6 +958,10 @@ void Patches() {
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x4DF4DBC", "200080D2C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x14ACE7C", "200080D2C0035FD6", gadgetsEnabled);
+    PATCH_SWITCH("0x14AC394", "200080D2C0035FD6", gadgetsEnabled);
     PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
     PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
     PATCH_SWITCH("0x2F87C14", "802580D2C0035FD6", cWear);
@@ -962,6 +994,9 @@ void Patches() {
     PATCH("0x4504710", "000080D2C0035FD6");
     PATCH("0x3B4BA00", "200080D2C0035FD6");
     PATCH("0x3B4BC40", "200080D2C0035FD6");
+#ifdef BIGSEX
+    PATCH("0x4008E8B", "200080D2C0035FD6");
+#endif
 }
 
 //effects controller : reload length(weaposounds and 3 strings) x
@@ -971,6 +1006,11 @@ void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+#ifdef BIGSEX
+        if (ImGui::Button(OBFUSCATE("tes"))) {
+            isStartDebug = true;
+        }
+#endif
         if (ImGui::Button(OBFUSCATE("Join Discord"))) {
             isDiscordPressed = true;
         }
