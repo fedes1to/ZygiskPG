@@ -11,7 +11,7 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 set(CMAKE_CXX_STANDARD 20)
 
 set(LINKER_FLAGS "-ffixed-x18 -Wl,--hash-style=both")
-set(C_FLAGS "-Werror=format -fdata-sections -ffunction-sections")
+set(C_FLAGS "-Werror=format -fdata-sections -ffunction-sections -lz")
 set(CXX_FLAGS "${CXX_FLAGS} -fno-exceptions -fno-rtti -DkITTYMEMORY_DEBUG")
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -53,6 +53,7 @@ add_library(${MODULE_NAME}
         )
 
 set(DOBBY_LIB ${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/libdobby.a)
+set(CURL_LIB ${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/libcurl.a)
 find_library(log-lib log)
 find_library(egl EGL)
 find_library(android android)
@@ -73,6 +74,7 @@ endif (${ANDROID_PLATFORM_LEVEL} LESS 12)
 target_link_libraries(
         ${MODULE_NAME} log
         ${DOBBY_LIB}
+        ${CURL_LIB}
         ${OPENGL_LIB}
         ${GLESV2_LIB}
         ${android}
