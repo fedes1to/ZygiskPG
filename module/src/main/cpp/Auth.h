@@ -15,11 +15,21 @@
 #include <vector>
 
 void initAuth() {
+
+    // Variables where we want to store the data from the config file
+    std::string aid = "";
+    std::string secret = "";
+    std::string apikey = "";
+    std::string username = "";
+    std::string password = "";
+    std::string hwid = "";
+    std::string license = "";
+    std::string email = "";
+
     bool hasFile;
-    static char* aid, secret, apikey;
 
     // get if user was authenticated before
-    std::ifstream file("myfile.txt");
+    std::ifstream file("acc.cfg");
     if(!file.is_open()){
         hasFile = false;
     } else {
@@ -27,17 +37,12 @@ void initAuth() {
     }
 
     if (hasFile) {
-        // Variables where we want to store the data from the config file
-        std::string aid = "";
-        std::string secret = "";
-        std::string apikey = "";
-
         // Names of the variables in the config file.
-        std::vector<std::string> ln = {"aid","secret","apikey"};
+        std::vector<std::string> ln = {"aid","secret","apikey", "username", "password", "hwid"};
 
         // Open the config file for reading
         std::ifstream f_in("acc.cfg");
-        CFG::ReadFile(f_in, ln, aid, secret, apikey);
+        CFG::ReadFile(f_in, ln, aid, secret, apikey, username, password, hwid);
         f_in.close();
 
         CURL *handle;
@@ -52,16 +57,25 @@ void initAuth() {
         curl_mime *multipart = curl_mime_init(handle);
         curl_mimepart *part = curl_mime_addpart(multipart);
         curl_mime_name(part, "type");
-        curl_mime_data(part, "info", CURL_ZERO_TERMINATED);
+        curl_mime_data(part, "login", CURL_ZERO_TERMINATED);
         part = curl_mime_addpart(multipart);
         curl_mime_name(part, "aid");
         curl_mime_data(part, aid.c_str(), CURL_ZERO_TERMINATED);
         part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "apikey");
+        curl_mime_data(part, apikey.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
         curl_mime_name(part, "secret");
         curl_mime_data(part, secret.c_str(), CURL_ZERO_TERMINATED);
         part = curl_mime_addpart(multipart);
-        curl_mime_name(part, "apikey");
-        curl_mime_data(part, apikey.c_str(), CURL_ZERO_TERMINATED);
+        curl_mime_name(part, "username");
+        curl_mime_data(part, username.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "password");
+        curl_mime_data(part, password.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "hwid");
+        curl_mime_data(part, hwid.c_str(), CURL_ZERO_TERMINATED);
         part = curl_mime_addpart(multipart);
 
         /* Set the form info */
@@ -71,7 +85,18 @@ void initAuth() {
 
         /* free the post data again */
         curl_mime_free(multipart);
+    } else {
 
+        // Names for the variables in the config file. They can be different from the actual variable names.
+        std::vector<std::string> ln = {"aid","secret","apikey", "username", "password", "hwid", "license", "email"};
+
+        // get the parameters from the user somehow here and then write them to the strings here (this should be maybe called at hook.cpp)
+        // we need to get the parameters from a login form in ImGui, so gotta figure that out ig
+
+        // Open the config file for writing
+        std::ofstream f_out("acc.cfg");
+        CFG::WriteFile(f_out, ln, aid,secret,apikey,username,password,hwid,license,email);
+        f_out.close();
     }
 }
 
