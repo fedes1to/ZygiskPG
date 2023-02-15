@@ -31,7 +31,7 @@ bool tryAutoLogin() {
     std::string hwid = "";
 
     // Names of the variables in the config file.
-    std::vector<std::string> ln = {"aid","secret","apikey", "username", "password", "hwid"};
+    std::vector<std::string> ln = {"username", "password", "hwid"};
 
     // Open the config file for reading
     std::ifstream f_in("acc.cfg");
@@ -91,48 +91,7 @@ bool tryLogin(std::string username, std::string password, std::string hwid) {
     std::ofstream f_out("acc.cfg");
     CFG::WriteFile(f_out, ln,username,password,hwid);
     f_out.close();
-    CURL *handle;
-    CURLcode result;
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
-    // declare handle
-    handle = curl_easy_init();
-    curl_easy_setopt(handle, CURLOPT_URL, "https://api.auth.gg/v1/");
-
-    // prepare post request
-    curl_mime *multipart = curl_mime_init(handle);
-    curl_mimepart *part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "type");
-    curl_mime_data(part, "login", CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "aid");
-    curl_mime_data(part, aid.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "apikey");
-    curl_mime_data(part, apikey.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "secret");
-    curl_mime_data(part, secret.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "username");
-    curl_mime_data(part, username.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "password");
-    curl_mime_data(part, password.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "hwid");
-    curl_mime_data(part, hwid.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-
-    /* Set the form info */
-    curl_easy_setopt(handle, CURLOPT_MIMEPOST, multipart);
-
-    result = curl_easy_perform(handle); /* post away! */
-
-    /* free the post data again */
-    curl_mime_free(multipart);
-
-    // need to do code to return whether login was successful or not
+    return tryAutoLogin();
 }
 
 bool tryRegister(std::string username, std::string password, std::string hwid, std::string license, std::string email) {
