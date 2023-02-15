@@ -86,10 +86,7 @@ spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
 bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash,
-spoofMe, reload, curButtonPressedC, firerate;
-
-float jumpHeight;
-float fovModifier;
+spoofMe, reload, curButtonPressedC, firerate, forceW ;
 
 static bool isValidAuth;
 static bool hasRegistered;
@@ -104,7 +101,7 @@ static char email[64];
 bool isStartDebug;
 #endif
 
-float damage, rimpulseme, rimpulse, pspeed, snowstormbullval;
+float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
 
 void (*SetString) (monoString* key, monoString* value);
@@ -582,7 +579,7 @@ void WeaponSounds(void* obj){
         if(portalBull){
             *(bool*)((uint64_t) obj + 0x3B4) = true;//portalGun
             *(bool*)((uint64_t) obj + 0x3B5) = true;//isPortalExplosion
-            *(int*)((uint64_t) obj + 0x3C0) = 1;//isPortalExplosion
+          //  *(int*)((uint64_t) obj + 0x3C0) = 1;//isPortalExplosion
         }
 
         if(charm){
@@ -607,13 +604,9 @@ void WeaponSounds(void* obj){
         if(snowstormbull){
             *(bool*)((uint64_t) obj + 0x2E4) = true;//snowStorm
             *(float*)((uint64_t) obj + 0x2E8) = 6;//snowStormBonusMultiplier
-            if(snowstormbullval != NULL){
+            if(snowstormbullval != NULL && !kniferange){
                 *(float*)((uint64_t) obj + 0xDC) = snowstormbullval; // shootDistance
                 *(float*)((uint64_t) obj + 0x5F8) = snowstormbullval; // range
-                kniferangesex = false;
-            }
-            else if(kniferange){
-                kniferangesex = true;
             }
         }
 
@@ -640,7 +633,7 @@ void WeaponSounds(void* obj){
         if(kspeedboost){
             *(bool*)((uint64_t) obj + 0x410) = true;//isFastAfterKill
             *(float*)((uint64_t) obj + 0x414) = 99999;//fastMultiplier
-           *(int*)((uint64_t) obj + 0x418) = 99999;//maxStackAfterKill
+            *(int*)((uint64_t) obj + 0x418) = 99999;//maxStackAfterKill
             *(int*)((uint64_t) obj + 0x41C) = 99999;//timeFastAfterKill
         }
 
@@ -765,7 +758,7 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0xF8) = 9999;//scopeSpeed
         }
 
-        if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}
+        //if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}
         /*void* ItemRecord = *(void**)((uint64_t) obj + 0x648);
         if(ItemRecord != nullptr){
             if(spleef){
@@ -774,6 +767,26 @@ void WeaponSounds(void* obj){
         }*/
     }
     oldWeaponSounds(obj);
+}
+
+void(*oldInGameConnection)(void* obj);
+void InGameConnection(void* obj){
+    if(obj != nullptr && forceW){
+        void* SceneInfo = *(void**)((uint64_t) obj + 0x30);
+        if(SceneInfo != nullptr){
+            LOGE("IT EXISTS");//check if its called cause i cant please
+            *(int*)((uint64_t) SceneInfo + 0x28) = 0;
+        }
+    }
+    oldInGameConnection(obj);
+}
+
+float (*old_get_fieldOfView)(void *instance);
+float get_fieldOfView(void *instance) {
+    if (instance != nullptr && fovModifier != NULL) {
+        return fovModifier;
+    }
+    return old_get_fieldOfView(instance);//add other shit to hooks like speed
 }
 
 void(*oldPlayerMoveC)(void* obj);
@@ -787,8 +800,12 @@ void(PlayerMoveC)(void* obj){
             EnableXray(obj, true);
         }
 
+        if(xray){
+            *(bool*)((uint64_t) obj + 0x708) = true; // search ZombiManager then its above
+        }
+
         if(ninjaJump){
-            FirstPersonControlSharp$set_ninjaJumpUsed(SkinName$firstPersonControl(Player_move_c$skinName(obj)), false);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetJetpackEnabledRPC, PhotonTargets::All, NULL);
         }
 
         if (spoofMe) {
@@ -889,34 +906,6 @@ void PixelTime(void *obj) {
     old_PixelTime(obj);
 }
 
-float (*oldSpeed)();
-float Speed(){
-    if(speed){
-        return 100;
-    }
-    else{
-        return 4;
-    }
-}
-
-void(*oldPetEngine)(void* obj);
-void PetEngine(void* obj){
-    if(obj != nullptr){
-        if(pspeed != NULL){
-            *(float*)((uint64_t) obj + 0x1B8) = pspeed;
-            *(float*)((uint64_t) obj + 0x1B4) = pspeed;
-        }
-    }
-    oldPetEngine(obj);
-}
-
-bool(*oldIsGadgetEnabled)(void* obj);
-bool IsGadgetEnabled(void* obj){
-    if(obj != nullptr && gadgetsEnabled){
-        return true;
-    }
-    oldIsGadgetEnabled(obj);
-}
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -961,6 +950,8 @@ void Hooks() {
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
     HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x15ECC04", UIInput, old_UIInput);
+    HOOK("0x2E49FB4", InGameConnection, oldInGameConnection);
+    HOOK("0x4359378", get_fieldOfView, old_get_fieldOfView);
 
     //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
 }
@@ -1001,6 +992,7 @@ void Patches() {
     PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
     PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
     PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);
+    PATCH_SWITCH("0x48F1E00", "00F0271EC0035FD6", speed);
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
@@ -1137,7 +1129,7 @@ void DrawMenu(){
                 ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
                 ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
                 //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
-                ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
+               // ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
                 if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
                     destroy = true;
                 }
