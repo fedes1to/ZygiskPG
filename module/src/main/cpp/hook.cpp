@@ -1020,133 +1020,169 @@ void DrawMenu(){
                 isDiscordPressed = true;
             }
             ImGui::TextUnformatted("Its Recommended to join the discord server for mod updates etc.");
-            if (ImGui::BeginTabBar(OBFUSCATE("Account Mods"))) {
-                ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
-                ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
-                ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
-                ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
-                if (ImGui::Button(OBFUSCATE("Add All Weapons"))) {
-                    isAddWeapons = true;
+            ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
+            if (ImGui::BeginTabBar("listbar", tab_bar_flags)) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Account Mods"))) {
+                    ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
+                    ImGui::TextUnformatted((OBFUSCATE(
+                            "Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
+                    ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
+                    ImGui::TextUnformatted(
+                            OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
+                    if (ImGui::Button(OBFUSCATE("Add All Weapons"))) {
+                        isAddWeapons = true;
+                    }
+                    ImGui::TextUnformatted((OBFUSCATE(
+                            "Gives the player all the weapons (It will take a while, Freezing is normal)")));
+                    ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
+                    ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
+                    ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
+                    if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
+                        isBuyEasterSticker = true;
+                    }
+                    ImGui::EndTabItem();
                 }
-                ImGui::BeginTabBar((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
-                ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
-                ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
-                ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
-                ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
-                if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
-                    isBuyEasterSticker = true;
+                if (ImGui::BeginTabItem(OBFUSCATE("Currency Mods"))) {
+                    ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
+                    ImGui::TextUnformatted(
+                            OBFUSCATE("Will be counted as the value that the game will use."));
+                    ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,
+                                   IM_ARRAYSIZE(curList), 4);
+                    if (ImGui::Button(OBFUSCATE("Add Currency"))) {
+                        isAddCurPressed = true;
+                        curButtonPressedC += 1;
+                    }
+                    ImGui::EndTabItem();
                 }
-            }
-            if (ImGui::BeginTabBar(OBFUSCATE("Currency Mods"))) {
-                ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
-                ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
-                ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList, IM_ARRAYSIZE(curList), 4);
-                if (ImGui::Button(OBFUSCATE("Add Currency"))) {
-                    isAddCurPressed = true;
-                    curButtonPressedC += 1;
+                if (ImGui::BeginTabItem(OBFUSCATE("Player Mods"))) {
+                    ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Makes you invincible (others can kill you but you won't die and just become invisible)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
+                    ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
+                    ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
+                    ImGui::SliderFloat(OBFUSCATE("Jump Height"), &jumpHeight, 0.0f, 360.0f);
+                    ImGui::EndTabItem();
                 }
-            }
-            if (ImGui::BeginTabBar(OBFUSCATE("Player Mods"))) {
-                ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
-                ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
-                ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
-                ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
-                ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
-                ImGui::SliderFloat(OBFUSCATE("Jump Height"),&jumpHeight, 0.0f, 360.0f);
-            }
-            if (ImGui::BeginTabBar(OBFUSCATE("Weapon Mods"))) {
-                ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 10.0f);
-                ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
-                ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
-                ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
-                ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
-                // ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
-                ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
-                ImGui::TextUnformatted(OBFUSCATE("Reloads the gun almost instantly (Re-equip after enabling)"));
-                ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"),&snowstormbullval, 0.0f, 2000.0f);
-                ImGui::Checkbox(OBFUSCATE("Silent Aim"),&snowstormbull);
-                ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
-                ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
-                ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
-                ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
-                ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
-                ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"), &shotBull);//add it chris dont forget
-                ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
-                ImGui::SliderInt(OBFUSCATE("Reflection Rays"),&reflection, 0, 1000);
-                ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
-                ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"),&kniferangesex);
-                ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
-                ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"),&recoilandspread);
-                ImGui::Checkbox(OBFUSCATE("Force Scope"),&scopef);
-                ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                ImGui::Checkbox(OBFUSCATE("Force Portal Bullets"),&portalBull);
-                ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot portal bullets."));
-                ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"),&polymorph);
-                ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
-                ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"),&harpoonBull);
-                ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
-            }
-            if (ImGui::BeginTabBar(OBFUSCATE("Effect Mods"))) {
-                ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
-                ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
-                ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
-                ImGui::TextUnformatted(OBFUSCATE("Removes the burning and being intoxicated effect on you."));
-                ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
-                ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
-                ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
-                ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
-                ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
-                ImGui::TextUnformatted(OBFUSCATE("Adds a speed-up effect (Will speed up any player you shoot until they die)"));
-                ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
-                ImGui::TextUnformatted(OBFUSCATE("Adds a slow-down effect (Will freeze any player you shoot until they die)"));
-                ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
-                ImGui::TextUnformatted(OBFUSCATE("Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
-                ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
-                ImGui::TextUnformatted(OBFUSCATE("Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
-                ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
-                ImGui::TextUnformatted(OBFUSCATE("Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
-            }
-            if (ImGui::BeginTabBar(OBFUSCATE("Visual Mods"))) {
-                ImGui::Checkbox(OBFUSCATE("Chams"), &xray);
-                ImGui::TextUnformatted(OBFUSCATE("Shows the enemy body through walls."));
-                ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
-                ImGui::TextUnformatted(OBFUSCATE("Shows the enemy after you shoot them once."));
-                ImGui::Checkbox(OBFUSCATE("Quick-Scope"), &quickscope);
-                ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
-                ImGui::SliderFloat(OBFUSCATE("Field Of View"),&fovModifier, 0.0, 360.0);
-            }
-            if (ImGui::BeginTabBar(OBFUSCATE("Game Mods"))) {
-                ImGui::Checkbox(OBFUSCATE("Kill All"),&kniferange);
-                ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
-                ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
-                ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
-                ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
-                ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
-                ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
-                ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
-                ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
-                ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
-                ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
-               // ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
-                if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
-                    destroy = true;
+                if (ImGui::BeginTabItem(OBFUSCATE("Weapon Mods"))) {
+                    ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"), &damage, 0.0f, 10.0f);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
+                    ImGui::TextUnformatted(
+                            OBFUSCATE("Forces Critical Shots each time you hit someone."));
+                    ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
+                    // ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
+                    ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Reloads the gun almost instantly (Re-equip after enabling)"));
+                    ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,
+                                       2000.0f);
+                    ImGui::Checkbox(OBFUSCATE("Silent Aim"), &snowstormbull);
+                    ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
+                    ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
+                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
+                    ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
+                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
+                    ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"),
+                                    &shotBull);//add it chris dont forget
+                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
+                    ImGui::SliderInt(OBFUSCATE("Reflection Rays"), &reflection, 0, 1000);
+                    ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
+                    ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"), &kniferangesex);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Allows you to aim and hit people with a knifer or a framethrower at any distance."));
+                    ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"), &recoilandspread);
+                    ImGui::Checkbox(OBFUSCATE("Force Scope"), &scopef);
+                    ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+                    ImGui::Checkbox(OBFUSCATE("Force Portal Bullets"), &portalBull);
+                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot portal bullets."));
+                    ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"), &polymorph);
+                    ImGui::TextUnformatted(
+                            OBFUSCATE("Forces bullets to make players turn into sheep."));
+                    ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"), &harpoonBull);
+                    ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
+                    ImGui::EndTabItem();
                 }
-            }
-            if (ImGui::BeginTabBar(OBFUSCATE("Experimental Mods")))
-            {
-                ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
-                ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
-                ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
-                if (ImGui::Button(OBFUSCATE("Load Scene"))) {
-                    isLoadScenePressed = true;
+                if (ImGui::BeginTabItem(OBFUSCATE("Effect Mods"))) {
+                    ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
+                    ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
+                    ImGui::TextUnformatted(
+                            OBFUSCATE("Removes the burning and being intoxicated effect on you."));
+                    ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
+                    ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+                    ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
+                    ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+                    ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Adds a speed-up effect (Will speed up any player you shoot until they die)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Adds a slow-down effect (Will freeze any player you shoot until they die)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
+                    ImGui::EndTabItem();
                 }
-                /* if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
-                     playstantiate = true;
-                 }
-                 if (ImGui::Button(OBFUSCATE("Mask me"))) {
-                     spoofMe = true;
-                 }*/
+                if (ImGui::BeginTabItem(OBFUSCATE("Visual Mods"))) {
+                    ImGui::Checkbox(OBFUSCATE("Chams"), &xray);
+                    ImGui::TextUnformatted(OBFUSCATE("Shows the enemy body through walls."));
+                    ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
+                    ImGui::TextUnformatted(OBFUSCATE("Shows the enemy after you shoot them once."));
+                    ImGui::Checkbox(OBFUSCATE("Quick-Scope"), &quickscope);
+                    ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
+                    ImGui::SliderFloat(OBFUSCATE("Field Of View"), &fovModifier, 0.0, 360.0);
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem(OBFUSCATE("Game Mods"))) {
+                    ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
+                    ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
+                    ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
+                    ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
+                    ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
+                    ImGui::TextUnformatted(OBFUSCATE(
+                                                   "The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
+                    ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
+                    ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
+                    ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+                    //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
+                    ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
+                    if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
+                        destroy = true;
+                    }
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem(OBFUSCATE("Experimental Mods"))) {
+                    ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
+                    ImGui::TextUnformatted(
+                            OBFUSCATE("Makes the game think its on the Unity Editor"));
+                    ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList,
+                                   IM_ARRAYSIZE(sceneList), 4);
+                    if (ImGui::Button(OBFUSCATE("Load Scene"))) {
+                        isLoadScenePressed = true;
+                    }
+                    /* if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
+                         playstantiate = true;
+                     }
+                     if (ImGui::Button(OBFUSCATE("Mask me"))) {
+                         spoofMe = true;
+                     }*/
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
             }
             Patches();
         }
@@ -1235,7 +1271,7 @@ void *hack_thread(void *arg) {
     if (NULL != sym_input) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
-    isValidAuth = tryAutoLogin(localHwid);
+    isValidAuth = /*tryAutoLogin(localHwid)*/ true;
     LOGI("Draw Done!");
     return nullptr;
 }
