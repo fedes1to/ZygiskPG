@@ -14,6 +14,13 @@
 #include "config_file.h"
 #include <vector>
 
+size_t curlCallback(void *contents, size_t size, size_t nmemb, std::string *s)
+{
+    size_t newLength = size*nmemb;
+    s->append((char*)contents, newLength);
+    return newLength;
+}
+
 void initAuth() {
 
     // Variables where we want to store the data from the config file
@@ -91,7 +98,54 @@ void initAuth() {
         std::vector<std::string> ln = {"aid","secret","apikey", "username", "password", "hwid", "license", "email"};
 
         // get the parameters from the user somehow here and then write them to the strings here (this should be maybe called at hook.cpp)
-        // we need to get the parameters from a login form in ImGui, so gotta figure that out ig
+        // we need to get the parameters from a login form in ImGui, so gotta figure that out ig, lets assume the values are set
+        CURL *handle;
+        CURLcode result;
+        curl_global_init(CURL_GLOBAL_DEFAULT);
+
+        // declare handle
+        handle = curl_easy_init();
+        curl_easy_setopt(handle, CURLOPT_URL, "https://api.auth.gg/v1/");
+
+        // prepare post request
+        curl_mime *multipart = curl_mime_init(handle);
+        curl_mimepart *part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "type");
+        curl_mime_data(part, "register", CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "aid");
+        curl_mime_data(part, aid.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "apikey");
+        curl_mime_data(part, apikey.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "secret");
+        curl_mime_data(part, secret.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "username");
+        curl_mime_data(part, username.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "password");
+        curl_mime_data(part, password.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "hwid");
+        curl_mime_data(part, hwid.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "license");
+        curl_mime_data(part, license.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+        curl_mime_name(part, "email");
+        curl_mime_data(part, email.c_str(), CURL_ZERO_TERMINATED);
+        part = curl_mime_addpart(multipart);
+
+        /* Set the form info */
+        curl_easy_setopt(handle, CURLOPT_MIMEPOST, multipart);
+        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, curlCallback);
+
+        result = curl_easy_perform(handle); /* post away! */
+
+        /* free the post data again */
+        curl_mime_free(multipart);
 
         // Open the config file for writing
         std::ofstream f_out("acc.cfg");
