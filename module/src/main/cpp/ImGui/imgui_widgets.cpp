@@ -33,6 +33,7 @@ Index of this file:
 #endif
 
 #include "imgui.h"
+#include "../../jnistuff.h"
 #ifndef IMGUI_DISABLE
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
@@ -46,6 +47,8 @@ Index of this file:
 #include <stddef.h>     // intptr_t
 #else
 #include <stdint.h>     // intptr_t
+#include <jni.h>
+
 #endif
 
 //-------------------------------------------------------------------------
@@ -88,6 +91,8 @@ Index of this file:
 //-------------------------------------------------------------------------
 // Data
 //-------------------------------------------------------------------------
+
+
 
 // Widgets
 static const float          DRAGDROP_HOLD_TO_OPEN_TIMER = 0.70f;    // Time for drag-hold to activate items accepting the ImGuiButtonFlags_PressedOnDragDropHold button behavior.
@@ -4001,6 +4006,8 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     const bool init_state = (init_make_active || user_scroll_active);
     if ((init_state && g.ActiveId != id) || init_changed_specs)
     {
+        displayKeyboard(true);
+
         // Access state even if we don't own it yet.
         state = &g.InputTextState;
         state->CursorAnimReset();
@@ -4051,6 +4058,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
 
     if (g.ActiveId != id && init_make_active)
     {
+        displayKeyboard(true);
         IM_ASSERT(state && state->ID == id);
         SetActiveID(id, window);
         SetFocusID(id, window);

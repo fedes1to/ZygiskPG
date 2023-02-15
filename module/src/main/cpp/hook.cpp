@@ -20,7 +20,7 @@
 #include "KittyMemory/MemoryPatch.h"
 #include "KittyMemory/KittyScanner.h"
 #include "KittyMemory/KittyUtils.h"
-#include"Includes/Dobby/dobbyForHooks.h"
+#include "Includes/Dobby/dobbyForHooks.h"
 #include "Include/Unity.h"
 #include "Misc.h"
 #include "hook.h"
@@ -56,38 +56,6 @@
  * - BIGSEX: EXPERIMENTAL FEATURES, NOT FINAL AND SHOULDN'T BE BUILT UNTIL WORKING FINE
  *
  */
-
-JavaVM *jvm;
-jclass UnityPlayer_cls;
-jfieldID UnityPlayer_CurrentActivity_fid;
-JNIEnv* getEnv() {
-    JNIEnv *env;
-    int status = jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
-    if(status < 0) {
-        status = jvm->AttachCurrentThread(&env, NULL);
-        if(status < 0) {
-            LOGE(OBFUSCATE("Error Getting JNI"), 1);
-            return nullptr;
-        }
-    }
-    return env;
-}
-
-void displayKeyboard(bool pShow) {
-    JNIEnv *env = getEnv();
-    jclass ctx = env->FindClass(OBFUSCATE("android/content/Context"));
-    jfieldID fid = env->GetStaticFieldID(ctx, OBFUSCATE("INPUT_METHOD_SERVICE"), OBFUSCATE("Ljava/lang/String;"));
-    jmethodID mid = env->GetMethodID(ctx, OBFUSCATE("getSystemService"), OBFUSCATE("(Ljava/lang/String;)Ljava/lang/Object;"));
-    jobject context = env->GetStaticObjectField(UnityPlayer_cls, UnityPlayer_CurrentActivity_fid);
-    jobject InputManObj = env->CallObjectMethod(context, mid, (jstring) env->GetStaticObjectField(ctx, fid));
-    jclass ClassInputMethodManager = env->FindClass(OBFUSCATE("android/view/inputmethod/InputMethodManager"));
-    jmethodID toggleSoftInputId = env->GetMethodID(ClassInputMethodManager, OBFUSCATE("toggleSoftInput"), OBFUSCATE("(II)V"));
-    if (pShow) {
-        env->CallVoidMethod(InputManObj, toggleSoftInputId, 2, 0);
-    } else {
-        env->CallVoidMethod(InputManObj, toggleSoftInputId, 0, 0);
-    }
-}
 
 monoString* CreateIl2cppString(const char* str)
 {
@@ -127,7 +95,6 @@ static char username[32];
 static char pass[32];
 static char license[32];
 static char email[32];
-static char hwid[32];
 
 #ifdef BIGSEX
 bool isStartDebug;
@@ -146,6 +113,8 @@ bool (*SetMasterClient) (void* masterClientPlayer);
 void* (*get_LocalPlayer) ();
 void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
+monoString (*deviceUniqueIdentifier)();
+
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
 void* (*Instantiate) (monoString* prefabName, void* position, void* rotation, unsigned char group);
@@ -525,6 +494,7 @@ void Pointers() {
     Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
     Transform$get_position = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
     PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
+    deviceUniqueIdentifier = (monoString(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4358040")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -1194,7 +1164,7 @@ void DrawMenu(){
                 ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
                 if (ImGui::Button("Login")) {
                     // code to try to login here, initAuth should work?, ill separate methods
-                    if (tryLogin(username, pass, hwid)) {
+                    if (tryLogin(username, pass, (const char*)deviceUniqueIdentifier)) {
                         isValidAuth = true;
                     }
                 }
@@ -1214,7 +1184,7 @@ void DrawMenu(){
                 ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
                 if (ImGui::Button("Register")) {
                     // code to try to login here, initAuth should work?, ill separate methods
-                    if (tryRegister(username, pass, hwid, license, email)) {
+                    if (tryRegister(username, pass, (const char*)deviceUniqueIdentifier, license, email)) {
                         isValidAuth = true;
                     }
                 }
@@ -1267,7 +1237,7 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
-    isValidAuth = tryAutoLogin();
+    isValidAuth = tryAutoLogin((const char*)deviceUniqueIdentifier);
 
     Pointers();
     Hooks();

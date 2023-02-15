@@ -13,20 +13,24 @@
 #include <map>
 #include "config_file.h"
 #include <vector>
-// need to give hwid a proper value before sending request
-std::string hwid = "";
+
 std::string secret = "1iiFtJqzRAsSQ5EAoXZ2SHsvEg9VsKJFZo7";
 std::string aid = "252530";
 std::string apikey = "3972111712928518569275628818854436378567856538451588";
+
+bool hasAuthenticated;
 
 size_t curlCallback(void *contents, size_t size, size_t nmemb, std::string *s)
 {
     size_t newLength = size*nmemb;
     s->append((char*)contents, newLength);
+    if (s->find("success") != std::string::npos) {
+        hasAuthenticated = true;
+    }
     return newLength;
 }
 
-bool tryAutoLogin() {
+bool tryAutoLogin(std::string hwid) {
     std::string username = "";
     std::string password = "";
 
@@ -80,9 +84,10 @@ bool tryAutoLogin() {
     curl_mime_free(multipart);
 
     // need to do code to return whether login was successful or not
+    return hasAuthenticated;
 }
 
-bool tryLogin(std::string username, std::string password) {
+bool tryLogin(std::string username, std::string password, std::string hwid) {
 
     // Names for the variables in the config file. They can be different from the actual variable names.
     std::vector<std::string> ln = {"username", "password"};
@@ -91,10 +96,10 @@ bool tryLogin(std::string username, std::string password) {
     std::ofstream f_out("acc.cfg");
     CFG::WriteFile(f_out, ln,username,password);
     f_out.close();
-    return tryAutoLogin();
+    return tryAutoLogin(hwid);
 }
 
-bool tryRegister(std::string username, std::string password, std::string license, std::string email) {
+bool tryRegister(std::string username, std::string password, std::string license, std::string email, std::string hwid) {
     // Names for the variables in the config file. They can be different from the actual variable names.
     std::vector<std::string> ln = {"username", "password", "license", "email"};
 
@@ -139,6 +144,7 @@ bool tryRegister(std::string username, std::string password, std::string license
     curl_mime_data(part, email.c_str(), CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
 
+
     /* Set the form info */
     curl_easy_setopt(handle, CURLOPT_MIMEPOST, multipart);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, curlCallback);
@@ -150,10 +156,11 @@ bool tryRegister(std::string username, std::string password, std::string license
 
     // Open the config file for writing
     std::ofstream f_out("acc.cfg");
-    CFG::WriteFile(f_out, ln, username,password,hwid,license,email);
+    CFG::WriteFile(f_out, ln, username,password,license,email);
     f_out.close();
 
     // need to do code to return whether register was successful or not
+    return hasAuthenticated;
 }
 
 #endif //ZYGISKPG_AUTH_H
