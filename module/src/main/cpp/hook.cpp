@@ -121,6 +121,7 @@ bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, play
 spoofMe, reload, curButtonPressedC, firerate, forceW;
 
 static bool isValidAuth;
+static bool hasRegistered;
 
 #ifdef BIGSEX
 bool isStartDebug;
@@ -1179,7 +1180,12 @@ void DrawMenu(){
             ImGui::End();
         }
     } else {
-
+        // chr1s makes login form code here
+        if (hasRegistered) {
+            // if autologin fails here code for login form
+        } else {
+            // register form here
+        }
     }
 }
 
