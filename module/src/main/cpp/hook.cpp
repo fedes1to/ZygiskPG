@@ -127,6 +127,7 @@ static char username[32];
 static char pass[32];
 static char license[32];
 static char email[32];
+static char hwid[32];
 
 #ifdef BIGSEX
 bool isStartDebug;
@@ -1193,7 +1194,9 @@ void DrawMenu(){
                 ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
                 if (ImGui::Button("Login")) {
                     // code to try to login here, initAuth should work?, ill separate methods
-
+                    if (tryLogin(username, pass, hwid)) {
+                        isValidAuth = true;
+                    }
                 }
                 if (ImGui::Button("Register")) {
                     hasRegistered = false;
@@ -1210,7 +1213,9 @@ void DrawMenu(){
                 ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
                 if (ImGui::Button("Register")) {
                     // code to try to login here, initAuth should work?, ill separate methods
-
+                    if (tryRegister(username, pass, hwid, license, email)) {
+                        isValidAuth = true;
+                    }
                 }
             }
         }
@@ -1259,6 +1264,8 @@ void *hack_thread(void *arg) {
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
+
+    isValidAuth = tryAutoLogin();
 
     Pointers();
     Hooks();

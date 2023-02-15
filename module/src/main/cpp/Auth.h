@@ -78,6 +78,8 @@ bool tryAutoLogin() {
 
     /* free the post data again */
     curl_mime_free(multipart);
+
+    // need to do code to return whether login was successful or not
 }
 
 bool tryLogin(std::string username, std::string password, std::string hwid) {
@@ -129,10 +131,11 @@ bool tryLogin(std::string username, std::string password, std::string hwid) {
 
     /* free the post data again */
     curl_mime_free(multipart);
+
+    // need to do code to return whether login was successful or not
 }
 
 bool tryRegister(std::string username, std::string password, std::string hwid, std::string license, std::string email) {
-
     // Names for the variables in the config file. They can be different from the actual variable names.
     std::vector<std::string> ln = {"username", "password", "hwid", "license", "email"};
 
@@ -190,21 +193,8 @@ bool tryRegister(std::string username, std::string password, std::string hwid, s
     std::ofstream f_out("acc.cfg");
     CFG::WriteFile(f_out, ln, username,password,hwid,license,email);
     f_out.close();
-}
 
-void initAuth() {
-    bool hasFile;
-    // get if user was authenticated before
-    std::ifstream file("acc.cfg");
-    if(!file.is_open()){
-        hasFile = false;
-    } else {
-        hasFile = true;
-    }
-
-    if (hasFile) {
-
-    }
+    // need to do code to return whether register was successful or not
 }
 
 #endif //ZYGISKPG_AUTH_H
