@@ -13,7 +13,8 @@
 #include <map>
 #include "config_file.h"
 #include <vector>
-
+// need to give hwid a proper value before sending request
+std::string hwid = "";
 std::string secret = "1iiFtJqzRAsSQ5EAoXZ2SHsvEg9VsKJFZo7";
 std::string aid = "252530";
 std::string apikey = "3972111712928518569275628818854436378567856538451588";
@@ -28,14 +29,13 @@ size_t curlCallback(void *contents, size_t size, size_t nmemb, std::string *s)
 bool tryAutoLogin() {
     std::string username = "";
     std::string password = "";
-    std::string hwid = "";
 
     // Names of the variables in the config file.
-    std::vector<std::string> ln = {"username", "password", "hwid"};
+    std::vector<std::string> ln = {"username", "password"};
 
     // Open the config file for reading
     std::ifstream f_in("acc.cfg");
-    CFG::ReadFile(f_in, ln,username, password, hwid);
+    CFG::ReadFile(f_in, ln,username, password);
     f_in.close();
 
     CURL *handle;
@@ -82,21 +82,21 @@ bool tryAutoLogin() {
     // need to do code to return whether login was successful or not
 }
 
-bool tryLogin(std::string username, std::string password, std::string hwid) {
+bool tryLogin(std::string username, std::string password) {
 
     // Names for the variables in the config file. They can be different from the actual variable names.
-    std::vector<std::string> ln = {"username", "password", "hwid"};
+    std::vector<std::string> ln = {"username", "password"};
 
     // Open the config file for writing
     std::ofstream f_out("acc.cfg");
-    CFG::WriteFile(f_out, ln,username,password,hwid);
+    CFG::WriteFile(f_out, ln,username,password);
     f_out.close();
     return tryAutoLogin();
 }
 
-bool tryRegister(std::string username, std::string password, std::string hwid, std::string license, std::string email) {
+bool tryRegister(std::string username, std::string password, std::string license, std::string email) {
     // Names for the variables in the config file. They can be different from the actual variable names.
-    std::vector<std::string> ln = {"username", "password", "hwid", "license", "email"};
+    std::vector<std::string> ln = {"username", "password", "license", "email"};
 
     // get the parameters from the user somehow here and then write them to the strings here (this should be maybe called at hook.cpp)
     // we need to get the parameters from a login form in ImGui, so gotta figure that out ig, lets assume the values are set
