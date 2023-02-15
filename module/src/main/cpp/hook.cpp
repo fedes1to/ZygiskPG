@@ -1018,15 +1018,15 @@ void DrawMenu(){
         {
             ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
 #ifdef BIGSEX
-            if (ImGui::Button(OBFUSCATE("tes"))) {
+          /*  if (ImGui::Button(OBFUSCATE("tes"))) {
                 isStartDebug = true;
-            }
+            }*/
 #endif
             if (ImGui::Button(OBFUSCATE("Join Discord"))) {
                 isDiscordPressed = true;
             }
             ImGui::TextUnformatted("Its Recommended to join the discord server for mod updates etc.");
-            if (ImGui::CollapsingHeader(OBFUSCATE("Account Mods"))) {
+            if (ImGui::BeginTabBar(OBFUSCATE("Account Mods"))) {
                 ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                 ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
                 ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
@@ -1034,7 +1034,7 @@ void DrawMenu(){
                 if (ImGui::Button(OBFUSCATE("Add All Weapons"))) {
                     isAddWeapons = true;
                 }
-                ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
+                ImGui::BeginTabBar((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
                 ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
                 ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
                 ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
@@ -1043,7 +1043,7 @@ void DrawMenu(){
                     isBuyEasterSticker = true;
                 }
             }
-            if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
+            if (ImGui::BeginTabBar(OBFUSCATE("Currency Mods"))) {
                 ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
                 ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
                 ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList, IM_ARRAYSIZE(curList), 4);
@@ -1052,7 +1052,7 @@ void DrawMenu(){
                     curButtonPressedC += 1;
                 }
             }
-            if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
+            if (ImGui::BeginTabBar(OBFUSCATE("Player Mods"))) {
                 ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                 ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
                 ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
@@ -1060,7 +1060,7 @@ void DrawMenu(){
                 ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
                 ImGui::SliderFloat(OBFUSCATE("Jump Height"),&jumpHeight, 0.0f, 360.0f);
             }
-            if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
+            if (ImGui::BeginTabBar(OBFUSCATE("Weapon Mods"))) {
                 ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 10.0f);
                 ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
                 ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
@@ -1092,7 +1092,7 @@ void DrawMenu(){
                 ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"),&harpoonBull);
                 ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
             }
-            if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
+            if (ImGui::BeginTabBar(OBFUSCATE("Effect Mods"))) {
                 ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
                 ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
                 ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
@@ -1112,7 +1112,7 @@ void DrawMenu(){
                 ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
                 ImGui::TextUnformatted(OBFUSCATE("Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
             }
-            if (ImGui::CollapsingHeader(OBFUSCATE("Visual Mods"))) {
+            if (ImGui::BeginTabBar(OBFUSCATE("Visual Mods"))) {
                 ImGui::Checkbox(OBFUSCATE("Chams"), &xray);
                 ImGui::TextUnformatted(OBFUSCATE("Shows the enemy body through walls."));
                 ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
@@ -1121,7 +1121,7 @@ void DrawMenu(){
                 ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
                 ImGui::SliderFloat(OBFUSCATE("Field Of View"),&fovModifier, 0.0, 360.0);
             }
-            if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
+            if (ImGui::BeginTabBar(OBFUSCATE("Game Mods"))) {
                 ImGui::Checkbox(OBFUSCATE("Kill All"),&kniferange);
                 ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
                 ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
@@ -1139,7 +1139,7 @@ void DrawMenu(){
                     destroy = true;
                 }
             }
-            if (ImGui::CollapsingHeader(OBFUSCATE("Experimental Mods")))
+            if (ImGui::BeginTabBar(OBFUSCATE("Experimental Mods")))
             {
                 ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
                 ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
