@@ -88,13 +88,13 @@ isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBu
 bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash,
 spoofMe, reload, curButtonPressedC, firerate, forceW ;
 
-static bool isValidAuth;
-static bool hasRegistered;
+// bools for auth shit
+bool isValidAuth, hasRegistered;
 
 static char username[32];
 static char pass[32];
 static char license[32];
-const char* localHwid;
+const char* localHwid = "";
 static char email[64];
 
 #ifdef BIGSEX
@@ -114,7 +114,6 @@ bool (*SetMasterClient) (void* masterClientPlayer);
 void* (*get_LocalPlayer) ();
 void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
-monoString (*deviceUniqueIdentifier)(void* instance);
 
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
@@ -1007,10 +1006,10 @@ void Patches() {
 //firerate : in player_move_c search SpeedsUpReloading and the func above is it
 
 void DrawMenu(){
+    static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    {
     if (isValidAuth)
     {
-        static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-        {
             ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
 #ifdef BIGSEX
           /*  if (ImGui::Button(OBFUSCATE("tes"))) {
@@ -1151,42 +1150,36 @@ void DrawMenu(){
             }
             Patches();
         }
-        if (hasRegistered && !isValidAuth) {
-            // if autologin fails here code for login form
-            static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-            {
-                ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
-                ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
-                if (ImGui::Button("Login")) {
-                    // code to try to login here, initAuth should work?, ill separate methods
-                    if (tryLogin(username, pass, localHwid)) {
-                        isValidAuth = true;
-                    }
-                }
-                if (ImGui::Button("Register")) {
-                    hasRegistered = false;
-                    // maybe reset needed? no idea
-                }
-            }
-        } else if (!isValidAuth) {
-            // register form here
-            static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-            {
-                ImGui::InputText("Email", email, IM_ARRAYSIZE(email));
-                ImGui::InputText("License", license, IM_ARRAYSIZE(license));
-                ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
-                ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
-                if (ImGui::Button("Register")) {
-                    // code to try to login here, initAuth should work?, ill separate methods
-                    if (tryRegister(username, pass, license, email, localHwid)) {
-                        isValidAuth = true;
-                    }
-                }
+    }
+    if (hasRegistered && !isValidAuth) {
+        // if autologin fails here code for login form
+        ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
+        ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
+        if (ImGui::Button("Login")) {
+            // code to try to login here, initAuth should work?, ill separate methods
+            if (tryLogin(username, pass, localHwid)) {
+                isValidAuth = true;
             }
         }
-        ImGui::End();
+        if (ImGui::Button("Register")) {
+            hasRegistered = false;
+            // maybe reset needed? no idea
+        }
+    } else if (!isValidAuth) {
+        // register form here
+        ImGui::InputText("Email", email, IM_ARRAYSIZE(email));
+        ImGui::InputText("License", license, IM_ARRAYSIZE(license));
+        ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
+        ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
+        if (ImGui::Button("Register")) {
+            // code to try to login here, initAuth should work?, ill separate methods
+            if (tryRegister(username, pass, license, email, localHwid)) {
+                isValidAuth = true;
+            }
+        }
     }
-    }
+    ImGui::End();
+}
 
 void SetupImgui() {
     IMGUI_CHECKVERSION();
