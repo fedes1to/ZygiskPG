@@ -31,9 +31,6 @@ Index of this file:
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
-
-#include "imgui.h"
-#include "../../jnistuff.h"
 #ifndef IMGUI_DISABLE
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
@@ -47,7 +44,6 @@ Index of this file:
 #include <stddef.h>     // intptr_t
 #else
 #include <stdint.h>     // intptr_t
-#include <jni.h>
 
 #endif
 
