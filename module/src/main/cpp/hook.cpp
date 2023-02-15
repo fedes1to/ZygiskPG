@@ -86,7 +86,7 @@ spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy,
 isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
 isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
 bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash,
-spoofMe, reload, curButtonPressedC, firerate, forceW;
+spoofMe, reload, curButtonPressedC, firerate;
 
 static bool isValidAuth;
 static bool hasRegistered;
@@ -101,7 +101,7 @@ static char email[64];
 bool isStartDebug;
 #endif
 
-float damage, rimpulseme, damage1, fovModifier, snowstormbullval, jumpHeight;
+float damage, rimpulseme, rimpulse, pspeed, snowstormbullval;
 int reflection, amountws;
 
 void (*SetString) (monoString* key, monoString* value);
@@ -580,7 +580,7 @@ void WeaponSounds(void* obj){
         if(portalBull){
             *(bool*)((uint64_t) obj + 0x3B4) = true;//portalGun
             *(bool*)((uint64_t) obj + 0x3B5) = true;//isPortalExplosion
-           // *(int*)((uint64_t) obj + 0x3C0) = 1;//isPortalExplosion
+            *(int*)((uint64_t) obj + 0x3C0) = 1;//isPortalExplosion
         }
 
         if(charm){
@@ -603,11 +603,15 @@ void WeaponSounds(void* obj){
         }
 
         if(snowstormbull){
-            *(bool*)((uint64_t) obj + 0x2E4) = true;//snowStormonusMultiplier
-            if(snowstormbullval != NULL && !kniferange){
-            *(float*)((uint64_t) obj + 0x2E8) = 6;//snowStormB
+            *(bool*)((uint64_t) obj + 0x2E4) = true;//snowStorm
+            *(float*)((uint64_t) obj + 0x2E8) = 6;//snowStormBonusMultiplier
+            if(snowstormbullval != NULL){
                 *(float*)((uint64_t) obj + 0xDC) = snowstormbullval; // shootDistance
                 *(float*)((uint64_t) obj + 0x5F8) = snowstormbullval; // range
+                kniferangesex = false;
+            }
+            else if(kniferange){
+                kniferangesex = true;
             }
         }
 
@@ -759,7 +763,7 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0xF8) = 9999;//scopeSpeed
         }
 
-       // if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}
+        if(xray){ *(bool*)((uint64_t) obj + 0xC6) = true;}
         /*void* ItemRecord = *(void**)((uint64_t) obj + 0x648);
         if(ItemRecord != nullptr){
             if(spleef){
@@ -781,12 +785,8 @@ void(PlayerMoveC)(void* obj){
             EnableXray(obj, true);
         }
 
-        if(xray){
-            *(bool*)((uint64_t) obj + 0x708) = true; // search ZombiManager then its above
-        }
-
         if(ninjaJump){
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetJetpackEnabledRPC, PhotonTargets::SeflViaServer, NULL);
+            FirstPersonControlSharp$set_ninjaJumpUsed(SkinName$firstPersonControl(Player_move_c$skinName(obj)), false);
         }
 
         if (spoofMe) {
@@ -888,34 +888,33 @@ void PixelTime(void *obj) {
     old_PixelTime(obj);
 }
 
-void(*oldInGameConnection)(void* obj);
-void InGameConnection(void* obj){
-    if(obj != nullptr && forceW){
-        void* SceneInfo = *(void**)((uint64_t) obj + 0x30);
-        if(SceneInfo != nullptr){
-            LOGE("IT EXISTS");//check if its called cause i cant please
-            *(int*)((uint64_t) SceneInfo + 0x28) = 0;
+float (*oldSpeed)();
+float Speed(){
+    if(speed){
+        return 100;
+    }
+    else{
+        return 4;
+    }
+}
+
+void(*oldPetEngine)(void* obj);
+void PetEngine(void* obj){
+    if(obj != nullptr){
+        if(pspeed != NULL){
+            *(float*)((uint64_t) obj + 0x1B8) = pspeed;
+            *(float*)((uint64_t) obj + 0x1B4) = pspeed;
         }
     }
-    oldInGameConnection(obj);
+    oldPetEngine(obj);
 }
 
-float (*old_get_fieldOfView)(void *instance);
-float get_fieldOfView(void *instance) {
-    if (instance != nullptr && fovModifier != NULL) {
-        return fovModifier;
+bool(*oldIsGadgetEnabled)(void* obj);
+bool IsGadgetEnabled(void* obj){
+    if(obj != nullptr && gadgetsEnabled){
+        return true;
     }
-    return old_get_fieldOfView(instance);
-}
-
-void(*oldFirstPersonControlSharp)(void* obj);
-void FirstPersonControlSharp(void* obj){
-    if(obj != nullptr){
-       if(jumpHeight != NULL){
-           *(float*)((uint64_t) obj + 0x4A0) = jumpHeight;
-       }
-    }
-    oldFirstPersonControlSharp(obj);
+    oldIsGadgetEnabled(obj);
 }
 
 int isGame(JNIEnv *env, jstring appDataDir) {
@@ -957,12 +956,12 @@ void Hooks() {
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x4BCA3D4", WeaponManager, old_WeaponManager);
-    HOOK("0x4359378", get_fieldOfView, old_get_fieldOfView);
+   // HOOK("0x41FD8D4", Speed, oldSpeed);CRASH
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
     HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x15ECC04", UIInput, old_UIInput);
-    HOOK("0x2E49FB4", InGameConnection, oldInGameConnection);
-    HOOK("Update", FirstPersonControlSharp, oldFirstPersonControlSharp);
+
+    //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
 }
 
 void Patches() {
@@ -970,8 +969,11 @@ void Patches() {
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);
-   // PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
-    PATCH_SWITCH("0x1AE6AC4", "200080D2C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x4DF4DBC", "200080D2C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x14ACE7C", "200080D2C0035FD6", gadgetsEnabled);
+    PATCH_SWITCH("0x14AC394", "200080D2C0035FD6", gadgetsEnabled);
+    PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
     PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
     PATCH_SWITCH("0x2F87C14", "802580D2C0035FD6", cWear);
     PATCH_SWITCH("0x2F87AFC", "802580D2C0035FD6", cWear);
@@ -994,10 +996,10 @@ void Patches() {
     PATCH_SWITCH("0x42679A0", "20080D02C0035FD6", wepSkins);
     PATCH_SWITCH("0x14193E4", "200180922C0035FD6", ammo);
     PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
-   // PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
-    //PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
+    PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump);
+    PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
+    PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
     PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);
-    PATCH_SWITCH("0x48F1E00", "00F0271EC0035FD6", speed);
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
@@ -1015,6 +1017,7 @@ void DrawMenu(){
     isValidAuth = tryAutoLogin(localHwid);
     if (isValidAuth)
     {
+<<<<<<< HEAD
         static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         {
             ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
@@ -1193,6 +1196,149 @@ void DrawMenu(){
                 }
             }
             ImGui::End();
+=======
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+#ifdef BIGSEX
+        if (ImGui::Button(OBFUSCATE("tes"))) {
+            isStartDebug = true;
+        }
+#endif
+        if (ImGui::Button(OBFUSCATE("Join Discord"))) {
+            isDiscordPressed = true;
+        }
+        ImGui::TextUnformatted("Its Recommended to join the discord server for mod updates etc.");
+        if (ImGui::CollapsingHeader(OBFUSCATE("Account Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
+            ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
+            ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
+            ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
+           if (ImGui::Button(OBFUSCATE("Add All Weapons"))) {
+                isAddWeapons = true;
+            }
+            ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
+            ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
+            ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
+            ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
+            ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
+            if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
+                isBuyEasterSticker = true;
+            }
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
+            ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
+            ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
+            ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList, IM_ARRAYSIZE(curList), 4);
+            if (ImGui::Button(OBFUSCATE("Add Currency"))) {
+                isAddCurPressed = true;
+                curButtonPressedC += 1;
+            }
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Player Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
+            ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
+            ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
+            ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
+            ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Mods"))) {
+            ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"),&damage, 0.0f, 10.0f);
+            ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
+            ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
+            ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
+            ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
+           // ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
+          //  ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
+            ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"),&snowstormbullval, 0.0f, 1000.0f);
+            ImGui::Checkbox(OBFUSCATE("Silent Aim"),&snowstormbull);
+            ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
+            ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
+            ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
+            ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
+            ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
+            ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"), &shotBull);//add it chris dont forget
+            ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
+            ImGui::SliderInt(OBFUSCATE("Reflection Rays"),&reflection, 0, 1000);
+            ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
+            ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"),&kniferangesex);
+            ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
+            ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"),&recoilandspread);
+            ImGui::Checkbox(OBFUSCATE("Force Scope"),&scopef);
+            ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+            ImGui::Checkbox(OBFUSCATE("Force Portal Bullets"),&portalBull);
+            ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot portal bullets."));
+            ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"),&polymorph);
+            ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
+            ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"),&harpoonBull);
+            ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
+            ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
+            ImGui::TextUnformatted(OBFUSCATE("Removes the burning and being intoxicated effect on you."));
+            ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+            ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+            ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
+            ImGui::TextUnformatted(OBFUSCATE("Adds a speed-up effect (Will speed up any player you shoot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
+            ImGui::TextUnformatted(OBFUSCATE("Adds a slow-down effect (Will freeze any player you shoot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
+            ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
+            ImGui::TextUnformatted(OBFUSCATE("Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Visual Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Chams"), &xray);
+            ImGui::TextUnformatted(OBFUSCATE("Shows the enemy body through walls."));
+            ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
+            ImGui::TextUnformatted(OBFUSCATE("Shows the enemy after you shoot them once."));
+            ImGui::Checkbox(OBFUSCATE("Quick-Scope"), &quickscope);
+            ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Pet Mods"))) {
+            //ImGui::Checkbox(OBFUSCATE("Godmode"), &pgod);
+           // ImGui::TextUnformatted(OBFUSCATE("Pets never die"));
+           // ImGui::SliderFloat(OBFUSCATE("Pet Speed"), &pspeed, 0.0f, 500.0f);
+
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
+            ImGui::Checkbox(OBFUSCATE("Kill All"),&kniferange);
+            ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
+            ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
+            ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
+            ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
+            ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
+            ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
+            ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
+            ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
+            ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
+            ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+            if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
+                destroy = true;
+            }
+        }
+        if (ImGui::CollapsingHeader(OBFUSCATE("Experimental Mods")))
+        {
+            ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
+            ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
+            ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
+            if (ImGui::Button(OBFUSCATE("Load Scene"))) {
+                isLoadScenePressed = true;
+            }
+            /*if (ImGui::Button(OBFUSCATE("Become god"))) {
+                SetMasterClient(get_LocalPlayer());
+            }*/
+            if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
+                playstantiate = true;
+            }
+            if (ImGui::Button(OBFUSCATE("Mask me"))) {
+                spoofMe = true;
+            }
+>>>>>>> parent of 40239c2 (playerspeed and others)
         }
     }
 }
