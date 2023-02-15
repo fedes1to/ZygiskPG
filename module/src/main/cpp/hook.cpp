@@ -123,6 +123,11 @@ spoofMe, reload, curButtonPressedC, firerate, forceW;
 static bool isValidAuth;
 static bool hasRegistered;
 
+static char username[32];
+static char pass[32];
+static char license[32];
+static char email[32];
+
 #ifdef BIGSEX
 bool isStartDebug;
 #endif
@@ -1180,11 +1185,34 @@ void DrawMenu(){
             ImGui::End();
         }
     } else {
-        // chr1s makes login form code here
         if (hasRegistered) {
             // if autologin fails here code for login form
+            static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+            {
+                ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
+                ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
+                if (ImGui::Button("Login")) {
+                    // code to try to login here, initAuth should work?, ill separate methods
+
+                }
+                if (ImGui::Button("Register")) {
+                    hasRegistered = false;
+                    // maybe reset needed? no idea
+                }
+            }
         } else {
             // register form here
+            static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+            {
+                ImGui::InputText("Email", email, IM_ARRAYSIZE(email));
+                ImGui::InputText("License", license, IM_ARRAYSIZE(license));
+                ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
+                ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
+                if (ImGui::Button("Register")) {
+                    // code to try to login here, initAuth should work?, ill separate methods
+
+                }
+            }
         }
     }
 }
