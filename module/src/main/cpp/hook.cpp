@@ -94,7 +94,8 @@ static bool hasRegistered;
 static char username[32];
 static char pass[32];
 static char license[32];
-static char email[32];
+const char* localHwid;
+static char email[64];
 
 #ifdef BIGSEX
 bool isStartDebug;
@@ -843,6 +844,7 @@ enum StickerType {
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
     if (obj != nullptr) {
+        localHwid = (const char*)deviceUniqueIdentifier;
         if (isBuyEasterSticker) {
             isBuyEasterSticker = false;
             BuyStickerPack((int*)StickerType::easter);
@@ -1164,7 +1166,7 @@ void DrawMenu(){
                 ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
                 if (ImGui::Button("Login")) {
                     // code to try to login here, initAuth should work?, ill separate methods
-                    if (tryLogin(username, pass, (const char*)deviceUniqueIdentifier)) {
+                    if (tryLogin(username, pass, localHwid)) {
                         isValidAuth = true;
                     }
                 }
@@ -1184,7 +1186,7 @@ void DrawMenu(){
                 ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
                 if (ImGui::Button("Register")) {
                     // code to try to login here, initAuth should work?, ill separate methods
-                    if (tryRegister(username, pass, (const char*)deviceUniqueIdentifier, license, email)) {
+                    if (tryRegister(username, pass, localHwid, license, email)) {
                         isValidAuth = true;
                     }
                 }
@@ -1237,10 +1239,11 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
-    isValidAuth = tryAutoLogin((const char*)deviceUniqueIdentifier);
-
     Pointers();
     Hooks();
+
+    sleep(1);
+    isValidAuth = tryAutoLogin(localHwid);
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
