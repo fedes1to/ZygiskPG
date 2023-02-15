@@ -114,7 +114,7 @@ bool (*SetMasterClient) (void* masterClientPlayer);
 void* (*get_LocalPlayer) ();
 void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
-monoString (*deviceUniqueIdentifier)();
+monoString (*deviceUniqueIdentifier)(void* instance);
 
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
@@ -495,7 +495,7 @@ void Pointers() {
     Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
     Transform$get_position = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
     PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
-    deviceUniqueIdentifier = (monoString(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4358040")));
+    deviceUniqueIdentifier = (monoString(*)(void*)) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4358040")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -844,7 +844,7 @@ enum StickerType {
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
     if (obj != nullptr) {
-        localHwid = (const char*)deviceUniqueIdentifier;
+        localHwid = deviceUniqueIdentifier(obj).getRawChars();
         if (isBuyEasterSticker) {
             isBuyEasterSticker = false;
             BuyStickerPack((int*)StickerType::easter);
@@ -1012,6 +1012,7 @@ void Patches() {
 //firerate : in player_move_c search SpeedsUpReloading and the func above is it
 
 void DrawMenu(){
+    isValidAuth = tryAutoLogin(localHwid);
     if (isValidAuth)
     {
         static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -1241,9 +1242,6 @@ void *hack_thread(void *arg) {
 
     Pointers();
     Hooks();
-
-    sleep(1);
-    isValidAuth = tryAutoLogin(localHwid);
 
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
