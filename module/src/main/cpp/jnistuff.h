@@ -7,7 +7,6 @@
 
 #include <cstring>
 #include <jni.h>
-#include "obfuscate.h"
 #include "hook.h"
 
 JavaVM *jvm;
@@ -40,6 +39,53 @@ void displayKeyboard(bool pShow) {
     } else {
         env->CallVoidMethod(InputManObj, toggleSoftInputId, 0, 0);
     }
+}
+
+
+std::string getPublicStaticString(JNIEnv *env, const char *className, const char *fieldName) {
+    jclass clazz = env->FindClass(className);
+    if (clazz != nullptr) {
+        jfieldID fid = env->GetStaticFieldID(clazz, fieldName, "Ljava/lang/String;");
+        if (fid != nullptr) {
+            jstring GladioReceiver = (jstring) env->GetStaticObjectField(clazz, fid);
+            jboolean blnIsCopy;
+            std::string mystr = env->GetStringUTFChars(GladioReceiver, &blnIsCopy);
+            return mystr;
+        }
+    }
+    return "ERROR";
+}
+
+std::string CreateDeviceUniqueID() {
+    JNIEnv *env = getEnv();
+    std::string strReturn;
+    std::string board = getPublicStaticString(env, "android/os/Build", "BOARD");
+    std::string brand = getPublicStaticString(env, "android/os/Build", "BRAND");
+    std::string display = getPublicStaticString(env, "android/os/Build", "DISPLAY");
+    std::string device = getPublicStaticString(env, "android/os/Build", "DEVICE");
+    std::string manufacturer = getPublicStaticString(env, "android/os/Build", "MANUFACTURER");
+    std::string model = getPublicStaticString(env, "android/os/Build", "MODEL");
+    std::string product = getPublicStaticString(env, "android/os/Build", "PRODUCT");
+
+    int mod = 10;
+    int a1 = ((int) board.size()) % mod;
+    int a2 = ((int) brand.size()) % mod;
+    int a3 = ((int) display.size()) % mod;
+    int a4 = ((int) device.size()) % mod;
+    int a5 = ((int) manufacturer.size()) % mod;
+    int a6 = ((int) model.size()) % mod;
+    int a7 = ((int) product.size()) % mod;
+
+    strReturn = "35" +
+                std::to_string(a1) +
+                std::to_string(a2) +
+                std::to_string(a3) +
+                std::to_string(a4) +
+                std::to_string(a5) +
+                std::to_string(a6) +
+                std::to_string(a7);
+
+    return strReturn;
 }
 
 #endif //ZYGISKPG_JNISTUFF_H

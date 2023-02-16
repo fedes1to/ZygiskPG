@@ -28,6 +28,7 @@
 #include <iostream>
 #include <chrono>
 #include "Auth.h"
+#include "jnistuff.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -93,7 +94,7 @@ bool isValidAuth, hasRegistered;
 static char username[32];
 static char pass[32];
 static char license[32];
-const char* localHwid = "";
+const char* localHwid = CreateDeviceUniqueID().c_str();
 static char email[64];
 
 #ifdef BIGSEX
