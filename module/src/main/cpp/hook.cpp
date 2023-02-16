@@ -28,7 +28,6 @@
 #include <iostream>
 #include <chrono>
 #include "Auth.h"
-#include "jnistuff.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -1008,8 +1007,15 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGuiIO& io = ImGui::GetIO();
+        static bool WantTextInputLast = false;
+        if (io.WantTextInput && !WantTextInputLast)
+        {
+            // here you put code to call the keyboard
+        }
+        WantTextInputLast = io.WantTextInput;
         if (isValidAuth) {
-            ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
 #ifdef BIGSEX
             /*  if (ImGui::Button(OBFUSCATE("tes"))) {
                   isStartDebug = true;
@@ -1178,7 +1184,8 @@ void DrawMenu(){
                 hasRegistered = false;
                 // maybe reset needed? no idea
             }
-        } else if (!isValidAuth) {
+        }
+        if (!isValidAuth) {
             // register form here
             ImGui::InputText("Email", email, IM_ARRAYSIZE(email));
             ImGui::InputText("License", license, IM_ARRAYSIZE(license));
@@ -1241,8 +1248,14 @@ void *hack_thread(void *arg) {
     Pointers();
     Hooks();
 
-    isValidAuth = tryAutoLogin();
+    LOGW("trying isValidAuth");
+    std::ifstream file("acc.cfg");
+    if (file.is_open()) {
+        LOGW("file was found");
+        isValidAuth = tryAutoLogin();
+    }
 
+    LOGW("done! hooking egl");
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
