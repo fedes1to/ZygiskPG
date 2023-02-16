@@ -28,8 +28,7 @@
 #include <iostream>
 #include <chrono>
 #include "Auth.h"
-#include "jnistuff.h"
-
+#include "jniStuff.h"
 #define GamePackageName "com.pixel.gun3d"
 
 //dear future self, if this game ever updat
@@ -94,7 +93,7 @@ bool isValidAuth, hasRegistered;
 static char username[32];
 static char pass[32];
 static char license[32];
-const char* localHwid = CreateDeviceUniqueID().c_str();
+const char* localHwid = "";
 static char email[64];
 
 #ifdef BIGSEX
@@ -1006,8 +1005,12 @@ void Patches() {
 //firerate : in player_move_c search SpeedsUpReloading and the func above is it
 
 void DrawMenu(){
+    ImGuiIO &io = ImGui::GetIO();
+    static bool WantTextInputLast = false;
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
+        if (io.WantTextInput && !WantTextInputLast){displayKeyboard(true);}
+        WantTextInputLast = io.WantTextInput;
         if (isValidAuth) {
             ImGui::Begin(OBFUSCATE(
                                  "ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
@@ -1236,14 +1239,12 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         SetupImgui();
         setupimg = true;
     }
-
     ImGuiIO &io = ImGui::GetIO();
-
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
 
     DrawMenu();
-
+;
     ImGui::EndFrame();
     ImGui::Render();
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
@@ -1270,7 +1271,7 @@ void *hack_thread(void *arg) {
     if (NULL != sym_input) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
-    isValidAuth = /*tryAutoLogin(localHwid)*/ true;
+    isValidAuth = /*tryAutoLogin(localHwid)*/ false;
     LOGI("Draw Done!");
     return nullptr;
 }
