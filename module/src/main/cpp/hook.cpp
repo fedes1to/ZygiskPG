@@ -509,7 +509,7 @@ void WeaponManager(void *obj) {
         auto delay = std::chrono::seconds(15);
         if (isAddWeapons) {
             for (int i = 0; i < 300; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -518,7 +518,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons2) {
             for (int i = 300; i < 500; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons2 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -527,7 +527,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons3) {
             for (int i = 500; i < 700; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons3 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -536,7 +536,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons4) {
             for (int i = 700; i < 900; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons4 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -545,7 +545,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons5) {
             for (int i = 900; i < 1186; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons5 = false;
             while (std::chrono::steady_clock::now() - start < delay) {}
