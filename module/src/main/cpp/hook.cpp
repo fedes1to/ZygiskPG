@@ -1012,7 +1012,7 @@ void DrawMenu(){
         static bool WantTextInputLast = false;
         if (io.WantTextInput && !WantTextInputLast)
         {
-            // here you put code to call the keyboard
+
         }
         WantTextInputLast = io.WantTextInput;
         if (isValidAuth) {
