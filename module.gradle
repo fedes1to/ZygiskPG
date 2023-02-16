@@ -4,6 +4,6 @@ ext {
     moduleName = "Pixel Gun 3D Mod Menu - ZygiskPG"
     moduleAuthor = "chr1s, networkCommand() and NitrogenDioxide ---- Credits to : oobbb - module, jmpews - Dobby, MJx0 - KittyMemory, ocornut - ImGui, Red16 - Kill All"
     moduleDescription = "Mod Menu for PG3D 23.0.1, this is a beta build! DEVICES BELOW ANDROID 7 ARE BOUND TO CAUSE ISSUES, USE AT YOUR OWN RISK."
-    moduleVersion = "v1.0a (23.0.1)"
+    moduleVersion = "v0.1a (23.0.1)"
     moduleVersionCode = 1
 }

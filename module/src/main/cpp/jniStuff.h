@@ -40,7 +40,7 @@ void displayKeyboard(bool pShow) {
     }
 }
 
-/*
+
 std::string getPublicStaticString(JNIEnv *env, const char *className, const char *fieldName) {
     jclass clazz = env->FindClass(className);
     if (clazz != nullptr) {
@@ -86,5 +86,10 @@ std::string CreateDeviceUniqueID() {
 
     return strReturn;
 }
+<<<<<<< HEAD:module/src/main/cpp/jniStuff.h
 */
 #endif //ZYGISKPG_JNISTUFF_H
+=======
+
+#endif //ZYGISKPG_JNISTUFF_H
+>>>>>>> parent of 23485f7 (fixes):module/src/main/cpp/jnistuff.h

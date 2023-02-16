@@ -88,12 +88,12 @@ ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabl
 portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW ;
 
 // bools for auth shit
-bool isValidAuth;
-bool hasRegistered;
+bool isValidAuth, hasRegistered;
 
 static char username[32];
 static char pass[32];
 static char license[32];
+const char* localHwid = CreateDeviceUniqueID().c_str();
 static char email[64];
 
 #ifdef BIGSEX
@@ -1176,7 +1176,7 @@ void DrawMenu(){
             ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
             if (ImGui::Button("Login")) {
                 // code to try to login here, initAuth should work?, ill separate methods
-                if (tryLogin(username, pass)) {
+                if (tryLogin(username, pass, localHwid)) {
                     isValidAuth = true;
                 }
             }
@@ -1193,7 +1193,7 @@ void DrawMenu(){
             ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
             if (ImGui::Button("Register")) {
                 // code to try to login here, initAuth should work?, ill separate methods
-                if (tryRegister(username, pass, license, email)) {
+                if (tryRegister(username, pass, license, email, localHwid)) {
                     isValidAuth = true;
                 }
             }
@@ -1248,6 +1248,7 @@ void *hack_thread(void *arg) {
     Pointers();
     Hooks();
 
+<<<<<<< HEAD
     LOGW("trying isValidAuth");
     std::ifstream file("acc.cfg");
     if (file.is_open()) {
@@ -1256,6 +1257,8 @@ void *hack_thread(void *arg) {
     }
 
     LOGW("done! hooking egl");
+=======
+>>>>>>> parent of 23485f7 (fixes)
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
@@ -1264,6 +1267,7 @@ void *hack_thread(void *arg) {
     if (NULL != sym_input) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
+    isValidAuth = /*tryAutoLogin(localHwid)*/ true;
     LOGI("Draw Done!");
     return nullptr;
 }

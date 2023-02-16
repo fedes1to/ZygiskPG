@@ -18,7 +18,7 @@ std::string secret = "1iiFtJqzRAsSQ5EAoXZ2SHsvEg9VsKJFZo7";
 std::string aid = "252530";
 std::string apikey = "3972111712928518569275628818854436378567856538451588";
 
-bool hasAuthenticated = false;
+bool hasAuthenticated;
 
 size_t curlCallback(void *contents, size_t size, size_t nmemb, std::string *s)
 {
@@ -30,27 +30,7 @@ size_t curlCallback(void *contents, size_t size, size_t nmemb, std::string *s)
     return newLength;
 }
 
-std::string getHwid() {
-    CURL *curl;
-    CURLcode result;
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    char* ip;
-
-    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
-
-    /* Perform the request, res will get the return code */
-    auto res = curl_easy_perform(curl);
-    /* Check for errors */
-    if((res == CURLE_OK) &&
-       !curl_easy_getinfo(curl, CURLINFO_LOCAL_IP, &ip) && ip) {
-        return ip;
-    }
-
-    /* always cleanup */
-    curl_easy_cleanup(curl);
-}
-
-bool tryAutoLogin() {
+bool tryAutoLogin(std::string hwid) {
     std::string username = "";
     std::string password = "";
 
@@ -92,7 +72,7 @@ bool tryAutoLogin() {
     curl_mime_data(part, password.c_str(), CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
     curl_mime_name(part, "hwid");
-    curl_mime_data(part, getHwid().c_str(), CURL_ZERO_TERMINATED);
+    curl_mime_data(part, hwid.c_str(), CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
 
     /* Set the form info */
@@ -107,7 +87,7 @@ bool tryAutoLogin() {
     return hasAuthenticated;
 }
 
-bool tryLogin(std::string username, std::string password) {
+bool tryLogin(std::string username, std::string password, std::string hwid) {
 
     // Names for the variables in the config file. They can be different from the actual variable names.
     std::vector<std::string> ln = {"username", "password"};
@@ -116,11 +96,10 @@ bool tryLogin(std::string username, std::string password) {
     std::ofstream f_out("acc.cfg");
     CFG::WriteFile(f_out, ln,username,password);
     f_out.close();
-    return tryAutoLogin();
+    return tryAutoLogin(hwid);
 }
 
-bool tryRegister(std::string username, std::string password, std::string license, std::string email) {
-
+bool tryRegister(std::string username, std::string password, std::string license, std::string email, std::string hwid) {
     // Names for the variables in the config file. They can be different from the actual variable names.
     std::vector<std::string> ln = {"username", "password", "license", "email"};
 
@@ -156,7 +135,7 @@ bool tryRegister(std::string username, std::string password, std::string license
     curl_mime_data(part, password.c_str(), CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
     curl_mime_name(part, "hwid");
-    curl_mime_data(part, getHwid().c_str(), CURL_ZERO_TERMINATED);
+    curl_mime_data(part, hwid.c_str(), CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
     curl_mime_name(part, "license");
     curl_mime_data(part, license.c_str(), CURL_ZERO_TERMINATED);
