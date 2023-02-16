@@ -41,7 +41,7 @@ void displayKeyboard(bool pShow) {
     }
 }
 
-
+/*
 std::string getPublicStaticString(JNIEnv *env, const char *className, const char *fieldName) {
     jclass clazz = env->FindClass(className);
     if (clazz != nullptr) {
@@ -87,5 +87,5 @@ std::string CreateDeviceUniqueID() {
 
     return strReturn;
 }
-
+*/
 #endif //ZYGISKPG_JNISTUFF_H
