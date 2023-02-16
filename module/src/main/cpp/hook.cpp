@@ -28,6 +28,7 @@
 #include <iostream>
 #include <chrono>
 #include "Auth.h"
+#include "jnistuff.h"
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -509,7 +510,7 @@ void WeaponManager(void *obj) {
         auto delay = std::chrono::seconds(15);
         if (isAddWeapons) {
             for (int i = 0; i < 300; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -518,7 +519,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons2) {
             for (int i = 300; i < 500; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons2 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -527,7 +528,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons3) {
             for (int i = 500; i < 700; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons3 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -536,7 +537,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons4) {
             for (int i = 700; i < 900; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons4 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -545,7 +546,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons5) {
             for (int i = 900; i < 1186; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
             }
             isAddWeapons5 = false;
             while (std::chrono::steady_clock::now() - start < delay) {}
@@ -1007,15 +1008,8 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
-        ImGuiIO& io = ImGui::GetIO();
-        static bool WantTextInputLast = false;
-        if (io.WantTextInput && !WantTextInputLast)
-        {
-
-        }
-        WantTextInputLast = io.WantTextInput;
         if (isValidAuth) {
+            ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
 #ifdef BIGSEX
             /*  if (ImGui::Button(OBFUSCATE("tes"))) {
                   isStartDebug = true;
@@ -1184,8 +1178,7 @@ void DrawMenu(){
                 hasRegistered = false;
                 // maybe reset needed? no idea
             }
-        }
-        if (!isValidAuth) {
+        } else if (!isValidAuth) {
             // register form here
             ImGui::InputText("Email", email, IM_ARRAYSIZE(email));
             ImGui::InputText("License", license, IM_ARRAYSIZE(license));
@@ -1248,17 +1241,6 @@ void *hack_thread(void *arg) {
     Pointers();
     Hooks();
 
-<<<<<<< HEAD
-    LOGW("trying isValidAuth");
-    std::ifstream file("acc.cfg");
-    if (file.is_open()) {
-        LOGW("file was found");
-        isValidAuth = tryAutoLogin();
-    }
-
-    LOGW("done! hooking egl");
-=======
->>>>>>> parent of 23485f7 (fixes)
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,

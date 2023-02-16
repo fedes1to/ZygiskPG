@@ -1,12 +1,13 @@
+//
+// Created by lbert on 2/15/2023.
+//
 
-#include "hook.h"
-#include <cstring>
-#include <jni.h>
 #ifndef ZYGISKPG_JNISTUFF_H
 #define ZYGISKPG_JNISTUFF_H
 
-
-
+#include <cstring>
+#include <jni.h>
+#include "hook.h"
 
 JavaVM *jvm;
 jclass UnityPlayer_cls;
@@ -86,10 +87,5 @@ std::string CreateDeviceUniqueID() {
 
     return strReturn;
 }
-<<<<<<< HEAD:module/src/main/cpp/jniStuff.h
-*/
-#endif //ZYGISKPG_JNISTUFF_H
-=======
 
 #endif //ZYGISKPG_JNISTUFF_H
->>>>>>> parent of 23485f7 (fixes):module/src/main/cpp/jnistuff.h
