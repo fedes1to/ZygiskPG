@@ -1005,15 +1005,11 @@ void Patches() {
 //firerate : in player_move_c search SpeedsUpReloading and the func above is it
 
 void DrawMenu(){
-    ImGuiIO &io = ImGui::GetIO();
-    static bool WantTextInputLast = false;
+
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        if (io.WantTextInput && !WantTextInputLast){displayKeyboard(true);}
-        WantTextInputLast = io.WantTextInput;
         if (isValidAuth) {
-            ImGui::Begin(OBFUSCATE(
-                                 "ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+            ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
 #ifdef BIGSEX
             /*  if (ImGui::Button(OBFUSCATE("tes"))) {
                   isStartDebug = true;
@@ -1036,13 +1032,11 @@ void DrawMenu(){
                     if (ImGui::Button(OBFUSCATE("Add All Weapons"))) {
                         isAddWeapons = true;
                     }
-                    ImGui::TextUnformatted((OBFUSCATE(
-                            "Gives the player all the weapons (It will take a while, Freezing is normal)")));
+                    ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
                     ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
                     ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
+                    ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
                         isBuyEasterSticker = true;
                     }
@@ -1061,8 +1055,7 @@ void DrawMenu(){
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Makes you invincible (others can kill you but you won't die and just become invisible)"));
+                    ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
                     ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
                     ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
@@ -1072,11 +1065,9 @@ void DrawMenu(){
                         ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
                         ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
                         ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                                       "Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
+                        ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
                         ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                                       "The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
+                        ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
                         ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
                         ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
                         ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
@@ -1271,7 +1262,7 @@ void *hack_thread(void *arg) {
     if (NULL != sym_input) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
-    isValidAuth = /*tryAutoLogin(localHwid)*/ false;
+    isValidAuth = /*tryAutoLogin(localHwid)*/ true;
     LOGI("Draw Done!");
     return nullptr;
 }
