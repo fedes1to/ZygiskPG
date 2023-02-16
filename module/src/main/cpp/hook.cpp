@@ -29,6 +29,8 @@
 #include <chrono>
 #include "Auth.h"
 #include "jniStuff.h"
+#include "Quaternion.h"
+
 #define GamePackageName "com.pixel.gun3d"
 
 //dear future self, if this game ever updat
@@ -85,10 +87,12 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, w
 shotbull, railbull,jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
 isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull,
 ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
-portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW ;
+portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot ;
 
 // bools for auth shit
 bool isValidAuth, hasRegistered;
+void *MyPlayer;
+void *closestenemy;
 
 static char username[32];
 static char pass[32];
@@ -119,259 +123,6 @@ void (*DestroyAll) ();
 void* (*Instantiate) (monoString* prefabName, void* position, void* rotation, unsigned char group);
 void (*BuyStickerPack) (int* type);
 
-enum RPCList
-{
-    ActivateMechRPC,
-    AddBonusAfterKillPlayerRPC,
-    AddForceRPC,
-    AddFreezerRayWithLength,
-    AddPaticleBazeRPC,
-    AddPlayerInCapturePoint,
-    AddScoreDuckHuntRPC,
-    AddWeaponAfterKillPlayerRPC,
-    AdvancedEffectRPC,
-    AdvancedEffectWithSenderRPC,
-    ApplyDamageRPC,
-    ApplyDebuffRPC,
-    ChargeGunAnimation,
-    ClearScoreCommandInFlagGameRPC,
-    Collide,
-    CountKillsCommandSynch,
-    CreateChestRPC,
-    DeactivateMechRPC,
-    DestroyRpc,
-    GetInPlayerRPC,
-    ShowSelectedFortNotification,
-    fireFlash,
-    GetBonusRewardRPC,
-    ActivateGadgetRPC,
-    GetDamageRPC,
-    RespawnRPC,
-    Go,
-    GoBazaRPC,
-    GoMatchRPC,
-    HoleRPC,
-    ImDeadInHungerGamesRPC,
-    imDeath,
-    ImKilledRPC,
-    IsVisible_RPC,
-    KilledByRPC,
-    LikeRPC,
-    MakeBonusRPC,
-    MeKillRPC,
-    OpponentLeftGame,
-    PlayDestroyEffectRpc,
-    PlayerEffectRPC,
-    PlayMusic,
-    PlayPortalSoundRPC,
-    PlayZombieAttackRPC,
-    PlayZombieRunRPC,
-    plusCountKillsCommand,
-    CheckActivityRPC,
-    HitByVehicleRPC,
-    ReloadGun,
-    RemoveBonusRPC,
-    RemoveBonusWithRewardRPC,
-    RemovePlayerInCapturePoint,
-    ResumeMatchRPC,
-    RevengeRequestRPC,
-    SendBuffParameters,
-    SendChatMessageWithIcon,
-    SendSystemMessegeFromFlagAddScoreRPC,
-    SendSystemMessegeFromFlagDroppedRPC,
-    SendSystemMessegeFromFlagReturnedRPC,
-    SetArmorVisInvisibleRPC,
-    setBootsRPC,
-    SetBotHealthRPC,
-    setCapeRPC,
-    SetCaptureRPC,
-    SetEnemyArmor,
-    SetEnemyBoots,
-    SetEnemyCape,
-    SetEnemyHat,
-    SetEnemyMask,
-    SetEnemyPet,
-    SetEnemySkin,
-    SetEnemyWeapon,
-    SetGadgetEffectActiveRPC,
-    SetGadgetesRPC,
-    SetHatWithInvisebleRPC,
-    SetBigHeadRPC,
-    SetJetpackEnabledRPC,
-    SetJetpackParticleEnabledRPC,
-    SetMaskRPC,
-    SetMyClanTexture,
-    SetMySkin,
-    SetNickName,
-    SetNOCaptureRPC,
-    SetPixelBookID,
-    SetRocketActive,
-    SetRocketActiveWithCharge,
-    SetRocketStickedRPC,
-    SetTargetRPC,
-    SetVisibleFireEffectRpc,
-    SetWeaponRPC,
-    SetWeaponSkinRPC,
-    SetWearIsInvisibleRPC,
-    ShotRPC,
-    ShowBonuseParticleRPC,
-    ShowExplosion,
-    ShowMultyKillRPC,
-    SinchCapture,
-    SlowdownRPC,
-    StartFlashRPC,
-    StartGame,
-    StartMatchRPC,
-    StartNewRespanObjectRpc,
-    StartRocketRPC,
-    StartShootLoopRPC,
-    StartTurretRPC,
-    SynchCaptureCounter,
-    SynchCaptureCounterNewPlayer,
-    SynchGameRating,
-    SynchGameTimer,
-    SynchNamberSpawnZoneRPC,
-    SynchNumUpdateRPC,
-    SynchronizeTimeRPC,
-    SynchScoreCommandRPC,
-    SynchScoresCommandsNewPlayerRPC,
-    SynchScoresCommandsRPC,
-    SynchStartTimer,
-    SynhCommandRPC,
-    SynhCountKillsRPC,
-    SynhDeltaHealthRPC,
-    SynhHealthRPC,
-    SynhIsZoming,
-    SynhNameRPC,
-    SynhRanksRPC,
-    SynhScoreRPC,
-    SynhDeltaArmorRPC,
-    PropertyRPC,
-    winInHungerRPC,
-    SetPlayerUniqID,
-    SynchLivesItems,
-    RegisterPlayerRPC,
-    SetGamemodeRPC,
-    SetMapRPC,
-    StartGameRPC,
-    SetReadyRPC,
-    QuitFromSquadRPC,
-    ShowStartGameRPC,
-    StartTimerRPC,
-    KickPlayerRPC,
-    SynchCurrentCategory,
-    ResetVersusTimerRPC,
-    StartAirDropItemRPC,
-    MakeBetRPC,
-    GoTeamMatchRPC,
-    StartTeamMatchRPC,
-    SynchronizeMatchTimeRPC,
-    SetRocketActiveWithNumSmoke,
-    SynhDeathCountRPC,
-    GoRevengeMatchRPC,
-    EndRoundRPC,
-    SynchronizeGoTimeRPC,
-    SyncronizeTeamWins,
-    FireFlashDamagebleRPC,
-    SetMaxArmorAndHealthRPC,
-    SendEmojiRPC,
-    SynchGetGadgets,
-    SyncTramPosition,
-    UnregisterPlayerRPC,
-    SyncLastMoveTime,
-    RemoveTargetRPC,
-    AttackGateRPC,
-    ShotArtilleryRPC,
-    SetDestinationRPC,
-    SetEquipRPC,
-    ShowEndEventRPC,
-    ShowEndEventNotificationRPC,
-    PlayingInSquadRPC,
-    SynchCombatLevelRPC,
-    SendPetIdRPC,
-    SynchGameLeague,
-    ActiveChunkChangedRPC,
-    GetBonusRPC,
-    SetGliderRPC,
-    AddWeaponAfterBonusPreviewRPC,
-    RemoveWeaponPreviewRPC,
-    SetRoyaleAvatarRPC,
-    SetMapPositionSquadRPC,
-    PlayerInjuredRPC,
-    SynhHealthInjuredRPC,
-    PlayerInjuryHealedRPC,
-    SetLandingTrailRPC,
-    SetUserMapMarkerRPC,
-    RemoveUserMapMarkerRPC,
-    FlyOnGliderSynchRPC,
-    BattleRoyaleSquadMemberKilledRPC,
-    HealingByPlayerRPC,
-    PlayerInjuryHealingProgressRPC,
-    WinRequestRPC,
-    SetMyAvatar,
-    SetEnemyAvatar,
-    SetEquipTypeRPC,
-    SynchMinigunRotationRPC,
-    PlayZombieBeforeAttackRPC,
-    SendNewEmojiRPC,
-    SynchVehicleParamsRPC,
-    SendBattleEmojiRPC,
-    SynchVehicleColorRPC,
-    SendChangeMobRPC,
-    EnterInTrigger,
-    SynchWeaponModulesRPC,
-    SynchArmorModulesRPC,
-    SetModuleGadgetEffectActiveRPC,
-    CreateRocketRPC,
-    ShowEffectOnOtherPlayersRPC,
-    SetParticleToWeaponRPC,
-    RegenerateHealthMob,
-    SendKillMob,
-    SynhDeltaHealthFromWeaponRPC,
-    JumpDisableRPC,
-    SetPortalRPC,
-    ActivatePolymorphRPC,
-    DeactivatePolymorphRPC,
-    AlternativeMobAttack,
-    AlternativeMobShot,
-    DetonateKamikadze,
-    SetWeaponLevel,
-    MarkEnemy,
-    GetDamageToShieldRPC,
-    SendOnGroundEffect,
-    PluginRPC,
-    EnableTeleportEffectsRPC,
-    AddAmmoFromWeaponRPC,
-    KillerInvisiblityRPC,
-    SyncGadgetReflectorCoeffRPC,
-    SynchVipStatusRPC,
-    InviteToSquadRPC,
-    JoinSquadRPC,
-    InviteToSquadFailRPC,
-    SyncBreakableObjects,
-    FreeFallSynchRPC,
-    SyncCableCarRPC,
-    StartPlantingBomb,
-    ResetPlantingBomb,
-    StartDefusingBomb,
-    ResetDefusingBomb,
-    SetIsPaidTransport,
-    SyncOwnerTransport,
-    SyncCharIdRPC,
-    SyncTeammateRegenByMe
-};
-
-enum PhotonTargets
-{
-    All,
-    Others,
-    MasterClient,
-    AllBuffered,
-    OthersBuffered,
-    AllViaServer,
-    AllBufferedViaServer,
-    SeflViaServer
-};
 
 void* (*GetComponent) (void* gameObject, void* type);
 void (*SendChat) (void* obj, monoString* text, bool isClan, monoString* logoid);
@@ -405,7 +156,7 @@ void* (*Component$get_transform)(void* component);
 monoString* (*Component$get_tag)(void* component);
 
 // Transform
-void* (*Transform$get_position)(void* object);
+Vector3 (*get_position)(void *_instance);
 
 // Quaternion
 void* (*Quaternion$get_identity)();
@@ -462,6 +213,8 @@ void* (*DebugLogWindow$get_debugLogWindow)();
 void* (*Resources$Load)(monoString* path);
 #endif
 
+void (*LookAt)(void* obj, Vector3);
+
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
@@ -491,8 +244,9 @@ void Pointers() {
     GameObject$Instantiate = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43608C8")));
     GameObject$class = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x20000E0")));
     Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
-    Transform$get_position = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
+    get_position = (Vector3 (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
     PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
+    LookAt = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43827DC")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -767,6 +521,18 @@ void WeaponSounds(void* obj){
     oldWeaponSounds(obj);
 }
 
+bool isEnemy(void* player_move_c){
+    return *(bool*)((uint64_t) player_move_c + 0x599);
+}
+
+bool IsMine(void* SkinName){
+    return *(bool*)((uint64_t) SkinName + 0xA8);
+}
+
+bool IsDead(void* player_move_c){
+    return *(bool*)((uint64_t) player_move_c + 0x590);
+}
+
 void(*oldInGameConnection)(void* obj);
 void InGameConnection(void* obj){
     if(obj != nullptr && forceW){
@@ -785,6 +551,17 @@ float get_fieldOfView(void *instance) {
         return fovModifier;
     }
     return old_get_fieldOfView(instance);//add other shit to hooks like speed
+}
+
+
+void Aimbot(void* player, void* enemy){
+    Vector3 ownLocation = get_position(Component$get_transform(player));
+    Vector3 enemyLocation = get_position(Component$get_transform(enemy));
+   // GetClosestEnemy(ownLocation, enemyLocation, enemy);
+  //  Vector3 ClosestEnemyLocation = get_position(Component$get_transform(closestenemy));
+   // 1ST METHOD : BREAKS Z ROTATION LookAt(Component$get_transform(player), enemyLocation);
+   Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
+   *(Quaternion *) ((uint64_t) player + 0x7C8) = rotation;
 }
 
 void(*oldPlayerMoveC)(void* obj);
@@ -814,7 +591,21 @@ void(PlayerMoveC)(void* obj){
             spoofMe = false;
         }
 
-        if (playstantiate) {
+        void* SkinName = *(void**)((uint64_t) obj + 0x648);
+        if(SkinName != nullptr){
+            if(isAimbot){
+                if(IsMine(SkinName)){
+                    MyPlayer = SkinName;
+                }
+                else{
+                    if(!IsDead(obj)){
+                        Aimbot(MyPlayer, obj);
+                    }
+                }
+            }
+        }
+
+       /* if (playstantiate) {
             SetMasterClient(get_LocalPlayer());
             LOGE("instantiating");
             void* skinName = Player_move_c$skinName(obj);
@@ -829,7 +620,7 @@ void(PlayerMoveC)(void* obj){
             float z = Vector3$get_z(pos);
             LOGE("pos: %f, %f, %f", x, y, z);
             playstantiate = false;
-        }
+        }*/
     }
     oldPlayerMoveC(obj);
 }
@@ -944,7 +735,6 @@ void Hooks() {
     HOOK("0x4051E70", PixelTime, old_PixelTime);
     HOOK("0x17139E8", WeaponSounds, oldWeaponSounds);
     HOOK("0x4BCA3D4", WeaponManager, old_WeaponManager);
-   // HOOK("0x41FD8D4", Speed, oldSpeed);CRASH
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
     HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x15ECC04", UIInput, old_UIInput);
@@ -1018,14 +808,12 @@ void DrawMenu(){
             if (ImGui::Button(OBFUSCATE("Join Discord"))) {
                 isDiscordPressed = true;
             }
-            ImGui::TextUnformatted(
-                    "Its Recommended to join the discord server for mod updates etc.");
+            ImGui::TextUnformatted(OBFUSCATE("Its Recommended to join the discord server for mod updates etc."));
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("listbar", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
-                    ImGui::TextUnformatted((OBFUSCATE(
-                            "Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
+                    ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
                     ImGui::TextUnformatted(
                             OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
@@ -1061,6 +849,7 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
                     ImGui::SliderFloat(OBFUSCATE("Jump Height"), &jumpHeight, 0.0f, 360.0f);
                     if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
+                        ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
                         ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
                         ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
                         ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
@@ -1085,66 +874,54 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE(
                                                    "Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
                     ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
-                    ImGui::TextUnformatted(
-                            OBFUSCATE("Forces Critical Shots each time you hit someone."));
+                    ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
                     ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
                     // ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
                     ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Reloads the gun almost instantly (Re-equip after enabling)"));
-                    ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,
-                                       2000.0f);
+                    ImGui::TextUnformatted(OBFUSCATE("Reloads the gun almost instantly (Re-equip after enabling)"));
+                    ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,2000.0f);
                     ImGui::Checkbox(OBFUSCATE("Silent Aim"), &snowstormbull);
                     ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
                     ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
                     ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
                     ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
                     ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
-                    ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"),
-                                    &shotBull);//add it chris dont forget
+                    ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"),&shotBull);//add it chris dont forget
                     ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
                     ImGui::SliderInt(OBFUSCATE("Reflection Rays"), &reflection, 0, 1000);
                     ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
                     ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"), &kniferangesex);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Allows you to aim and hit people with a knifer or a framethrower at any distance."));
+                    ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
                     ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"), &recoilandspread);
                     ImGui::Checkbox(OBFUSCATE("Force Scope"), &scopef);
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
                     ImGui::Checkbox(OBFUSCATE("Force Portal Bullets"), &portalBull);
                     ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot portal bullets."));
                     ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"), &polymorph);
-                    ImGui::TextUnformatted(
-                            OBFUSCATE("Forces bullets to make players turn into sheep."));
+                    ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
                     ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"), &harpoonBull);
                     ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
                     if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
                         ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                                       "Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
+                        ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
                         ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
-                        ImGui::TextUnformatted(
-                                OBFUSCATE(
-                                        "Removes the burning and being intoxicated effect on you."));
+                        ImGui::TextUnformatted(OBFUSCATE("Removes the burning and being intoxicated effect on you."));
                         ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
                         ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
                         ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
                         ImGui::TextUnformatted(OBFUSCATE(
-                                                       "Adds a speed-up effect (Will speed up any player you shoot until they die)"));
+                                "Adds a speed-up effect (Will speed up any player you shoot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
                         ImGui::TextUnformatted(OBFUSCATE(
-                                                       "Adds a slow-down effect (Will freeze any player you shoot until they die)"));
+                                "Adds a slow-down effect (Will freeze any player you shoot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                                       "Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
+                        ImGui::TextUnformatted(OBFUSCATE("Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                                       "Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
+                        ImGui::TextUnformatted(OBFUSCATE("Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                                       "Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
+                        ImGui::TextUnformatted(OBFUSCATE("Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
                     }
                     ImGui::EndTabItem();
                 }
@@ -1158,7 +935,7 @@ void DrawMenu(){
                     ImGui::SliderFloat(OBFUSCATE("Field Of View"), &fovModifier, 0.0, 360.0);
                     ImGui::EndTabItem();
                 }
-                if (ImGui::BeginTabItem(OBFUSCATE("Experimental Mods"))) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Experimental"))) {
                     ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
                     ImGui::TextUnformatted(
                             OBFUSCATE("Makes the game think its on the Unity Editor"));

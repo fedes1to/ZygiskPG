@@ -326,6 +326,58 @@ Quaternion Quaternion::LookRotation(Vector3 forward)
     return LookRotation(forward, Vector3(0, 1, 0));
 }
 
+Quaternion Quaternion::LookRotation(Vector3 forward, Vector3 upwards)
+{
+    // Normalize inputs
+    forward = Vector3::Normalized(forward);
+    upwards = Vector3::Normalized(upwards);
+    // Don't allow zero vectors
+    if (Vector3::SqrMagnitude(forward) < SMALL_float || Vector3::SqrMagnitude(upwards) < SMALL_float)
+        return Quaternion::Identity();
+    // Handle alignment with up direction
+    if (1 - fabs(Vector3::Dot(forward, upwards)) < SMALL_float)
+        return FromToRotation(Vector3::Forward(), forward);
+    // Get orthogonal vectors
+    Vector3 right = Vector3::Normalized(Vector3::Cross(upwards, forward));
+    upwards = Vector3::Cross(forward, right);
+    // Calculate rotation
+    Quaternion quaternion;
+    float radicand = right.X + upwards.Y + forward.Z;
+    if (radicand > 0)
+    {
+        quaternion.W = sqrt(1.0 + radicand) * 0.5;
+        float recip = 1.0 / (4.0 * quaternion.W);
+        quaternion.X = (upwards.Z - forward.Y) * recip;
+        quaternion.Y = (forward.X - right.Z) * recip;
+        quaternion.Z = (right.Y - upwards.X) * recip;
+    }
+    else if (right.X >= upwards.Y && right.X >= forward.Z)
+    {
+        quaternion.X = sqrt(1.0 + right.X - upwards.Y - forward.Z) * 0.5;
+        float recip = 1.0 / (4.0 * quaternion.X);
+        quaternion.W = (upwards.Z - forward.Y) * recip;
+        quaternion.Z = (forward.X + right.Z) * recip;
+        quaternion.Y = (right.Y + upwards.X) * recip;
+    }
+    else if (upwards.Y > forward.Z)
+    {
+        quaternion.Y = sqrt(1.0 - right.X + upwards.Y - forward.Z) * 0.5;
+        float recip = 1.0 / (4.0 * quaternion.Y);
+        quaternion.Z = (upwards.Z + forward.Y) * recip;
+        quaternion.W = (forward.X - right.Z) * recip;
+        quaternion.X = (right.Y + upwards.X) * recip;
+    }
+    else
+    {
+        quaternion.Z = sqrt(1.0 - right.X - upwards.Y + forward.Z) * 0.5;
+        float recip = 1.0 / (4.0 * quaternion.Z);
+        quaternion.Y = (upwards.Z + forward.Y) * recip;
+        quaternion.X = (forward.X + right.Z) * recip;
+        quaternion.W = (right.Y - upwards.X) * recip;
+    }
+    return quaternion;
+}
+
 Quaternion Quaternion::Normalized(Quaternion rotation)
 {
     return rotation / Norm(rotation);
