@@ -78,15 +78,14 @@ const char* wepList[] = { "", "FirstPistol", "FirstShotgun", "UziWeapon", "Revol
 const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rust", "Gluk", "Cube", "City", "Pool", "Ants", "Maze", "Arena", "Train", "Day_D", "Space", "Pizza", "Barge", "Pool2", "Winter", "Area52", "Castle", "Arena2", "Sniper", "Day_D2", "Matrix", "Heaven", "office", "Portal", "Hungry", "Bridge", "Gluk_2", "knife2", "Estate", "Glider", "Utopia", "School", "Gluk_3", "spleef1", "Slender", "Loading", "temple4", "sawmill", "Parkour", "pg_gold", "olympus", "Stadium", "ClanWar", "shipped", "Coliseum", "GGDScene", "Paradise", "valhalla", "Assault2", "Training", "Speedrun", "Hospital", "Hungry_2", "mine_new", "LevelArt", "facility", "office_z", "Pumpkins2", "red_light", "BioHazard", "ChatScene", "impositor", "PromScene", "New_tutor", "Cementery", "AppCenter", "aqua_park", "Aztec_old", "ClanWarV2", "toy_story", "checkmate", "CustomInfo", "tokyo_3019", "new_hangar", "Pool_night", "china_town", "FortAttack", "Ghost_town", "Area52Labs", "Ice_Palace", "Arena_Mine", "SkinEditor", "North_Pole", "Ghost_town2", "Arena_Swamp", "ToyFactory3", "NuclearCity", "space_ships", "FortDefence", "Two_Castles", "Ships_Night", "RacingTrack", "Coliseum_MP", "Underwater2", "ChooseLevel", "Sky_islands", "Menu_Custom", "Secret_Base", "white_house", "ProfileShop", "Arena_Space", "Cube_portals", "ClosingScene", "Mars_Station", "Arena_Castle", "checkmate_22", "Hungry_Night", "Sky_islands2", "Death_Escape", "Arena_Hockey", "WinterIsland", "Dust_entering", "pizza_sandbox", "alien_planet2", "LevelComplete", "COLAPSED_CITY", "ClanTankBuild", "train_robbery", "space_updated", "AfterBanScene", "corporate_war", "ships_updated", "templ4_winter", "Pool_entering", "supermarket_2", "DuelArenaSpace", "LoadAnotherApp", "checkmate_22.0", "Paradise_Night", "Slender_Multy2", "Code_campaign3", "Spleef_Arena_1", "infernal_forge", "china_town_day", "islands_sniper", "FortFieldBuild", "monster_hunter", "paladin_castle", "Spleef_Arena_2", "Bota_campaign4", "CampaignLoading", "Developer_Scene", "christmas_train", "Space_campaign3", "Ice_Palace_Duel", "clan_fortress01", "Christmas_Town3", "orbital_station", "Duel_ghost_town", "Swamp_campaign3", "WalkingFortress", "office_christmas", "Spooky_Lunapark3", "knife3_christmas", "Portal_Campaign4", "Arena_Underwater", "emperors_palace2", "hurricane_shrine", "Castle_campaign3", "christmas_town_22", "CampaignChooseBox", "Christmas_Dinner2", "Dungeon_dead_city", "aqua_park_sandbox", "Stadium_deathmatch", "AuthorizationScene", "sky_islands_updated", "LevelToCompleteProm", "sky_islands_sandbox", "AuthenticationScene", "NuclearCity_entering", "DownloadAssetBundles", "red_light_team_fight", "freeplay_city_summer", "four_seasons_updated", "tokyo_3018_campaign4", "COLAPSED_CITY_sniper", "ice_palace_christmas", "LoveIsland_deathmatch", "cubic_arena_campaign4", "Christmas_Town_Night3", "toy_factory_christmas", "battle_royale_arcade_2", "Dungeon_magical_valley", "Death_Escape_campaign4", "battle_royale_arcade_3", "battle_royale_09_summer", "WalkingFortress_campaign4" };
 const char* curList[] = { OBFUSCATE("GemsCurrency"), OBFUSCATE("Coins"), OBFUSCATE("ClanSilver"), OBFUSCATE("ClanLootBoxPoints"),  OBFUSCATE("Coupons"), OBFUSCATE("PixelPassCurrency"), OBFUSCATE("RouletteAdsCurrency"), OBFUSCATE("PixelBucks") };
 bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
-removedrone, god, ammo, collectibles, ezsuper, changeID, isOpenKeyboard,
+removedrone, god, ammo, collectibles, changeID,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
-doublejump, coindrop, itemParams, blackMarket, couponClicker, setsClicker,
+doublejump, coindrop, blackMarket, couponClicker, setsClicker,
 negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange, expbull,
-spleef, shotbull, railbull, poison, jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
-isAddCurPressed, coins, gems, clsilver, coupons, clanlootboox, pixelpass, pixelbucks, craftcurrency, roullette,
-isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull, ninjaJump,spamchat,pgod, prespawn,gadgetdisabler, xray, scopef,
-bypassName, isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate, portalBull, snowstormbull, polymorph, harpoonBull, dash,
-spoofMe, reload, curButtonPressedC, firerate, forceW ;
+shotbull, railbull,jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
+isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull,
+ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
+portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW ;
 
 // bools for auth shit
 bool isValidAuth, hasRegistered;
@@ -1008,21 +1007,22 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-    if (isValidAuth)
-    {
-            ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        if (isValidAuth) {
+            ImGui::Begin(OBFUSCATE(
+                                 "ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
 #ifdef BIGSEX
-          /*  if (ImGui::Button(OBFUSCATE("tes"))) {
-                isStartDebug = true;
-            }*/
+            /*  if (ImGui::Button(OBFUSCATE("tes"))) {
+                  isStartDebug = true;
+              }*/
 #endif
             if (ImGui::Button(OBFUSCATE("Join Discord"))) {
                 isDiscordPressed = true;
             }
-            ImGui::TextUnformatted("Its Recommended to join the discord server for mod updates etc.");
+            ImGui::TextUnformatted(
+                    "Its Recommended to join the discord server for mod updates etc.");
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("listbar", tab_bar_flags)) {
-                if (ImGui::BeginTabItem(OBFUSCATE("Account Mods"))) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                     ImGui::TextUnformatted((OBFUSCATE(
                             "Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
@@ -1042,21 +1042,20 @@ void DrawMenu(){
                     if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
                         isBuyEasterSticker = true;
                     }
-                    ImGui::EndTabItem();
-                }
-                if (ImGui::BeginTabItem(OBFUSCATE("Currency Mods"))) {
-                    ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
-                    ImGui::TextUnformatted(
-                            OBFUSCATE("Will be counted as the value that the game will use."));
-                    ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,
-                                   IM_ARRAYSIZE(curList), 4);
-                    if (ImGui::Button(OBFUSCATE("Add Currency"))) {
-                        isAddCurPressed = true;
-                        curButtonPressedC += 1;
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
+                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
+                        ImGui::TextUnformatted(
+                                OBFUSCATE("Will be counted as the value that the game will use."));
+                        ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,
+                                       IM_ARRAYSIZE(curList), 4);
+                        if (ImGui::Button(OBFUSCATE("Add Currency"))) {
+                            isAddCurPressed = true;
+                            curButtonPressedC += 1;
+                        }
                     }
                     ImGui::EndTabItem();
                 }
-                if (ImGui::BeginTabItem(OBFUSCATE("Player Mods"))) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                     ImGui::TextUnformatted(OBFUSCATE(
                                                    "Makes you invincible (others can kill you but you won't die and just become invisible)"));
@@ -1064,9 +1063,29 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
                     ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
                     ImGui::SliderFloat(OBFUSCATE("Jump Height"), &jumpHeight, 0.0f, 360.0f);
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
+                        ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
+                        ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
+                        ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
+                        ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
+                        ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
+                        ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
+                        ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
+                        ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
+                        ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+                        //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
+                        ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
+                        if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
+                            destroy = true;
+                        }
+                    }
                     ImGui::EndTabItem();
                 }
-                if (ImGui::BeginTabItem(OBFUSCATE("Weapon Mods"))) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Weapon"))) {
                     ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"), &damage, 0.0f, 10.0f);
                     ImGui::TextUnformatted(OBFUSCATE(
                                                    "Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
@@ -1104,37 +1123,37 @@ void DrawMenu(){
                             OBFUSCATE("Forces bullets to make players turn into sheep."));
                     ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"), &harpoonBull);
                     ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
+                        ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
+                        ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
+                        ImGui::TextUnformatted(
+                                OBFUSCATE(
+                                        "Removes the burning and being intoxicated effect on you."));
+                        ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
+                        ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+                        ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
+                        ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
+                        ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "Adds a speed-up effect (Will speed up any player you shoot until they die)"));
+                        ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "Adds a slow-down effect (Will freeze any player you shoot until they die)"));
+                        ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
+                        ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
+                        ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
+                        ImGui::TextUnformatted(OBFUSCATE(
+                                                       "Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
+                    }
                     ImGui::EndTabItem();
                 }
-                if (ImGui::BeginTabItem(OBFUSCATE("Effect Mods"))) {
-                    ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
-                    ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
-                    ImGui::TextUnformatted(
-                            OBFUSCATE("Removes the burning and being intoxicated effect on you."));
-                    ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
-                    ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
-                    ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
-                    ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
-                    ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Adds a speed-up effect (Will speed up any player you shoot until they die)"));
-                    ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Adds a slow-down effect (Will freeze any player you shoot until they die)"));
-                    ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
-                    ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
-                    ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
-                    ImGui::EndTabItem();
-                }
-                if (ImGui::BeginTabItem(OBFUSCATE("Visual Mods"))) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Visual"))) {
                     ImGui::Checkbox(OBFUSCATE("Chams"), &xray);
                     ImGui::TextUnformatted(OBFUSCATE("Shows the enemy body through walls."));
                     ImGui::Checkbox(OBFUSCATE("Show marker"), &enemymarker);
@@ -1142,27 +1161,6 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Quick-Scope"), &quickscope);
                     ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
                     ImGui::SliderFloat(OBFUSCATE("Field Of View"), &fovModifier, 0.0, 360.0);
-                    ImGui::EndTabItem();
-                }
-                if (ImGui::BeginTabItem(OBFUSCATE("Game Mods"))) {
-                    ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
-                    ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
-                    ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
-                    ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
-                    ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
-                    ImGui::TextUnformatted(OBFUSCATE(
-                                                   "The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
-                    ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
-                    ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
-                    ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
-                    ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                    //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
-                    ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
-                    if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
-                        destroy = true;
-                    }
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Experimental Mods"))) {
@@ -1186,35 +1184,35 @@ void DrawMenu(){
             }
             Patches();
         }
-    }
-    if (hasRegistered && !isValidAuth) {
-        // if autologin fails here code for login form
-        ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
-        ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
-        if (ImGui::Button("Login")) {
-            // code to try to login here, initAuth should work?, ill separate methods
-            if (tryLogin(username, pass, localHwid)) {
-                isValidAuth = true;
+        if (hasRegistered && !isValidAuth) {
+            // if autologin fails here code for login form
+            ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
+            ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
+            if (ImGui::Button("Login")) {
+                // code to try to login here, initAuth should work?, ill separate methods
+                if (tryLogin(username, pass, localHwid)) {
+                    isValidAuth = true;
+                }
+            }
+            if (ImGui::Button("Register")) {
+                hasRegistered = false;
+                // maybe reset needed? no idea
+            }
+        } else if (!isValidAuth) {
+            // register form here
+            ImGui::InputText("Email", email, IM_ARRAYSIZE(email));
+            ImGui::InputText("License", license, IM_ARRAYSIZE(license));
+            ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
+            ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
+            if (ImGui::Button("Register")) {
+                // code to try to login here, initAuth should work?, ill separate methods
+                if (tryRegister(username, pass, license, email, localHwid)) {
+                    isValidAuth = true;
+                }
             }
         }
-        if (ImGui::Button("Register")) {
-            hasRegistered = false;
-            // maybe reset needed? no idea
-        }
-    } else if (!isValidAuth) {
-        // register form here
-        ImGui::InputText("Email", email, IM_ARRAYSIZE(email));
-        ImGui::InputText("License", license, IM_ARRAYSIZE(license));
-        ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
-        ImGui::InputText("Password", pass, IM_ARRAYSIZE(pass));
-        if (ImGui::Button("Register")) {
-            // code to try to login here, initAuth should work?, ill separate methods
-            if (tryRegister(username, pass, license, email, localHwid)) {
-                isValidAuth = true;
-            }
-        }
+        ImGui::End();
     }
-    ImGui::End();
 }
 
 void SetupImgui() {
