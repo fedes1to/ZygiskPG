@@ -68,7 +68,7 @@ namespace KittyMemory {
 
     bool memRead(void *address, const void *buffer, size_t len)
     {
-        KITTY_LOGI("memRead(%p, %p, %zu)", address, buffer, len);
+        //KITTY_LOGI("memRead(%p, %p, %zu)", address, buffer, len);
 
         if (!address) {
             KITTY_LOGE("memRead err address (%p) is null", address);

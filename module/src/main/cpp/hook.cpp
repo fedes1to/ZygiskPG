@@ -88,7 +88,7 @@ negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, w
 shotbull, railbull,jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
 isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull,
 ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
-portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot ;
+portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill;
 
 // bools for auth shit
 bool isValidAuth, hasRegistered;
@@ -217,6 +217,7 @@ void* (*Resources$Load)(monoString* path);
 void (*LookAt)(void* obj, Vector3);
 void (*set_rotation)(void* obj, Quaternion value);
 void (*get_rotation)(void* obj);
+void(*set_position)(void* obj, Vector3 val);
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
@@ -249,8 +250,9 @@ void Pointers() {
     get_position = (Vector3 (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
     PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
     LookAt = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43827DC")));
-    set_rotation = (void (*)(void*, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A87880")));
-    get_rotation = (void (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A87880")));
+    set_rotation = (void (*)(void*, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4381718")));
+    get_rotation = (void (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A87784")));
+    set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A874FC")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -557,7 +559,6 @@ float get_fieldOfView(void *instance) {
     return old_get_fieldOfView(instance);//add other shit to hooks like speed
 }
 
-
 void Aimbot(void* player, void* enemy){
     Vector3 ownLocation = get_position(Component$get_transform(player));
     LOGE("GET MY LOCATION");
@@ -565,12 +566,11 @@ void Aimbot(void* player, void* enemy){
     LOGE("GET ENEMY LOCATION");
    // GetClosestEnemy(ownLocation, enemyLocation, enemy);
   //  Vector3 ClosestEnemyLocation = get_position(Component$get_transform(closestenemy));
-  Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
-   Vector3 rotVec3 = Quaternion::ToEuler();
-   LookAt(Component$get_transform(player), enemyLocation);
+  // LookAt(Component$get_transform(player), enemyLocation);
    //
   // LOGE("SET ROTATION");
-   //set_rotation(Component$get_transform(player), rotation);
+   Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
+   set_rotation(Component$get_transform(player), rotation);
 }
 
 void(*oldPlayerMoveC)(void* obj);
@@ -602,18 +602,23 @@ void(PlayerMoveC)(void* obj){
 
         void* SkinName = *(void**)((uint64_t) obj + 0x648);
         if(SkinName != nullptr){
+            if(IsMine(SkinName)){
+                MyPlayer = SkinName;
+            }
             if(isAimbot){
-                if(IsMine(SkinName)){
-                    MyPlayer = SkinName;
-                }
-                else{
-                    if(!IsDead(obj)){
+                else if(!IsDead(obj)){
                         LOGE("CALLING!");
                         Aimbot(MyPlayer, obj);
                     }
                 }
             }
-        }
+
+            if(Telekill){
+                if(!IsDead(obj)){
+                    Vector3 enemyPos = get_position(Component$get_transform(obj));
+                    set_position(Component$get_transform(MyPlayer), Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
+                }
+            }
 
        /* if (playstantiate) {
             SetMasterClient(get_LocalPlayer());
@@ -858,24 +863,26 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
                     ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
                     ImGui::SliderFloat(OBFUSCATE("Jump Height"), &jumpHeight, 0.0f, 360.0f);
-                    if (ImGui::CollapsingHeader(OBFUSCATE("Game Mods"))) {
-                        ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
-                        ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
-                        ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
-                        ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
-                        ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
-                        ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
-                        ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
-                        ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
-                        ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
-                        ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
-                        ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
-                        ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                        //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
-                        ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
-                        if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
-                            destroy = true;
-                        }
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem(OBFUSCATE("Game Mods"))) {
+                    ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
+                    ImGui::Checkbox(OBFUSCATE("Telekill"), &Telekill);
+                    ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
+                    ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
+                    ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
+                    ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
+                    ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
+                    ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
+                    ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
+                    ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
+                    ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
+                    ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
+                    ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+                    //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
+                    ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
+                    if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
+                        destroy = true;
                     }
                     ImGui::EndTabItem();
                 }
