@@ -92,8 +92,10 @@ portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPres
 
 // bools for auth shit
 bool isValidAuth, hasRegistered;
+
 void *MyPlayer;
 void *closestenemy;
+void *camera;
 
 static char username[32];
 static char pass[32];
@@ -569,8 +571,10 @@ void Aimbot(void* player, void* enemy){
   // LookAt(Component$get_transform(player), enemyLocation);
    //
   // LOGE("SET ROTATION");
+
    Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
    set_rotation(Component$get_transform(player), rotation);
+   set_rotation(Component$get_transform(Camera$get_Main()), rotation);
 }
 
 void(*oldPlayerMoveC)(void* obj);
@@ -606,7 +610,7 @@ void(PlayerMoveC)(void* obj){
                 MyPlayer = SkinName;
             }
             if(isAimbot){
-                else if(!IsDead(obj)){
+                if(!IsDead(obj)){
                         LOGE("CALLING!");
                         Aimbot(MyPlayer, obj);
                     }
