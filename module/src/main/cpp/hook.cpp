@@ -574,7 +574,7 @@ void Aimbot(void* player, void* enemy){
 
    Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
    set_rotation(Component$get_transform(player), rotation);
-   set_rotation(Component$get_transform(Camera$get_Main()), rotation);
+
 }
 
 void(*oldPlayerMoveC)(void* obj);
