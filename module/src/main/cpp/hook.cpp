@@ -96,7 +96,7 @@ wantsDisplayKeyboard;
 bool isValidAuth, hasRegistered;
 
 void *MyPlayer;
-void *closestenemy;
+void *enemyPlayer;
 void *camera;
 
 static char username[32];
@@ -208,6 +208,8 @@ void* (Player_move_c$skinName)(void* ref) {
     }
 }
 
+
+
 #ifdef BIGSEX
 // DebugLogWindow
 
@@ -256,7 +258,7 @@ void Pointers() {
     LookAt = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43827DC")));
     set_rotation = (void (*)(void*, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4381718")));
     get_rotation = (void (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A87784")));
-    set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A874FC")));
+    set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x438149C")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -548,7 +550,6 @@ void InGameConnection(void* obj){
     if(obj != nullptr && forceW){
         void* SceneInfo = *(void**)((uint64_t) obj + 0x30);
         if(SceneInfo != nullptr){
-            LOGE("IT EXISTS");//check if its called cause i cant please
             *(int*)((uint64_t) SceneInfo + 0x28) = 0;
         }
     }
@@ -562,6 +563,21 @@ float get_fieldOfView(void *instance) {
     }
     return old_get_fieldOfView(instance);//add other shit to hooks like speed
 }
+
+void(*oldBullet)(void* obj);
+void Bullet(void* obj){
+    if(obj != nullptr && isAimbot){
+        if(MyPlayer != nullptr && enemyPlayer != nullptr){
+            LOGE("I EXISTTT!!!!!!!!");
+            Vector3 enemyLocation = get_position(Component$get_transform(enemyPlayer));
+            Vector3 ownLocation = get_position(Component$get_transform(MyPlayer));
+            Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
+            *(Vector3*)((uint64_t) obj + 0x44) = enemyLocation;
+        }
+    }
+    oldBullet(obj);
+}
+
 
 void Aimbot(void* player, void* enemy){
     Vector3 ownLocation = get_position(Component$get_transform(player));
@@ -610,6 +626,7 @@ void(PlayerMoveC)(void* obj){
         if(SkinName != nullptr){
             if(IsMine(SkinName)){
                 MyPlayer = SkinName;
+                enemyPlayer = obj;
             }
             if(isAimbot){
                 if(!IsDead(obj)){
@@ -620,7 +637,7 @@ void(PlayerMoveC)(void* obj){
             }
 
             if(Telekill){
-                if(!IsDead(obj)){
+                if(!IsDead(obj) /*&& isEnemy(obj)*/){
                     Vector3 enemyPos = get_position(Component$get_transform(obj));
                     set_position(Component$get_transform(MyPlayer), Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
                 }
@@ -761,7 +778,7 @@ void Hooks() {
     HOOK("0x15ECC04", UIInput, old_UIInput);
     HOOK("0x2E49FB4", InGameConnection, oldInGameConnection);
     HOOK("0x4359378", get_fieldOfView, old_get_fieldOfView);
-
+    //HOOK("0x499DE58", Bullet, oldBullet);
     //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
 }
 
