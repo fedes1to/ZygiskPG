@@ -1,40 +1,17 @@
-/**
- *  ============================================================================
- *  MIT License
- *
- *  Copyright (c) 2016 Eric Phillips
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a
- *  copy of this software and associated documentation files (the "Software"),
- *  to deal in the Software without restriction, including without limitation
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- *  Software is furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *  DEALINGS IN THE SOFTWARE.
- *  ============================================================================
- *
- *
- *  This file implements a series of math functions for manipulating a
- *  quaternion.
- *
- *  Created by Eric Phillips on October 21, 2016.
- */
-
 #pragma once
 
 #define _USE_MATH_DEFINES
+#include <math.h>
+#include <iostream>
+
 #define SMALL_float 0.0000000001
 
+
+/**
+ * Attempt to include a header file if the file exists.
+ * If the file does not exist, create a dummy data structure for that type.
+ * If it cannot be determined if it exists, just attempt to include it.
+ */
 #include "Vector3.h"
 
 struct Quaternion
@@ -281,7 +258,15 @@ Quaternion::Quaternion(Vector3 vector, float scalar) : X(vector.X),
 Quaternion::Quaternion(float x, float y, float z, float w) : X(x), Y(y),
                                                              Z(z), W(w) {}
 
+
 Quaternion Quaternion::Identity() { return Quaternion(0, 0, 0, 1); }
+
+
+float Quaternion::Angle(Quaternion a, Quaternion b)
+{
+    float dot = Dot(a, b);
+    return acos(fmin(fabs(dot), 1)) * 2;
+}
 
 Quaternion Quaternion::Conjugate(Quaternion rotation)
 {
@@ -293,9 +278,51 @@ float Quaternion::Dot(Quaternion lhs, Quaternion rhs)
     return lhs.X * rhs.X + lhs.Y * rhs.Y + lhs.Z * rhs.Z + lhs.W * rhs.W;
 }
 
+Quaternion Quaternion::FromAngleAxis(float angle, Vector3 axis)
+{
+    Quaternion q;
+    float m = sqrt(axis.X * axis.X + axis.Y * axis.Y + axis.Z * axis.Z);
+    float s = sin(angle / 2) / m;
+    q.X = axis.X * s;
+    q.Y = axis.Y * s;
+    q.Z = axis.Z * s;
+    q.W = cos(angle / 2);
+    return q;
+}
+
 Quaternion Quaternion::FromEuler(Vector3 rotation)
 {
     return FromEuler(rotation.X, rotation.Y, rotation.Z);
+}
+
+Quaternion Quaternion::FromEuler(float x, float y, float z)
+{
+    float cx = cos(x * 0.5);
+    float cy = cos(y * 0.5);
+    float cz = cos(z * 0.5);
+    float sx = sin(x * 0.5);
+    float sy = sin(y * 0.5);
+    float sz = sin(z * 0.5);
+    Quaternion q;
+    q.X = cx * sy * sz + cy * cz * sx;
+    q.Y = cx * cz * sy - cy * sx * sz;
+    q.Z = cx * cy * sz - cz * sx * sy;
+    q.W = sx * sy * sz + cx * cy * cz;
+    return q;
+}
+
+Quaternion Quaternion::FromToRotation(Vector3 fromVector, Vector3 toVector)
+{
+    float dot = Vector3::Dot(fromVector, toVector);
+    float k = sqrt(Vector3::SqrMagnitude(fromVector) *
+                   Vector3::SqrMagnitude(toVector));
+    if (fabs(dot / k + 1) < 0.00001)
+    {
+        Vector3 ortho = Vector3::Orthogonal(fromVector);
+        return Quaternion(Vector3::Normalized(ortho), 0);
+    }
+    Vector3 cross = Vector3::Cross(fromVector, toVector);
+    return Normalized(Quaternion(cross, dot + k));
 }
 
 Quaternion Quaternion::Inverse(Quaternion rotation)
@@ -378,10 +405,122 @@ Quaternion Quaternion::LookRotation(Vector3 forward, Vector3 upwards)
     return quaternion;
 }
 
+float Quaternion::Norm(Quaternion rotation)
+{
+    return sqrt(rotation.X * rotation.X +
+                rotation.Y * rotation.Y +
+                rotation.Z * rotation.Z +
+                rotation.W * rotation.W);
+}
+
 Quaternion Quaternion::Normalized(Quaternion rotation)
 {
     return rotation / Norm(rotation);
 }
+
+Quaternion Quaternion::RotateTowards(Quaternion from, Quaternion to,
+                                     float maxRadiansDelta)
+{
+    float angle = Quaternion::Angle(from, to);
+    if (angle == 0)
+        return to;
+    maxRadiansDelta = fmax(maxRadiansDelta, angle - M_PI);
+    float t = fmin(1, maxRadiansDelta / angle);
+    return Quaternion::SlerpUnclamped(from, to, t);
+}
+
+Quaternion Quaternion::Slerp(Quaternion a, Quaternion b, float t)
+{
+    if (t < 0) return Normalized(a);
+    else if (t > 1) return Normalized(b);
+    return SlerpUnclamped(a, b, t);
+}
+
+Quaternion Quaternion::SlerpUnclamped(Quaternion a, Quaternion b, float t)
+{
+    float n1;
+    float n2;
+    float n3 = Dot(a, b);
+    bool flag = false;
+    if (n3 < 0)
+    {
+        flag = true;
+        n3 = -n3;
+    }
+    if (n3 > 0.999999)
+    {
+        n2 = 1 - t;
+        n1 = flag ? -t : t;
+    }
+    else
+    {
+        float n4 = acos(n3);
+        float n5 = 1 / sin(n4);
+        n2 = sin((1 - t) * n4) * n5;
+        n1 = flag ? -sin(t * n4) * n5 : sin(t * n4) * n5;
+    }
+    Quaternion quaternion;
+    quaternion.X = (n2 * a.X) + (n1 * b.X);
+    quaternion.Y = (n2 * a.Y) + (n1 * b.Y);
+    quaternion.Z = (n2 * a.Z) + (n1 * b.Z);
+    quaternion.W = (n2 * a.W) + (n1 * b.W);
+    return Normalized(quaternion);
+}
+
+void Quaternion::ToAngleAxis(Quaternion rotation, float &angle, Vector3 &axis)
+{
+    if (rotation.W > 1)
+        rotation = Normalized(rotation);
+    angle = 2 * acos(rotation.W);
+    float s = sqrt(1 - rotation.W * rotation.W);
+    if (s < 0.00001) {
+        axis.X = 1;
+        axis.Y = 0;
+        axis.Z = 0;
+    } else {
+        axis.X = rotation.X / s;
+        axis.Y = rotation.Y / s;
+        axis.Z = rotation.Z / s;
+    }
+}
+
+Vector3 Quaternion::ToEuler(Quaternion rotation)
+{
+    float sqw = rotation.W * rotation.W;
+    float sqx = rotation.X * rotation.X;
+    float sqy = rotation.Y * rotation.Y;
+    float sqz = rotation.Z * rotation.Z;
+    // If normalized is one, otherwise is correction factor
+    float unit = sqx + sqy + sqz + sqw;
+    float test = rotation.X * rotation.W - rotation.Y * rotation.Z;
+    Vector3 v;
+    // Singularity at north pole
+    if (test > 0.4995f * unit)
+    {
+        v.Y = 2 * atan2(rotation.Y, rotation.X);
+        v.X = M_PI_2;
+        v.Z = 0;
+        return v;
+    }
+    // Singularity at south pole
+    if (test < -0.4995f * unit)
+    {
+        v.Y = -2 * atan2(rotation.Y, rotation.X);
+        v.X = -M_PI_2;
+        v.Z = 0;
+        return v;
+    }
+    // Yaw
+    v.Y = atan2(2 * rotation.W * rotation.Y + 2 * rotation.Z * rotation.X,
+                1 - 2 * (rotation.X * rotation.X + rotation.Y * rotation.Y));
+    // Pitch
+    v.X = asin(2 * (rotation.W * rotation.X - rotation.Y * rotation.Z));
+    // Roll
+    v.Z = atan2(2 * rotation.W * rotation.Z + 2 * rotation.X * rotation.Y,
+                1 - 2 * (rotation.Z * rotation.Z + rotation.X * rotation.X));
+    return v;
+}
+
 struct Quaternion& Quaternion::operator+=(const float rhs)
 {
     X += rhs;

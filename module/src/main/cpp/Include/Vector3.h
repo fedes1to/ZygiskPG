@@ -1,38 +1,9 @@
-/**
- *  ============================================================================
- *  MIT License
- *
- *  Copyright (c) 2016 Eric Phillips
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a
- *  copy of this software and associated documentation files (the "Software"),
- *  to deal in the Software without restriction, including without limitation
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- *  Software is furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *  DEALINGS IN THE SOFTWARE.
- *  ============================================================================
- *
- *
- *  This file implements a series of math functions for manipulating a
- *  3D vector.
- *
- *  Created by Eric Phillips on October 8, 2016.
- */
-
 #pragma once
 
 #define _USE_MATH_DEFINES
+#include <math.h>
+#include <string.h>
+
 
 struct Vector3
 {
@@ -56,7 +27,6 @@ struct Vector3
     inline Vector3(float value);
     inline Vector3(float x, float y);
     inline Vector3(float x, float y, float z);
-
 
     /**
      * Constants for common vectors.
@@ -88,18 +58,18 @@ struct Vector3
     static inline Vector3 ClampMagnitude(Vector3 vector, float maxLength);
 
     /**
-     * Returns the component of a in the direction of b (scalar projection).
-     * @param a: The target vector.
-     * @param b: The vector being compared against.
-     * @return: A scalar value.
+     * Retorna o componente de a na direção de b (projeção escalar).
+     * @param a: O vetor de destino.
+     * @param b: O vetor que está sendo comparado.
+     * @return: Um valor escalar.
      */
     static inline float Component(Vector3 a, Vector3 b);
 
     /**
-     * Returns the cross product of two vectors.
-     * @param lhs: The left side of the multiplication.
-     * @param rhs: The right side of the multiplication.
-     * @return: A new vector.
+     * Retorna o produto vetorial de dois vetores.
+     * @param lhs: O lado esquerdo da multiplicação.
+     * @param rhs: O lado direito da multiplicação.
+     * @return: Um novo vetor.
      */
     static inline Vector3 Cross(Vector3 lhs, Vector3 rhs);
 
@@ -122,13 +92,13 @@ struct Vector3
     static inline float Dot(Vector3 lhs, Vector3 rhs);
 
     /**
-     * Converts a spherical representation of a vector into cartesian
-     * coordinates.
-     * This uses the ISO convention (radius r, inclination theta, azimuth phi).
-     * @param rad: The magnitude of the vector.
-     * @param theta: The angle in the XY plane from the X axis.
-     * @param phi: The angle from the positive Z axis to the vector.
-     * @return: A new vector.
+     * Converte uma representação esférica de um vetor em cartesiano
+     * coordenadas.
+     * Isso usa a convenção ISO (raio r, inclinação theta, azimute phi).
+     * @param rad: A magnitude do vetor.
+     * @param theta: O ângulo no plano XY do eixo X.
+     * @param phi: O ângulo do eixo Z positivo para o vetor.
+     * @return: Um novo vetor.
      */
     static inline Vector3 FromSpherical(float rad, float theta, float phi);
 
@@ -364,6 +334,15 @@ Vector3 Vector3::Down() { return Vector3(0, -1, 0); }
 Vector3 Vector3::Forward() { return Vector3(0, 0, 1); }
 Vector3 Vector3::Backward() { return Vector3(0, 0, -1); }
 
+
+float Vector3::Angle(Vector3 a, Vector3 b)
+{
+    float v = Dot(a, b) / (Magnitude(a) * Magnitude(b));
+    v = fmax(v, -1.0);
+    v = fmin(v, 1.0);
+    return acos(v);
+}
+
 Vector3 Vector3::ClampMagnitude(Vector3 vector, float maxLength)
 {
     float length = Magnitude(vector);
@@ -395,6 +374,15 @@ float Vector3::Dot(Vector3 lhs, Vector3 rhs)
     return lhs.X * rhs.X + lhs.Y * rhs.Y + lhs.Z * rhs.Z;
 }
 
+Vector3 Vector3::FromSpherical(float rad, float theta, float phi)
+{
+    Vector3 v;
+    v.X = rad * sin(theta) * cos(phi);
+    v.Y = rad * sin(theta) * sin(phi);
+    v.Z = rad * cos(theta);
+    return v;
+}
+
 Vector3 Vector3::Lerp(Vector3 a, Vector3 b, float t)
 {
     if (t < 0) return a;
@@ -407,6 +395,10 @@ Vector3 Vector3::LerpUnclamped(Vector3 a, Vector3 b, float t)
     return (b - a) * t + a;
 }
 
+float Vector3::Magnitude(Vector3 v)
+{
+    return sqrt(SqrMagnitude(v));
+}
 
 Vector3 Vector3::Max(Vector3 a, Vector3 b)
 {
@@ -479,15 +471,76 @@ Vector3 Vector3::Reject(Vector3 a, Vector3 b)
     return a - Project(a, b);
 }
 
+Vector3 Vector3::RotateTowards(Vector3 current, Vector3 target,
+                               float maxRadiansDelta,
+                               float maxMagnitudeDelta)
+{
+    float magCur = Magnitude(current);
+    float magTar = Magnitude(target);
+    float newMag = magCur + maxMagnitudeDelta *
+                            ((magTar > magCur) - (magCur > magTar));
+    newMag = fmin(newMag, fmax(magCur, magTar));
+    newMag = fmax(newMag, fmin(magCur, magTar));
+
+    float totalAngle = Angle(current, target) - maxRadiansDelta;
+    if (totalAngle <= 0)
+        return Normalized(target) * newMag;
+    else if (totalAngle >= M_PI)
+        return Normalized(-target) * newMag;
+
+    Vector3 axis = Cross(current, target);
+    float magAxis = Magnitude(axis);
+    if (magAxis == 0)
+        axis = Normalized(Cross(current, current + Vector3(3.95, 5.32, -4.24)));
+    else
+        axis /= magAxis;
+    current = Normalized(current);
+    Vector3 newVector = current * cos(maxRadiansDelta) +
+                        Cross(axis, current) * sin(maxRadiansDelta);
+    return newVector * newMag;
+}
+
 Vector3 Vector3::Scale(Vector3 a, Vector3 b)
 {
     return Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
 }
 
+Vector3 Vector3::Slerp(Vector3 a, Vector3 b, float t)
+{
+    if (t < 0) return a;
+    else if (t > 1) return b;
+    return SlerpUnclamped(a, b, t);
+}
+
+Vector3 Vector3::SlerpUnclamped(Vector3 a, Vector3 b, float t)
+{
+    float magA = Magnitude(a);
+    float magB = Magnitude(b);
+    a /= magA;
+    b /= magB;
+    float dot = Dot(a, b);
+    dot = fmax(dot, -1.0);
+    dot = fmin(dot, 1.0);
+    float theta = acos(dot) * t;
+    Vector3 relativeVec = Normalized(b - a * dot);
+    Vector3 newVec = a * cos(theta) + relativeVec * sin(theta);
+    return newVec * (magA + (magB - magA) * t);
+}
 
 float Vector3::SqrMagnitude(Vector3 v)
 {
     return v.X * v.X + v.Y * v.Y + v.Z * v.Z;
+}
+
+void Vector3::ToSpherical(Vector3 vector, float &rad, float &theta,
+                          float &phi)
+{
+    rad = Magnitude(vector);
+    float v = vector.Z / rad;
+    v = fmax(v, -1.0);
+    v = fmin(v, 1.0);
+    theta = acos(v);
+    phi = atan2(vector.Y, vector.X);
 }
 
 
@@ -537,6 +590,20 @@ struct Vector3& Vector3::operator-=(const Vector3 rhs)
     Y -= rhs.Y;
     Z -= rhs.Z;
     return *this;
+}
+
+char Vector3::ToChar(Vector3 a) {
+    const char* x = (const char*)(int)a.X;
+    const char* y = (const char*)(int)a.Y;
+    const char* z = (const char*)(int)a.Z;
+    char buffer[25];
+    strncpy(buffer, x, sizeof(buffer));
+    strncpy(buffer, ", ", sizeof(buffer));
+    strncpy(buffer, y, sizeof(buffer));
+    strncpy(buffer, ", ", sizeof(buffer));
+    strncpy(buffer, z, sizeof(buffer));
+    strncpy(buffer, ", ", sizeof(buffer));
+    return buffer[24];
 }
 
 Vector3 operator-(Vector3 rhs) { return rhs * -1; }

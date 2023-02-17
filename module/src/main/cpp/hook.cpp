@@ -29,7 +29,8 @@
 #include <chrono>
 #include "Auth.h"
 #include "jniStuff.h"
-#include "Quaternion.h"
+#include "Include/Quaternion.h"
+
 
 #define GamePackageName "com.pixel.gun3d"
 
@@ -214,7 +215,8 @@ void* (*Resources$Load)(monoString* path);
 #endif
 
 void (*LookAt)(void* obj, Vector3);
-
+void (*set_rotation)(void* obj, Quaternion value);
+void (*get_rotation)(void* obj);
 void Pointers() {
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
@@ -247,6 +249,8 @@ void Pointers() {
     get_position = (Vector3 (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
     PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
     LookAt = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43827DC")));
+    set_rotation = (void (*)(void*, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A87880")));
+    get_rotation = (void (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A87880")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -263,7 +267,7 @@ void WeaponManager(void *obj) {
         auto delay = std::chrono::seconds(15);
         if (isAddWeapons) {
             for (int i = 0; i < 300; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -272,7 +276,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons2) {
             for (int i = 300; i < 500; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons2 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -281,7 +285,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons3) {
             for (int i = 500; i < 700; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons3 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -290,7 +294,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons4) {
             for (int i = 700; i < 900; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons4 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
@@ -299,7 +303,7 @@ void WeaponManager(void *obj) {
         }
         if (isAddWeapons5) {
             for (int i = 900; i < 1186; i++) {
-                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (12));
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons5 = false;
             while (std::chrono::steady_clock::now() - start < delay) {}
@@ -556,12 +560,17 @@ float get_fieldOfView(void *instance) {
 
 void Aimbot(void* player, void* enemy){
     Vector3 ownLocation = get_position(Component$get_transform(player));
+    LOGE("GET MY LOCATION");
     Vector3 enemyLocation = get_position(Component$get_transform(enemy));
+    LOGE("GET ENEMY LOCATION");
    // GetClosestEnemy(ownLocation, enemyLocation, enemy);
   //  Vector3 ClosestEnemyLocation = get_position(Component$get_transform(closestenemy));
-   // 1ST METHOD : BREAKS Z ROTATION LookAt(Component$get_transform(player), enemyLocation);
-   Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
-   *(Quaternion *) ((uint64_t) player + 0x7C8) = rotation;
+  Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
+   Vector3 rotVec3 = Quaternion::ToEuler();
+   LookAt(Component$get_transform(player), enemyLocation);
+   //
+  // LOGE("SET ROTATION");
+   //set_rotation(Component$get_transform(player), rotation);
 }
 
 void(*oldPlayerMoveC)(void* obj);
@@ -599,6 +608,7 @@ void(PlayerMoveC)(void* obj){
                 }
                 else{
                     if(!IsDead(obj)){
+                        LOGE("CALLING!");
                         Aimbot(MyPlayer, obj);
                     }
                 }
@@ -668,7 +678,7 @@ void PixelTime(void *obj) {
             SetString(CreateIl2cppString(OBFUSCATE("AccountCreated")), CreateIl2cppString(OBFUSCATE("")));
         }
         if (isAddCurPressed) {
-            setSomething(webInstance(), CreateIl2cppString(curList[selectedCur]), (int *)(amountws), (int *)(12));
+            setSomething(webInstance(), CreateIl2cppString(curList[selectedCur]), (int *)(amountws), (int *)(8));
             isAddCurPressed = false;
         }
         if (webLevel) {
@@ -829,7 +839,7 @@ void DrawMenu(){
                         isBuyEasterSticker = true;
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
-                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
+                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 3000);
                         ImGui::TextUnformatted(
                                 OBFUSCATE("Will be counted as the value that the game will use."));
                         ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,
