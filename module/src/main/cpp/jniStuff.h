@@ -11,21 +11,8 @@
 JavaVM *jvm;
 jclass UnityPlayer_cls;
 jfieldID UnityPlayer_CurrentActivity_fid;
-JNIEnv* getEnv() {
-    JNIEnv *env;
-    int status = jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
-    if(status < 0) {
-        status = jvm->AttachCurrentThread(&env, NULL);
-        if(status < 0) {
-            LOGE("Error Getting JNI");
-            return nullptr;
-        }
-    }
-    return env;
-}
 
-void displayKeyboard(bool pShow) {
-    JNIEnv *env = getEnv();
+void displayKeyboard(JNIEnv *env, bool pShow) {
     jclass ctx = env->FindClass(OBFUSCATE("android/content/Context"));
     jfieldID fid = env->GetStaticFieldID(ctx, OBFUSCATE("INPUT_METHOD_SERVICE"), OBFUSCATE("Ljava/lang/String;"));
     jmethodID mid = env->GetMethodID(ctx, OBFUSCATE("getSystemService"), OBFUSCATE("(Ljava/lang/String;)Ljava/lang/Object;"));

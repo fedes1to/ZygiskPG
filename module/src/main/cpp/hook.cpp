@@ -102,6 +102,7 @@ static char pass[32];
 static char license[32];
 const char* localHwid = "";
 static char email[64];
+JNIEnv* environment;
 
 #ifdef BIGSEX
 bool isStartDebug;
@@ -716,6 +717,7 @@ void PixelTime(void *obj) {
 
 
 int isGame(JNIEnv *env, jstring appDataDir) {
+    environment = env;
     if (!appDataDir)
         return 0;
     const char *app_data_dir = env->GetStringUTFChars(appDataDir, nullptr);
@@ -817,8 +819,16 @@ void DrawMenu(){
 
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGuiIO& io = ImGui::GetIO();
+        static bool WantTextInputLast = false;
+        if (io.WantTextInput && !WantTextInputLast)
+        {
+            // here you put code to call the keyboard
+            displayKeyboard(environment, true);
+        }
+        WantTextInputLast = io.WantTextInput;
         if (isValidAuth) {
-            ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
 #ifdef BIGSEX
             /*  if (ImGui::Button(OBFUSCATE("tes"))) {
                   isStartDebug = true;
@@ -869,7 +879,7 @@ void DrawMenu(){
                     ImGui::SliderFloat(OBFUSCATE("Jump Height"), &jumpHeight, 0.0f, 360.0f);
                     ImGui::EndTabItem();
                 }
-                if (ImGui::BeginTabItem(OBFUSCATE("Game Mods"))) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Game"))) {
                     ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
                     ImGui::Checkbox(OBFUSCATE("Telekill"), &Telekill);
                     ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
@@ -1049,6 +1059,12 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
+    std::ifstream file("acc.cfg");
+    if (file.is_open()) {
+        LOGW("file was found");
+        isValidAuth = tryAutoLogin(localHwid);
+    }
+
     Pointers();
     Hooks();
 
@@ -1060,7 +1076,6 @@ void *hack_thread(void *arg) {
     if (NULL != sym_input) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
-    isValidAuth = /*tryAutoLogin(localHwid)*/ true;
     LOGI("Draw Done!");
     return nullptr;
 }
