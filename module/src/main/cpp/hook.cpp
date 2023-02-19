@@ -951,10 +951,8 @@ void DrawMenu(){
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
                         ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 3000);
-                        ImGui::TextUnformatted(
-                                OBFUSCATE("Will be counted as the value that the game will use."));
-                        ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,
-                                       IM_ARRAYSIZE(curList), 4);
+                        ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
+                        ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,IM_ARRAYSIZE(curList), 4);
                         if (ImGui::Button(OBFUSCATE("Add Currency"))) {
                             isAddCurPressed = true;
                             curButtonPressedC += 1;
