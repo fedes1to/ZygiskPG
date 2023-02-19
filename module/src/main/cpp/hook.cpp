@@ -241,8 +241,10 @@ void (*updateRank) (void* instance, int* rankIndex, int* trophies);
 void (*updateClanLevelAndExperience) (void* instance, int* level, int* exp);
 void (*setLeagueInTournament) (void* instance, int* league, int* tournament);
 void (*addModule) (int* count, monoString* moduleValue);
+void (*tryAddArmor) (monoString* armor, int* enumerator, bool* bool1);
 
 void Pointers() {
+    tryAddArmor = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x332F008")));
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16D800C")));
     provideWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3335650")));
     provideWearNonArmor = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33357A4")));
@@ -736,35 +738,20 @@ void PixelTime(void *obj) {
         if (addAllArmors) {
             for (int i = 0; i < 23; i++)
             {
-                buyArmor(webInstance(), (int *)(65), (int *)(65), CreateIl2cppString(armorList[i]));
+                tryAddArmor(CreateIl2cppString(armorList[i]), (int*)(7), (bool*)(true));
             }
             for (int i = 0; i < 22; i++) {
-                provideWearNonArmor((int*)(65), CreateIl2cppString(capeList[i]));
+                tryAddArmor(CreateIl2cppString(capeList[i]), (int*)(9), (bool*)(true));
             }
             for (int i = 0; i < 28; i++)
             {
-                provideWearNonArmor((int*)(65), CreateIl2cppString(hatList[i]));
+                tryAddArmor(CreateIl2cppString(hatList[i]), (int*)(6), (bool*)(true));
             }
             for (int i = 0; i < 35; i++)
             {
-                provideWearNonArmor((int*)(65), CreateIl2cppString(bootsList[i]));
+                tryAddArmor(CreateIl2cppString(bootsList[i]), (int*)(10), (bool*)(true));
             }
             addAllArmors = false;
-        }
-        if (addAllWepSkins)
-        {
-            for (int i = 0; i < 999; i++)
-            {
-                purchaseWeaponSkin(webInstance(), (int*)(i));
-            }
-            addAllWepSkins = false;
-        }
-        if (addAllModules) {
-            for (int i = 0; i < 42; i++) {
-                addModule((int *)(9999), CreateIl2cppString(modList[i]));
-                addModule((int *)(9999), CreateIl2cppString(modpList[i]));
-            }
-            addAllModules = false;
         }
         if (bypassBan) {
             setState((int*)(15));
@@ -878,7 +865,6 @@ void Patches() {
     PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
     PATCH_SWITCH("0x438120C", "200080D2C0035FD6", enableEditor);
     PATCH_SWITCH("0x2ADECFC", "200080D2C0035FD6", enableEditor);
-    PATCH_SWITCH("0x42679A0", "20080D02C0035FD6", wepSkins);
   //  PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump); isGrounded
     PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
     //PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
@@ -895,6 +881,7 @@ void Patches() {
     PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
     PATCH_SWITCH("0x2F87D98", "80388152C0035FD6", collectibles); // 0x48EF240
     PATCH_SWITCH("0x2FA25A0", "00FA80D2C0035FD6", modules);
+    PATCH_SWITCH("0x3716C70", "200080D2C0035FD6", wepSkins); //
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
@@ -960,14 +947,8 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
                     ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
 #ifdef BIGSEX
-                    if (ImGui::Button(OBFUSCATE("Add All Modules"))) {
-                        addAllModules = true;
-                    }
                     if (ImGui::Button(OBFUSCATE("Add All Armors"))) {
                         addAllArmors = true;
-                    }
-                    if (ImGui::Button(OBFUSCATE("Add All wepSkins"))) {
-                        addAllWepSkins = true;
                     }
 #endif
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
