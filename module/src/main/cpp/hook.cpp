@@ -86,12 +86,14 @@ removedrone, god, ammo, collectibles, changeID,
 crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
 doublejump, coindrop, blackMarket, couponClicker, setsClicker,
 negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange, expbull,
-shotbull, railbull,jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
+shotbull, railbull,jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup,
 isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, shotBull,
 ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
-portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill,
-wantsDisplayKeyboard;
+portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill,catspam,
+wantsDisplayKeyboard, gadgetcd,speed, gadgetduration;
 
+float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
+int reflection, amountws;
 // bools for auth shit
 bool isValidAuth, hasRegistered;
 
@@ -109,8 +111,6 @@ static char email[64];
 bool isStartDebug;
 #endif
 
-float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
-int reflection, amountws;
 
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
@@ -122,7 +122,7 @@ bool (*SetMasterClient) (void* masterClientPlayer);
 void* (*get_LocalPlayer) ();
 void (*DestroyPlayerObjects)(void *player);
 monoArray<void**> *(*PhotonNetwork_playerListothers)();
-
+bool(*isEnemyTo)(void* player);
 void (*DestroyAll) ();
 // public static GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, byte group = 0, object[] data = null)
 void* (*Instantiate) (monoString* prefabName, void* position, void* rotation, unsigned char group);
@@ -259,6 +259,7 @@ void Pointers() {
     set_rotation = (void (*)(void*, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4381718")));
     get_rotation = (void (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3A87784")));
     set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x438149C")));
+    isEnemyTo = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46B6DF8")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -335,9 +336,9 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x1F0) = true;//isGadgetDisabler
             *(float*)((uint64_t) obj + 0x1F4) = 99999;//gadgetDisableTime
         }
-        if(killboost){
-            *(bool*)((uint64_t) obj + 0x3F8) = true;//isIncreasedDamageFromKill
-            *(int*)((uint64_t) obj + 0x400) = 3;//maxStackIncreasedDamage
+
+        if(catspam){
+            *(bool*)((uint64_t) obj + 0x640) = false;//is3CatSpam
         }
 
         if(portalBull){
@@ -392,13 +393,6 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x404) = true;//isElectricShock
             *(float*)((uint64_t) obj + 0x408) = 99999;//electricShockCoeff
             *(float*)((uint64_t) obj + 0x40C) = 99999;//electricShockTime
-        }
-
-        if(kspeedboost){
-            *(bool*)((uint64_t) obj + 0x410) = true;//isFastAfterKill
-            *(float*)((uint64_t) obj + 0x414) = 99999;//fastMultiplier
-            *(int*)((uint64_t) obj + 0x418) = 99999;//maxStackAfterKill
-            *(int*)((uint64_t) obj + 0x41C) = 99999;//timeFastAfterKill
         }
 
         if(daterweapon){
@@ -492,10 +486,6 @@ void WeaponSounds(void* obj){
             *(int*)((uint64_t) obj + 0x1B8) = reflection;//countReflectionRay
         }
 
-        if(speed){
-            *(float*)((uint64_t) obj + 0x60C) = 999999;//speedModifier
-        }
-
       /*  if(spleef){
             *(bool*)((uint64_t) obj + 0x424) = true;//isSpleef
         }*/
@@ -533,8 +523,30 @@ void WeaponSounds(void* obj){
     oldWeaponSounds(obj);
 }
 
-bool isEnemy(void* player_move_c){
-    return *(bool*)((uint64_t) player_move_c + 0x599);
+float(*oldGadgetDuration)(void* obj);
+float gadgetDuration(void* obj){
+    if(obj != nullptr && gadgetduration){
+        return 9999999;
+    }
+    return oldGadgetDuration(obj);
+}
+
+void (*oldFirstPersonControllerSharp)(void* obj);
+void FirstPersonControllSharp(void* obj){
+    if(obj != nullptr){
+        if(jumpHeight != NULL){
+            *(float*)((uint64_t) obj + 0x4A0) = jumpHeight;
+        }
+    }
+    oldFirstPersonControllerSharp(obj);
+}
+
+float (*oldSpeeds)(void* obj);
+float Speed(void* obj){
+    if(obj != nullptr && speed){
+        return 10;
+    }
+    return oldSpeeds(obj);
 }
 
 bool IsMine(void* SkinName){
@@ -545,26 +557,15 @@ bool IsDead(void* player_move_c){
     return *(bool*)((uint64_t) player_move_c + 0x590);
 }
 
-void(*oldInGameConnection)(void* obj);
-void InGameConnection(void* obj){
-    if(obj != nullptr && forceW){
-        void* SceneInfo = *(void**)((uint64_t) obj + 0x30);
-        if(SceneInfo != nullptr){
-            *(int*)((uint64_t) SceneInfo + 0x28) = 0;
-        }
-    }
-    oldInGameConnection(obj);
-}
-
 float (*old_get_fieldOfView)(void *instance);
 float get_fieldOfView(void *instance) {
     if (instance != nullptr && fovModifier != NULL) {
         return fovModifier;
     }
-    return old_get_fieldOfView(instance);//add other shit to hooks like speed
+    return old_get_fieldOfView(instance);
 }
 
-void(*oldBullet)(void* obj);
+/*void(*oldBullet)(void* obj);
 void Bullet(void* obj){
     if(obj != nullptr && isAimbot){
         if(MyPlayer != nullptr && enemyPlayer != nullptr){
@@ -576,24 +577,16 @@ void Bullet(void* obj){
         }
     }
     oldBullet(obj);
-}
-
+}*/
 
 void Aimbot(void* player, void* enemy){
     Vector3 ownLocation = get_position(Component$get_transform(player));
-    LOGE("GET MY LOCATION");
     Vector3 enemyLocation = get_position(Component$get_transform(enemy));
-    LOGE("GET ENEMY LOCATION");
-   // GetClosestEnemy(ownLocation, enemyLocation, enemy);
-  //  Vector3 ClosestEnemyLocation = get_position(Component$get_transform(closestenemy));
-  // LookAt(Component$get_transform(player), enemyLocation);
-   //
-  // LOGE("SET ROTATION");
-
-   Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
-   set_rotation(Component$get_transform(player), rotation);
-
+    Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
+    set_rotation(Component$get_transform(player), rotation);
+    *(Quaternion*)((uint64_t) enemyPlayer + 0x7F4) = rotation;
 }
+
 
 void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
@@ -611,7 +604,7 @@ void(PlayerMoveC)(void* obj){
         }
 
         if(ninjaJump){
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetJetpackEnabledRPC, PhotonTargets::All, NULL);
+            *(bool*)((uint64_t) obj + 0x12C) = true;
         }
 
         if (spoofMe) {
@@ -622,6 +615,10 @@ void(PlayerMoveC)(void* obj){
             spoofMe = false;
         }
 
+        if(gadgetsEnabled){
+            *(bool*)((uint64_t) obj + 0xD72) = false;//search for Action, the field should be under the gadget class
+        }
+
         void* SkinName = *(void**)((uint64_t) obj + 0x648);
         if(SkinName != nullptr){
             if(IsMine(SkinName)){
@@ -630,14 +627,14 @@ void(PlayerMoveC)(void* obj){
             }
             if(isAimbot){
                 if(!IsDead(obj)){
-                        LOGE("CALLING!");
                         Aimbot(MyPlayer, obj);
                     }
                 }
             }
 
             if(Telekill){
-                if(!IsDead(obj) /*&& isEnemy(obj)*/){
+              //  LOGE("Is Enemy : %d", isEnemyTo(obj));
+                if(!IsDead(obj)){
                     Vector3 enemyPos = get_position(Component$get_transform(obj));
                     set_position(Component$get_transform(MyPlayer), Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
                 }
@@ -776,10 +773,10 @@ void Hooks() {
     HOOK("0x473F064", PlayerMoveC, oldPlayerMoveC);
     HOOK("0x38DB748", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x15ECC04", UIInput, old_UIInput);
-    HOOK("0x2E49FB4", InGameConnection, oldInGameConnection);
+    HOOK("0x48F1E00", Speed, oldSpeeds);
     HOOK("0x4359378", get_fieldOfView, old_get_fieldOfView);
-    //HOOK("0x499DE58", Bullet, oldBullet);
-    //HOOK("0x3F7C62C", PetRespawnTime, oldPetRespawnTime);c
+    HOOK("0x22EA828", gadgetDuration, oldGadgetDuration);
+    HOOK("0x1AF1154", FirstPersonControllSharp, oldFirstPersonControllerSharp);
 }
 
 void Patches() {
@@ -787,10 +784,8 @@ void Patches() {
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);
-    PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
-    PATCH_SWITCH("0x4DF4DBC", "200080D2C0035FD6", ninjaJump);
-    PATCH_SWITCH("0x14ACE7C", "200080D2C0035FD6", gadgetsEnabled);
-    PATCH_SWITCH("0x14AC394", "200080D2C0035FD6", gadgetsEnabled);
+  //  PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
+  //  PATCH_SWITCH("0x4DF4DBC", "200080D2C0035FD6", ninjaJump);
     PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
     PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
     PATCH_SWITCH("0x2F87C14", "802580D2C0035FD6", cWear);
@@ -812,25 +807,24 @@ void Patches() {
     PATCH_SWITCH("0x438120C", "200080D2C0035FD6", enableEditor);
     PATCH_SWITCH("0x2ADECFC", "200080D2C0035FD6", enableEditor);
     PATCH_SWITCH("0x42679A0", "20080D02C0035FD6", wepSkins);
-    PATCH_SWITCH("0x14193E4", "200180922C0035FD6", ammo);
-    PATCH_SWITCH("0x14193D8", "200180922C0035FD6", ammo);
-    PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump);
+  //  PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump); isGrounded
     PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
-    PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
-    PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);
-    PATCH_SWITCH("0x48F1E00", "00F0271EC0035FD6", speed);
+    //PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
+    PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);//effects controller : reload length (weaposounds and 3 strings)
+    PATCH_SWITCH("0x22EA7EC", "000080D2C0035FD6", gadgetcd);
+    PATCH_SWITCH("0x22EA770", "200180922C0035FD6", gadgetcd);//canuse
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
     PATCH("0x3B4BA00", "200080D2C0035FD6");
     PATCH("0x3B4BC40", "200080D2C0035FD6");
+    PATCH("0x3986B9C", "C0035FD6");
 #ifdef BIGSEX
     PATCH("0x4008E8B", "200080D2C0035FD6");
 #endif
 }
 
-//effects controller : reload length(weaposounds and 3 strings) x
-//firerate : in player_move_c search SpeedsUpReloading and the func above is it
+
 
 void DrawMenu(){
 
@@ -845,23 +839,18 @@ void DrawMenu(){
         }
         WantTextInputLast = io.WantTextInput;
         if (isValidAuth) {
-#ifdef BIGSEX
-            /*  if (ImGui::Button(OBFUSCATE("tes"))) {
-                  isStartDebug = true;
-              }*/
-#endif
+
             if (ImGui::Button(OBFUSCATE("Join Discord"))) {
                 isDiscordPressed = true;
             }
             ImGui::TextUnformatted(OBFUSCATE("Its Recommended to join the discord server for mod updates etc."));
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
-            if (ImGui::BeginTabBar("listbar", tab_bar_flags)) {
+            if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
-                    ImGui::TextUnformatted(
-                            OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
+                    ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
                     if (ImGui::Button(OBFUSCATE("Add All Weapons 1/2"))) {
                         isAddWeapons = true;
                     }
@@ -894,34 +883,38 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
                     ImGui::Checkbox(OBFUSCATE("Infinite Jump"), &ninjaJump);
-                    ImGui::Checkbox(OBFUSCATE("Player Speed"), &speed);
-                    ImGui::SliderFloat(OBFUSCATE("Jump Height"), &jumpHeight, 0.0f, 360.0f);
+                    ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
+                    ImGui::SliderFloat(OBFUSCATE("Jump Height"), &jumpHeight, 0.0f,2.5f);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Game"))) {
-                    ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
+                   // ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
                     ImGui::Checkbox(OBFUSCATE("Telekill"), &Telekill);
                     ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
                     ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
                     ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
-                    ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
-                    ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
-                    ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
-                    ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone or you'll be kicked)"));
                     ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
                     ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
                     ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                    //mGui::Checkbox(OBFUSCATE("Force Weapons in All Modes"), &forceW);
                     ImGui::TextUnformatted(OBFUSCATE("Use weapons in any modes."));
                     if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
                         destroy = true;
                     }
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Gadget Mods"))) {
+                        ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
+                        ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone)"));
+                        ImGui::Checkbox(OBFUSCATE("Ignore Gadget Disabled Effect"), &gadgetsEnabled);
+                        ImGui::Checkbox(OBFUSCATE("No Gadget Cooldown"), &gadgetcd);
+                        ImGui::TextUnformatted(OBFUSCATE("Do not change gagets while its enabled."));
+                        ImGui::Checkbox(OBFUSCATE("Infinite Gadget Duration"), &gadgetduration);
+                        ImGui::TextUnformatted(OBFUSCATE("Disable after placing down the timed gadget to get access to other gadgets"));
+                        ImGui::Checkbox(OBFUSCATE("Turret Godmode"), &tgod);
+                        ImGui::TextUnformatted(OBFUSCATE("Gives the Turret Gadget Infinite Health, others can destroy it, it will become invisible when it does."));
+                    }
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Weapon"))) {
-                    ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"), &damage, 0.0f, 10.0f);
-                    ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
                     ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
                     ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
                     ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
@@ -931,40 +924,42 @@ void DrawMenu(){
                     ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,2000.0f);
                     ImGui::Checkbox(OBFUSCATE("Silent Aim"), &snowstormbull);
                     ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
-                    ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
-                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
-                    ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
-                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
-                    ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"),&shotBull);//add it chris dont forget
-                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
-                    ImGui::SliderInt(OBFUSCATE("Reflection Rays"), &reflection, 0, 1000);
-                    ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
-                    ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"), &kniferangesex);
-                    ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
                     ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"), &recoilandspread);
                     ImGui::Checkbox(OBFUSCATE("Force Scope"), &scopef);
+                    ImGui::Checkbox(OBFUSCATE("Force 3 Cat Spam"), &catspam);
+                    ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"),&kniferangesex);
+                    ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                    ImGui::Checkbox(OBFUSCATE("Force Portal Bullets"), &portalBull);
-                    ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot portal bullets."));
-                    ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"), &polymorph);
-                    ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
-                    ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"), &harpoonBull);
-                    ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets v2"));
+                    ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"), &damage, 0.0f, 10.0f);
+                    ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Bullet Mods"))) {
+                        ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
+                        ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
+                        ImGui::Checkbox(OBFUSCATE("Force Railgun Bullets"), &railbull);
+                        ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot railgun bullets."));
+                        ImGui::SliderInt(OBFUSCATE("Reflection Rays"), &reflection, 0, 1000);
+                        ImGui::TextUnformatted(OBFUSCATE("Amplifys the reflection ray ricochet."));
+                        ImGui::Checkbox(OBFUSCATE("Force Shotgun Bullets"),&shotBull);//add it chris dont forget
+                        ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot shotgun bullets."));
+                        ImGui::Checkbox(OBFUSCATE("Force Portal Bullets"), &portalBull);
+                        ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot portal bullets."));
+                        ImGui::Checkbox(OBFUSCATE("Force Polymorph Bullets"), &polymorph);
+                        ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
+                        ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"), &harpoonBull);
+                        ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets that dont launch you."));
+                    }
+
                     if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
                         ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
-                        ImGui::Checkbox(OBFUSCATE("No Fire and Toxic Effects"), &fte);
-                        ImGui::TextUnformatted(OBFUSCATE("Removes the burning and being intoxicated effect on you."));
                         ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
                         ImGui::Checkbox(OBFUSCATE("Force Blindness Effect"), &blindness);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the electric shock effect"));
                         ImGui::Checkbox(OBFUSCATE("Force Speed-Up Effect"), &speedup);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                "Adds a speed-up effect (Will speed up any player you shoot until they die)"));
+                        ImGui::TextUnformatted(OBFUSCATE("Adds a speed-up effect (Will speed up any player you shoot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Slow-down Effect"), &slowdown);
-                        ImGui::TextUnformatted(OBFUSCATE(
-                                "Adds a slow-down effect (Will freeze any player you shoot until they die)"));
+                        ImGui::TextUnformatted(OBFUSCATE("Adds a slow-down effect (Will freeze any player you shoot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Jump Disabler Effect"), &jumpdisable);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the jump disabler effect (Will disable jump for any player you shoot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Head Magnifier Effect"), &headmagnify);
@@ -981,15 +976,13 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Shows the enemy after you shoot them once."));
                     ImGui::Checkbox(OBFUSCATE("Quick-Scope"), &quickscope);
                     ImGui::TextUnformatted(OBFUSCATE("Opens the scope instantly."));
-                    ImGui::SliderFloat(OBFUSCATE("Field Of View"), &fovModifier, 0.0, 360.0);
+                //    ImGui::SliderFloat(OBFUSCATE("Field Of View"), &fovModifier, 0.0, 360.0);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Experimental"))) {
                     ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
-                    ImGui::TextUnformatted(
-                            OBFUSCATE("Makes the game think its on the Unity Editor"));
-                    ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList,
-                                   IM_ARRAYSIZE(sceneList), 4);
+                    ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
+                    ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
                     if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                         isLoadScenePressed = true;
                     }
@@ -1043,7 +1036,7 @@ void SetupImgui() {
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
     ImGui_ImplOpenGL3_Init("#version 100");
     ImGui::StyleColorsDark();
-    ImGui::GetStyle().ScaleAllSizes(6.0f);
+    ImGui::GetStyle().ScaleAllSizes(7.0f);
     io.Fonts->AddFontFromMemoryTTF(Roboto_Regular, 30, 30.0f);
 }
 
