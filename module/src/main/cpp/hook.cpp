@@ -80,7 +80,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, isAddWeapons6, shotBull,
         ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill, modules,
-        wantsDisplayKeyboard, initParams, addAllArmors, addAllModules, addAllWepSkins,catspam, gadgetcd, gadgetduration, tmate, ninjaJump1,ninjaJump2;
+        wantsDisplayKeyboard, initParams, addAllArmors, addAllModules, addAllWepSkins,catspam, gadgetcd, gadgetduration, tmate, isAddWeapons7,isAddWeapons8;
 
 float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -99,8 +99,6 @@ void* webInstance()
     static void*(*webInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16E25C4")));
     return webInstance();
 }
-
-
 
 bool isValidAuth, hasRegistered;
 
@@ -301,54 +299,60 @@ void (*old_WeaponManager)(void *obj);
 void WeaponManager(void *obj) {
     if (obj != nullptr) {
         if (isAddWeapons) {
-            for (int i = 0; i < 300; i++) {
+            for (int i = 0; i < 150; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
-            sleep(1);
-            isAddWeapons2 = true;
         }
         if (isAddWeapons2) {
-            for (int i = 300; i < 500; i++) {
+            for (int i = 150; i < 300; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons2 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
-            sleep(1);
-            isAddWeapons3 = true;
         }
         if (isAddWeapons3) {
-            for (int i = 500; i < 700; i++) {
+            for (int i = 300; i < 450; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons3 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
-            sleep(1);
         }
         if (isAddWeapons4) {
-            for (int i = 700; i < 900; i++) {
+            for (int i = 450; i < 600; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons4 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
-            isAddWeapons5 = true;
         }
         if (isAddWeapons5) {
-            for (int i = 900; i < 1050; i++) {
+            for (int i = 600; i < 750; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons5 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
-            sleep(1);
-            isAddWeapons6 = true;
 
         }
         if (isAddWeapons6) {
-            for (int i = 1050; i < 1187; i++) {
+            for (int i = 750; i < 900; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons6 = false;
+            LoadLevel(CreateIl2cppString("AppCenter"));
+        }
+        if (isAddWeapons7) {
+            for (int i = 900; i < 1050; i++) {
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
+            }
+            isAddWeapons7 = false;
+            LoadLevel(CreateIl2cppString("AppCenter"));
+        }
+        if (isAddWeapons8) {
+            for (int i = 1050; i < 1187; i++) {
+                addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
+            }
+            isAddWeapons8 = false;
             LoadLevel(CreateIl2cppString("AppCenter"));
         }
     }
@@ -883,7 +887,7 @@ void Patches() {
     PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);
     PATCH_SWITCH("0x48F1E00", "00F0271EC0035FD6", speed);
     PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
-    PATCH_SWITCH("0x48EF240", "00FA80D2C0035FD6", collectibles); // 0x48EF240
+    PATCH_SWITCH("0x2F87D98", "80388152C0035FD6", collectibles); // 0x48EF240
     PATCH_SWITCH("0x2FA25A0", "00FA80D2C0035FD6", modules);
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
@@ -915,10 +919,55 @@ void DrawMenu(){
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
                     ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
-                    if (ImGui::Button(OBFUSCATE("Add All Weapons 1/2"))) {
-                        isAddWeapons = true;
+                    if (ImGui::CollapsingHeader("Unlock Weapons"))
+                    {
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 1/8"))) {
+                            isAddWeapons = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 2/8"))) {
+                            isAddWeapons2 = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 3/8"))) {
+                            isAddWeapons3 = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 4/8"))) {
+                            isAddWeapons4 = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 5/8"))) {
+                            isAddWeapons5 = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 6/8"))) {
+                            isAddWeapons6 = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 7/8"))) {
+                            isAddWeapons7 = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 8/8"))) {
+                            isAddWeapons8 = true;
+                        }
+                        ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
                     }
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
+                    if (ImGui::Button(OBFUSCATE("BypassBan"))) {
+                        bypassBan = true;
+                    }
+                    ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
+                    ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
+#ifdef BIGSEX
+                    if (ImGui::Button(OBFUSCATE("Add All Modules"))) {
+                        addAllModules = true;
+                    }
+                    if (ImGui::Button(OBFUSCATE("Add All Armors"))) {
+                        addAllArmors = true;
+                    }
+                    if (ImGui::Button(OBFUSCATE("Add All wepSkins"))) {
+                        addAllWepSkins = true;
+                    }
+#endif
+                    ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
+                    ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
+                    ImGui::Checkbox(OBFUSCATE("ItemParams intSet"), &initParams);
+                    ImGui::TextUnformatted(OBFUSCATE("For testing purposes only"));
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
@@ -1081,7 +1130,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         setupimg = true;
     }
 
-    readFile("/storage/emulated/0/license.txt");
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
@@ -1104,6 +1152,9 @@ void *hack_thread(void *arg) {
 
     isValidAuth = true;
 
+#ifdef BIGSEX
+    isValidAuth = true;
+#endif
     Pointers();
     Hooks();
 
