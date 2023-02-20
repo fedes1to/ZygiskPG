@@ -32,7 +32,7 @@
 #include "Rect.h"
 #include <fstream>
 #include <limits>
-
+#include "Include/FileWrapper.h"
 #define GamePackageName "com.pixel.gun3d"
 
 int glHeight, glWidth;
@@ -85,7 +85,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill, modules,
         wantsDisplayKeyboard, initParams, addAllArmors, addAllModules, addAllWepSkins,catspam, gadgetcd,
-        showItems, gadgetduration, tmate, isAddWeapons7,isAddWeapons8,esp;
+        showItems, gadgetduration, tmate, isAddWeapons7,isAddWeapons8,chams;
 
 float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -751,16 +751,6 @@ void(PlayerMoveC)(void* obj){
                                  Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
                 }
             }
-            if (esp) {
-                auto isPlayerLocation = WorldToScreenPoint(get_camera(),
-                                                           GetPlayerLocation(enemyPlayer));
-                ImDrawList *drawList = ImGui::GetWindowDrawList();
-                ImVec2 rectPosition(isPlayerLocation.X, isPlayerLocation.Y);
-                ImVec2 rectSize(100, 100);
-                ImU32 rectColor = ImColor(255, 0, 0);
-                drawList->AddRect(rectPosition, ImVec2(rectPosition.x + rectSize.x,
-                                                       rectPosition.y + rectSize.y), rectColor);
-            }
 
             /* if (playstantiate) {
                  SetMasterClient(get_LocalPlayer());
@@ -993,7 +983,6 @@ void Patches() {
 
 
 void DrawMenu(){
-    ImGui::Checkbox(OBFUSCATE("ESP"), &esp);
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
@@ -1231,9 +1220,9 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
-
+    //LOGE("AccInfo %s", File("/sdcard/license.txt").read_content().c_str());
     DrawMenu();
-;
+
     ImGui::EndFrame();
     ImGui::Render();
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
