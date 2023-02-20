@@ -895,6 +895,21 @@ void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+
+// Open the text file for reading
+        std::ifstream file("/sdcard/Download/license.txt");
+
+        if (!file.is_open()) {
+            LOGE("RETARD UR FILE DOESNT EXIST OR I JUST CANT READ THE FILE CAUSE ANDROID IS RETARDEEED");
+        }
+
+// Read the file contents into a string
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        std::string fileContent = buffer.str();
+
+// Close the file
+        file.close();
         if (isValidAuth) {
             if (ImGui::Button(OBFUSCATE("Join Discord"))) {
                 isDiscordPressed = true;

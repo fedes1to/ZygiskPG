@@ -20,15 +20,6 @@ std::string apikey = "3972111712928518569275628818854436378567856538451588";
 
 bool hasAuthenticated;
 
-void readFile(const char* filename, std::list<std::string>& lines)
-{
-    lines.clear();
-    std::ifstream file(filename);
-    std::string s;
-    while (getline(file, s))
-        lines.push_back(s);
-}
-
 size_t curlCallback(void *contents, size_t size, size_t nmemb, std::string *s)
 {
     size_t newLength = size*nmemb;
