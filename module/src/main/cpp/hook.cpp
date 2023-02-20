@@ -254,7 +254,7 @@ void (*updateRank) (void* instance, int* rankIndex, int* trophies);
 void (*updateClanLevelAndExperience) (void* instance, int* level, int* exp);
 void (*setLeagueInTournament) (void* instance, int* league, int* tournament);
 void (*addModule) (int* count, monoString* moduleValue);
-bool (*isDead)(void* obj);
+//bool (*isDead)(void* obj);
 void (*tryAddArmor) (monoString* armor, int* enumerator, bool* bool1);
 void (*addItem) (monoString* item, int* type);
 void (*addWear) (int* enumerator, monoString* item);
@@ -312,7 +312,7 @@ void Pointers() {
     set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x438149C")));
     isEnemyTo = (bool (*)(void*, void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46B6DF8")));
     EnableJetpack = (void (*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4720220")));
-    isDead = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x143726C")));
+ //   isDead = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x143726C")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -634,8 +634,16 @@ float Speed(void* obj){
     return oldSpeeds(obj);
 }
 
+bool isEnemy(void* player_move_c){
+    return *(bool*)((uint64_t) player_move_c + 0xA45);
+}
+
 bool IsMine(void* SkinName){
     return *(bool*)((uint64_t) SkinName + 0xA8);
+}
+
+bool IsDead(void* player_move_c){
+    return *(bool*)((uint64_t) player_move_c + 0x590);
 }
 
 float (*old_get_fieldOfView)(void *instance);
@@ -707,14 +715,14 @@ void(PlayerMoveC)(void* obj){
                 enemyPlayer = obj;
             }
             if(isAimbot){
-                if(!isDead(obj)){
+                if(!IsDead(obj)){
                         Aimbot(MyPlayer, obj);
                     }
                 }
             }
 
             if(Telekill){
-                if(!isDead(obj)){
+                if(!IsDead(obj)){
                     Vector3 enemyPos = get_position(Component$get_transform(obj));
                     set_position(Component$get_transform(MyPlayer), Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
                 }
