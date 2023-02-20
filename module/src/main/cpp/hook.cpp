@@ -589,15 +589,22 @@ void FirstPersonControllSharp(void* obj){
     oldFirstPersonControllerSharp(obj);
 }
 
+void behaviour_teleport(void* obj, monoString* message, monoString* prefix) {
+    void* myTransform = Component$get_transform(Player_move_c$skinName(obj));
+    int myOffset = std::stoi(string$Substring(message, prefix->getLength())->getString());
+    set_position(myTransform, get_position(myTransform)+(Transform$get_forward(myTransform)*myOffset));
+}
+
 void (*old_SendChatHooked)(void* obj, monoString* message, bool isClan, monoString* clanIcon);
 void SendChatHooked(void* obj, monoString* message, bool isClan, monoString* clanIcon){
     if(obj != nullptr){
-        LOGE("RELATED TO TELEPORT: %s", message->getChars());
         if (string$StartsWith(message, CreateIl2cppString(OBFUSCATE("!teleport ")))) {
-            LOGE("Ja, ist %s", string$Substring(message, 10)->getChars());
-            void* myTransform = Component$get_transform(Player_move_c$skinName(obj));
-            int myOffset = std::stoi(string$Substring(message, 10)->getString());
-            set_position(myTransform, get_position(myTransform)+(Transform$get_forward(myTransform)*myOffset));
+            behaviour_teleport(obj, message, CreateIl2cppString(OBFUSCATE("!teleport ")));
+            return;
+        }
+        if (string$StartsWith(message, CreateIl2cppString(OBFUSCATE("!tp ")))) {
+            behaviour_teleport(obj, message, CreateIl2cppString(OBFUSCATE("!tp ")));
+            return;
         }
     }
     old_SendChatHooked(obj, message, isClan, clanIcon);
