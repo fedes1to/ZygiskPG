@@ -255,6 +255,7 @@ enum RPCList
     SyncTeammateRegenByMe
 };
 
+
 enum PhotonTargets
 {
     All,

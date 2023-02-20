@@ -29,11 +29,13 @@
 #include <chrono>
 #include "Auth.h"
 #include "Include/Quaternion.h"
+#include "Rect.h"
 #include <fstream>
 #include <limits>
 
 #define GamePackageName "com.pixel.gun3d"
 
+int glHeight, glWidth;
 //dear future self, if this game ever updat
 
 /*
@@ -83,10 +85,23 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill, modules,
         wantsDisplayKeyboard, initParams, addAllArmors, addAllModules, addAllWepSkins,catspam, gadgetcd,
-        showItems, gadgetduration, tmate, isAddWeapons7,isAddWeapons8;
+        showItems, gadgetduration, tmate, isAddWeapons7,isAddWeapons8,esp;
 
 float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
+
+Vector3 WorldToScreenPoint(void *transform, Vector3 pos) {
+    if (!transform)return Vector3();
+    Vector3 position;
+    static const auto WorldToScreenPoint_Injected = reinterpret_cast<uint64_t(__fastcall *)(void *,Vector3, int, Vector3 &)>(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4359F60")));
+    WorldToScreenPoint_Injected(transform, pos, 4, position);
+    return position;
+}
+
+void *get_camera() {
+    static const auto get_camera_injected = reinterpret_cast<uint64_t(__fastcall *)()>(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435A454")));
+    return (void *) get_camera_injected();
+}
 
 monoString* CreateIl2cppString(const char* str)
 {
@@ -605,6 +620,10 @@ void FirstPersonControllSharp(void* obj){
     oldFirstPersonControllerSharp(obj);
 }
 
+Vector3 GetPlayerLocation(void *player) {
+    return get_position(Component$get_transform(player));
+}
+
 void behaviour_teleport(void* obj, monoString* message, monoString* prefix) {
     void* myTransform = Component$get_transform(Player_move_c$skinName(obj));
     int myOffset = std::stoi(string$Substring(message, prefix->getLength())->getString());
@@ -679,71 +698,87 @@ void Aimbot(void* player, void* enemy){
 
 void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
-    if(obj != nullptr){
-        if(spamchat){
-            SendChat(obj, CreateIl2cppString("buy zygiskpg - https://discord.gg/ZVP2kuJXww"), false, CreateIl2cppString("0"));
+    if(obj != nullptr) {
+        if (spamchat) {
+            SendChat(obj, CreateIl2cppString("buy zygiskpg - https://discord.gg/ZVP2kuJXww"), false,
+                     CreateIl2cppString("0"));
         }
 
-        if(xrayApplied){
+        if (xrayApplied) {
             EnableXray(obj, true);
         }
 
 
-        if(xray){
-            *(bool*)((uint64_t) obj + 0x708) = true; // search ZombiManager then its above
+        if (xray) {
+            *(bool *) ((uint64_t) obj + 0x708) = true; // search ZombiManager then its above
         }
 
-        if(ninjaJump){
+        if (ninjaJump) {
             EnableJetpack(obj, true);//search for jetpack in player_move_C
         }
         if (spoofMe) {
-            void* argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID, PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID, PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetPixelBookID);
+            void *argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID,
+                           PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,
+                           PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All,
+                           argsForSetPixelBookID);
             spoofMe = false;
         }
 
-        if(gadgetsEnabled){
-            *(bool*)((uint64_t) obj + 0xD72) = false;//search for Action, the field should be under the gadget class
+        if (gadgetsEnabled) {
+            *(bool *) ((uint64_t) obj +
+                       0xD72) = false;//search for Action, the field should be under the gadget class
         }
 
-        void* SkinName = *(void**)((uint64_t) obj + 0x648);
-        if(SkinName != nullptr){
-            if(IsMine(SkinName)){
+        void *SkinName = *(void **) ((uint64_t) obj + 0x648);
+        if (SkinName != nullptr) {
+            if (IsMine(SkinName)) {
                 MyPlayer = SkinName;
                 enemyPlayer = obj;
             }
-            if(isAimbot){
-                if(!IsDead(obj)){
-                        Aimbot(MyPlayer, obj);
-                    }
+            if (isAimbot) {
+                if (!IsDead(obj)) {
+                    Aimbot(MyPlayer, obj);
                 }
             }
 
-            if(Telekill){
-                if(!IsDead(obj)){
+            if (Telekill) {
+                if (!IsDead(obj)) {
                     Vector3 enemyPos = get_position(Component$get_transform(obj));
-                    set_position(Component$get_transform(MyPlayer), Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
+                    set_position(Component$get_transform(MyPlayer),
+                                 Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
                 }
             }
+            if (esp) {
+                auto isPlayerLocation = WorldToScreenPoint(get_camera(),
+                                                           GetPlayerLocation(enemyPlayer));
+                ImDrawList *drawList = ImGui::GetWindowDrawList();
+                ImVec2 rectPosition(isPlayerLocation.X, isPlayerLocation.Y);
+                ImVec2 rectSize(100, 100);
+                ImU32 rectColor = ImColor(255, 0, 0);
+                drawList->AddRect(rectPosition, ImVec2(rectPosition.x + rectSize.x,
+                                                       rectPosition.y + rectSize.y), rectColor);
+            }
 
-       /* if (playstantiate) {
-            SetMasterClient(get_LocalPlayer());
-            LOGE("instantiating");
-            void* skinName = Player_move_c$skinName(obj);
-            LOGE("skinname is null: %s", std::to_string(skinName == nullptr).c_str());
-            void* pos = Transform$get_position(Component$get_transform(skinName));
-            LOGE("pos is null: %s", std::to_string(pos == nullptr).c_str());
-            LOGE("getidentity is null: %s", std::to_string(Quaternion$get_identity() == nullptr).c_str());
-            Instantiate(CreateIl2cppString("RacingCar"), pos, Quaternion$get_identity(), 0);
-            LOGE("instantiated");
-            float x = Vector3$get_x(pos);
-            float y = Vector3$get_y(pos);
-            float z = Vector3$get_z(pos);
-            LOGE("pos: %f, %f, %f", x, y, z);
-            playstantiate = false;
-        }*/
+            /* if (playstantiate) {
+                 SetMasterClient(get_LocalPlayer());
+                 LOGE("instantiating");
+                 void* skinName = Player_move_c$skinName(obj);
+                 LOGE("skinname is null: %s", std::to_string(skinName == nullptr).c_str());
+                 void* pos = Transform$get_position(Component$get_transform(skinName));
+                 LOGE("pos is null: %s", std::to_string(pos == nullptr).c_str());
+                 LOGE("getidentity is null: %s", std::to_string(Quaternion$get_identity() == nullptr).c_str());
+                 Instantiate(CreateIl2cppString("RacingCar"), pos, Quaternion$get_identity(), 0);
+                 LOGE("instantiated");
+                 float x = Vector3$get_x(pos);
+                 float y = Vector3$get_y(pos);
+                 float z = Vector3$get_z(pos);
+                 LOGE("pos: %f, %f, %f", x, y, z);
+                 playstantiate = false;
+             }*/
+        }
     }
     oldPlayerMoveC(obj);
 }
@@ -878,7 +913,7 @@ int isGame(JNIEnv *env, jstring appDataDir) {
     }
 }
 
-int glHeight, glWidth;
+
 bool setupimg;
 
 HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
@@ -958,7 +993,7 @@ void Patches() {
 
 
 void DrawMenu(){
-
+    ImGui::Checkbox(OBFUSCATE("ESP"), &esp);
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
@@ -1037,7 +1072,7 @@ void DrawMenu(){
                         isBuyEasterSticker = true;
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
-                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
+                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 5000);//dont fucking change it you cocksucker, make it how you want in a dev build but for users its 5000
                         ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
                         ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,IM_ARRAYSIZE(curList), 4);
                         if (ImGui::Button(OBFUSCATE("Add Currency"))) {
@@ -1220,7 +1255,6 @@ void *hack_thread(void *arg) {
 #endif
     Pointers();
     Hooks();
-
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
