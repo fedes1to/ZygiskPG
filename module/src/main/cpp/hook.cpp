@@ -938,7 +938,8 @@ void Patches() {
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
     PATCH("0x3B4BA00", "200080D2C0035FD6");
-    PATCH("0x3BBDEE0", "200080D2C0035FD6"); // all scenes available in all modes, can remove if you want
+    // vv deleted this one because it makes sandbox matches show up in daeathmatch
+    //PATCH("0x3BBDEE0", "200080D2C0035FD6"); // all scenes available in all modes, can remove if you want
     PATCH("0x3B4BC40", "200080D2C0035FD6");
     PATCH("0x3986B9C", "C0035FD6");
 #ifdef BIGSEX
