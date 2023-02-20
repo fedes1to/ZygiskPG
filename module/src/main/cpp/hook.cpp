@@ -171,6 +171,10 @@ float (Vector3$get_z)(void* ref) {
     }
 }
 
+// string
+bool (*string$StartsWith)(monoString* string, monoString* value);
+monoString* (*string$Substring)(monoString* string, int startIndex);
+
 // Component
 void* (*Component$get_gameObject)(void* component);
 void* (*Component$get_transform)(void* component);
@@ -178,6 +182,7 @@ monoString* (*Component$get_tag)(void* component);
 
 // Transform
 Vector3 (*get_position)(void *_instance);
+Vector3 (*Transform$get_forward)(void *_instance);
 
 // Quaternion
 void* (*Quaternion$get_identity)();
@@ -296,6 +301,9 @@ void Pointers() {
     GameObject$Instantiate = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43608C8")));
     GameObject$class = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x20000E0")));
     Quaternion$get_identity = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437D668")));
+    Transform$get_forward = (Vector3 (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43819DC")));
+    string$StartsWith = (bool (*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE00")));
+    string$Substring = (monoString* (*)(monoString*, int)) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43F4220")));
     get_position = (Vector3 (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43813FC")));
     PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43B3B60")));
     LookAt = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43827DC")));
@@ -597,6 +605,20 @@ void FirstPersonControllSharp(void* obj){
     oldFirstPersonControllerSharp(obj);
 }
 
+void (*old_SendChatHooked)(void* obj, monoString* message, bool isClan, monoString* clanIcon);
+void SendChatHooked(void* obj, monoString* message, bool isClan, monoString* clanIcon){
+    if(obj != nullptr){
+        LOGE("RELATED TO TELEPORT: %s", message->getChars());
+        if (string$StartsWith(message, CreateIl2cppString(OBFUSCATE("!teleport ")))) {
+            LOGE("Ja, ist %s", string$Substring(message, 10)->getChars());
+            void* myTransform = Component$get_transform(Player_move_c$skinName(obj));
+            int myOffset = std::stoi(string$Substring(message, 10)->getString());
+            set_position(myTransform, get_position(myTransform)+(Transform$get_forward(myTransform)*myOffset));
+        }
+    }
+    old_SendChatHooked(obj, message, isClan, clanIcon);
+}
+
 float (*oldSpeeds)(void* obj);
 float Speed(void* obj){
     if(obj != nullptr && speed){
@@ -862,6 +884,7 @@ void Hooks() {
     HOOK("0x4359378", get_fieldOfView, old_get_fieldOfView);
     HOOK("0x22EA828", gadgetDuration, oldGadgetDuration);
     HOOK("0x1AF1154", FirstPersonControllSharp, oldFirstPersonControllerSharp);
+    HOOK("0x471AB70", SendChatHooked, old_SendChatHooked);
 }
 
 void Patches() {
@@ -908,6 +931,7 @@ void Patches() {
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
     PATCH("0x3B4BA00", "200080D2C0035FD6");
+    PATCH("0x3BBDEE0", "200080D2C0035FD6"); // all scenes available in all modes, can remove if you want
     PATCH("0x3B4BC40", "200080D2C0035FD6");
     PATCH("0x3986B9C", "C0035FD6");
 #ifdef BIGSEX
