@@ -61,6 +61,8 @@
  */
 static int selectedScene = 0;
 static int selectedCur = 0;
+
+const char* skinList[] = { "Weapon1018_black_friday", "Weapon1018_climber", "Weapon1018_default", "Weapon1032_default", "Weapon1032_ice_serpent", "Weapon1032_orobro", "Weapon1041_default", "Weapon1041_yeti", "Weapon1044_default", "Weapon1044_pixel_cola", "Weapon1057_default", "Weapon1057_pumpking_rabbit", "Weapon1057_silver_wolf", "Weapon1063_default", "Weapon1063_hallorifle", "Weapon1063_mini_game", "Weapon1065_default", "Weapon1065_flammable_backpack", "Weapon1068_default", "Weapon1068_digital_pumpkin", "Weapon1069_crystal_cycler", "Weapon1069_default", "Weapon1069_demons_soul", "Weapon1077_default", "Weapon1077_pro_version", "Weapon1087_caution_wild_deer", "Weapon1087_default", "Weapon1089_default", "Weapon1089_north_pole_crusader", "Weapon1110_default", "Weapon1110_spooktober", "Weapon1111_default", "Weapon1111_poison_vein", "Weapon1112_default", "Weapon1112_zombie", "Weapon1125_default", "Weapon1125_ice_dragon_cult", "Weapon1135_default", "Weapon1135_three_eyed_pumpking", "Weapon1137_default", "Weapon1137_love_implant", "Weapon1144_default", "Weapon1144_santa_pew", "Weapon1146_default", "Weapon1146_monster_slimethrower", "Weapon1153_default", "Weapon1153_neon_christmas", "Weapon115_default", "Weapon115_Gold", "Weapon1167_default", "Weapon1167_soul_catcher", "Weapon1169_default", "Weapon1169_winter_fox", "Weapon1172_default", "Weapon1172_pumpkin_shogun", "Weapon1172_soul_of_winter", "Weapon1177_default", "Weapon1177_holy_punch", "Weapon1177_millitary_supply", "Weapon1195_default", "Weapon1195_icicle", "Weapon1195_living_specimen", "Weapon1203_broken_heart", "Weapon1203_default", "Weapon1203_ice_dragon_cult", "Weapon1208_default", "Weapon1208_happy_deers", "Weapon1209_default", "Weapon1209_mecha", "Weapon1210_black_dragon_bite", "Weapon1210_default", "Weapon1214_default", "Weapon1214_сold_breath", "Weapon1216_default", "Weapon1216_grizzly", "Weapon1224_default", "Weapon1224_mecha", "Weapon1231_default", "Weapon1231_jolly", "Weapon1232_santa_list", "Weapon1234_default", "Weapon1234_spooky_hunter", "Weapon1254_default", "Weapon1254_millitary_supply", "Weapon1264_default", "Weapon1264_irradiated", "Weapon1265_default", "Weapon1265_scary_news", "Weapon1269_default", "Weapon1269_mecha", "Weapon127_default", "Weapon127_Gold", "Weapon1284_default", "Weapon1284_night_tempest", "Weapon1286_cristmas_cook", "Weapon1286_default", "Weapon1287_default", "Weapon1287_goth", "Weapon1287_mecha", "Weapon1290_christmas_light", "Weapon1290_default", "Weapon1294_default", "Weapon1294_sckeleton", "Weapon1300_bloody_order", "Weapon1300_default", "Weapon1305_default", "Weapon1305_vummy_again", "Weapon1323_brain_eater", "Weapon1323_default", "Weapon1338_default", "Weapon1338_millitary_supply", "Weapon133_default", "Weapon133_Gold", "Weapon1341_default", "Weapon1341_demon_eye", "Weapon1355_default", "Weapon1355_irradiated", "Weapon1407_default", "Weapon1407_winter_holiday", "Weapon1411_default", "Weapon1411_nuclear_reactor", "Weapon1416_crystal_dislike", "Weapon1416_default", "Weapon1416_nuclear_reactor", "Weapon1422_default", "Weapon1422_santas_deer", "Weapon1428_default", "Weapon1428_сarousel", "Weapon1434_default", "Weapon1434_mummy", "Weapon1435_default", "Weapon1435_frozen_king", "Weapon1448_christmas_tree", "Weapon1448_default", "Weapon1449_default", "Weapon1449_frozen", "Weapon1455_default", "Weapon1455_train", "Weapon1462_antidote", "Weapon1462_default", "Weapon1478_default", "Weapon1478_rafflesia", "Weapon1490_default", "Weapon1490_one_aloner", "Weapon1492_default", "Weapon1492_surgeon", "Weapon1493_default", "Weapon1493_pixel_cola", "Weapon1505_default", "Weapon1505_eternal_night", "Weapon1506_default", "Weapon1506_princess", "Weapon1533_bloody_web", "Weapon1533_default", "Weapon1534_ancient_dragon", "Weapon1534_default", "Weapon1546_altered_ak_5_56", "Weapon1546_default", "Weapon1547_altered_disguised_weapon", "Weapon1547_default", "Weapon1555_default", "Weapon1555_destruction_preader", "Weapon1556_black_dragon_curse", "Weapon1556_default", "Weapon17_altered_fast_death", "Weapon17_default", "Weapon1_default", "Weapon1_halloween", "Weapon220_default", "Weapon220_fishbone", "Weapon220_Gold", "Weapon220_neon", "Weapon221_alligator", "Weapon221_default", "Weapon221_techno", "Weapon224_default", "Weapon224_Gold", "Weapon224_overhited", "Weapon224_transformer", "Weapon25_default", "Weapon25_mythical_power", "Weapon281_bone", "Weapon281_cyborg", "Weapon281_default", "Weapon281_green_dragon", "Weapon281_mythical_power", "Weapon293_blocks", "Weapon293_default", "Weapon293_portalium_blaster", "Weapon293_reactor", "Weapon308_default", "Weapon308_Gold", "Weapon339_cyber_necromancy", "Weapon339_default", "Weapon339_medieval", "Weapon339_paladin", "Weapon345_altered_space_rifle", "Weapon345_default", "Weapon374_default", "Weapon374_Gold", "Weapon386_default", "Weapon386_ice_dragon_cult", "Weapon392_default", "Weapon392_mythical_power", "Weapon399_default", "Weapon399_emperor", "Weapon399_modified", "Weapon399_runes", "Weapon411_black_friday", "Weapon411_default", "Weapon411_insidious", "Weapon413_default", "Weapon413_Gold", "Weapon421_default", "Weapon421_Gold", "Weapon438_default", "Weapon438_Gold", "Weapon444_Clown", "Weapon444_default", "Weapon444_Gold", "Weapon444_RedSkull", "Weapon533_default", "Weapon533_Resort", "Weapon544_default", "Weapon544_mythical_power", "Weapon552_default", "Weapon552_mythical_power", "Weapon564_Chrome", "Weapon564_default", "Weapon564_Predator", "Weapon564_Tropic", "Weapon613_default", "Weapon613_enchanted", "Weapon613_from_the_ruins", "Weapon613_Gold", "Weapon613_neon", "Weapon613_reactor", "Weapon615_default", "Weapon615_jack_the _umpkin", "Weapon625_chamomile", "Weapon625_default", "Weapon625_hype", "Weapon625_samurai", "Weapon640_default", "Weapon640_icicle", "Weapon640_Monster", "Weapon640_Techno", "Weapon654_default", "Weapon654_frozen_candy", "Weapon65_default", "Weapon65_one_dragon_story", "Weapon667_black_friday", "Weapon667_default", "Weapon679_default", "Weapon679_spooky_laser", "Weapon681_default", "Weapon681_military", "Weapon681_relic", "Weapon681_severe_caramel", "Weapon681_supercharged", "Weapon687_crystal_anti_champion", "Weapon687_decorated_pruce", "Weapon687_default", "Weapon687_Neon", "Weapon687_Steampunk", "Weapon687_Watermelon", "Weapon688_altered_champion_solar_cannon", "Weapon688_default", "Weapon688_electro_pine", "Weapon707_default", "Weapon707_jack_the_orac", "Weapon711_default", "Weapon711_santas_helper", "Weapon712_default", "Weapon712_old_clock", "Weapon714_bad_elf", "Weapon714_default", "Weapon720_default", "Weapon720_Gold", "Weapon721_black_dragon_revolver", "Weapon721_default", "Weapon725_default", "Weapon725_Gold", "Weapon725_laser", "Weapon725_lava_spirit", "Weapon725_necromancer", "Weapon727_default", "Weapon727_Gold", "Weapon737_burning", "Weapon737_default", "Weapon737_druid", "Weapon737_Scarab", "Weapon751_default", "Weapon751_ice_dragon_cult", "Weapon752_cosmus", "Weapon752_default", "Weapon752_prehistoric", "Weapon755_Bombardier", "Weapon755_default", "Weapon759_Code", "Weapon759_default", "Weapon759_Mutant", "Weapon764_default", "Weapon764_Gold", "Weapon769_default", "Weapon769_dragons_fury", "Weapon770_default", "Weapon770_ice_dragon_cult", "Weapon778_default", "Weapon778_packed", "Weapon77_default", "Weapon77_Gold", "Weapon77_mythical_power", "Weapon782_candy_factory", "Weapon782_default", "Weapon782_snowman", "Weapon790_default", "Weapon790_match_inviter", "Weapon791_default", "Weapon791_super_bowl_fan", "Weapon792_default", "Weapon792_super_bowl_cannon", "Weapon795_dead_eye", "Weapon795_default", "Weapon795_winter_rune", "Weapon809_default", "Weapon809_xmas_energy", "Weapon811_default", "Weapon811_diner", "Weapon811_snowman", "Weapon82_cheese", "Weapon82_chess", "Weapon82_default", "Weapon82_egypt", "Weapon834_christmas", "Weapon834_default", "Weapon834_nuclear_reactor", "Weapon834_pumpkin_destoyer", "Weapon865_default", "Weapon865_toy", "Weapon895_default", "Weapon895_krampus_soul", "Weapon895_pumpking_king", "Weapon895_robot_head", "Weapon898_black_armor_stitcher", "Weapon898_default", "Weapon906_default", "Weapon906_snow_blower", "Weapon916_asimov", "Weapon916_default", "Weapon916_frosty", "Weapon917_asimov", "Weapon917_default", "Weapon918_asimov", "Weapon918_default", "Weapon918_snow_camouflage", "Weapon925_black_friday", "Weapon925_default", "Weapon928_black_friday", "Weapon928_default", "Weapon949_default", "Weapon949_monstrous_harpy", "Weapon94_black_friday", "Weapon94_default", "Weapon94_giant_bell", "Weapon94_SpacePirate", "Weapon94_Volcano", "Weapon954_default", "Weapon954_fireplace", "Weapon954_hell_oven", "Weapon957_default", "Weapon957_fortune", "Weapon957_poison", "Weapon968_default", "Weapon968_ice_dragon_cult", "Weapon972_altered_rainbow_destroyer", "Weapon972_default", "Weapon977_default", "Weapon977_nothern_lights", "Weapon982_default", "Weapon982_scourge_of_the_king", "Weapon987_default", "Weapon987_mecha", "Weapon991_default", "Weapon991_fenfir", "Weapon999_default", "Weapon999_dual_xmas", "Weapon999_millitary_supply", "Weapon1564_default", "Weapon1564_gemini_constellation", "Weapon447_aries_constellation", "Weapon447_default", "Weapon1046_default", "Weapon1046_pisces_constellation", "Weapon222_default", "Weapon222_sagittarius_constellation", "Weapon1565_default", "Weapon1565_libra_constellation", "Weapon1440_default", "Weapon1440_ultrasounding_rifle", "Weapon1000_brutal_sounder", "Weapon1000_default", "Weapon706_default", "Weapon706_pband_beat", "Weapon189_default", "Weapon189_true_fan_shotgun", "Weapon669_pband_fans_sword", "Weapon669_default", "Weapon1069_legendary_bike", "Weapon1374_default", "Weapon1374_dragon_of_doom", "Weapon1544_default", "Weapon1544_fire_team_no1", "Weapon1356_default", "Weapon1356_sakura", "Weapon1580_default", "Weapon1580_dragons_wrath", "Weapon1588_corrupred_raven_staff", "Weapon1588_default", "Weapon1587_corrupted_sorting_pistol", "Weapon1587_default", "Weapon1021_default", "Weapon1021_enchanted_healing_staff", "Weapon1109_default", "Weapon1109_enchanted_snow_queen_wand", "Weapon132_default", "Weapon132_enchanted_dark_mage_wand", "Weapon1596_cosmic_seas_navigation_shotgun", "Weapon1596_default", "Weapon419_deepwater_dead_star", "Weapon419_default", "Weapon116_deepwater_scythe", "Weapon116_default", "Weapon1595_cosmic_seas_navigation_shotgun", "Weapon1595_default", "Weapon893_deepwater_comet", "Weapon893_default", "Weapon1606_default", "Weapon1606_iced_stars", "Weapon1338_christmas_ronin", "Weapon1607_default", "Weapon1607_winter_curse", "Weapon778_royal_christmas_revolver", "Weapon1259_bad_vibes_neutralizer", "Weapon1259_default", "Weapon1197_default", "Weapon1197_harsh_snowfall", "Weapon834_ultimative_snowfall", "Weapon1196_advanced_snowfall", "Weapon1196_default", "Weapon1200_bullet_snowfall", "Weapon1200_default", "Weapon1618_deadly_butterfly", "Weapon1618_default", "Weapon1619_ancient_warrior", "Weapon1619_default", "Weapon1200_default" };
 const char* capeList[] = { "cape_Custom", "cape_EliteCrafter", "StormTrooperCape_Up1", "StormTrooperCape_Up2", "cape_Archimage", "HitmanCape_Up1", "HitmanCape_Up2", "cape_BloodyDemon", "BerserkCape_Up1", "BerserkCape_Up2", "cape_Engineer", "cape_Engineer_Up1", "cape_Engineer_Up2", "cape_SkeletonLord", "SniperCape_Up1", "SniperCape_Up2", "cape_cloak_of_night", "cape_ultimate_defense", "cape_vaneuvering_module", "cape_RoyalKnight", "DemolitionCape_Up1", "DemolitionCape_Up2"};
 const char* bootsList[] = { "boots_gray", "StormTrooperBoots_Up1", "StormTrooperBoots_Up2", "boots_red", "HitmanBoots_Up1", "HitmanBoots_Up2", "boots_black", "BerserkBoots_Up1", "BerserkBoots_Up2", "EngineerBoots", "EngineerBoots_Up1", "EngineerBoots_Up2", "boots_blue", "SniperBoots_Up1", "SniperBoots_Up2", "boots_green", "DemolitionBoots_Up1", "DemolitionBoots_Up2", "boots_tabi", "boots_cyber_santa", "boots_cyber_santa_Up1", "boots_cyber_santa_Up2", "boots_exoskeleton_pilot_avatar", "boots_exoskeleton_pilot_avatar_up1", "boots_exoskeleton_pilot_avatar_up2", "boots_black_dragon", "boots_halloween", "boots_halloween_up1", "boots_halloween_up2", "boots_roller_skates", "boots_stardust", "boots_ultimate_defense", "boots_piligrim", "boots_piligrim_up1", "boots_piligrim_up2"};
 const char* hatList[] = { "league1_hat_hitman", "league2_hat_cowboyhat", "league3_hat_afro", "league4_hat_mushroom", "league5_hat_brain", "league6_hat_tiara", "hat_Adamant_3", "hat_Headphones", "hat_black_dragon", "hat_chest", "hat_KingsCrown", "hat_stardust", "hat_Samurai", "hat_DiamondHelmet", "hat_SeriousManHat", "hat_cyber_santa", "hat_cyber_santa_Up1", "hat_cyber_santa_Up2", "hat_exoskeleton_pilot_avatar", "hat_exoskeleton_pilot_avatar_up1", "hat_exoskeleton_pilot_avatar_up2", "hat_halloween", "hat_halloween_up1", "hat_halloween_up2", "hat_piligrim", "hat_piligrim_up1", "hat_piligrim_up2", "hat_high_end_earphones" };
@@ -80,7 +82,8 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, isAddWeapons6, shotBull,
         ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill, modules,
-        wantsDisplayKeyboard, initParams, addAllArmors, addAllModules, addAllWepSkins,catspam, gadgetcd, gadgetduration, tmate, isAddWeapons7,isAddWeapons8;
+        wantsDisplayKeyboard, initParams, addAllArmors, addAllModules, addAllWepSkins,catspam, gadgetcd,
+        showItems, gadgetduration, tmate, isAddWeapons7,isAddWeapons8;
 
 float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -92,6 +95,13 @@ monoString* CreateIl2cppString(const char* str)
     int* startIndex = 0;
     int* length = (int *)strlen(str);
     return CreateIl2cppString(str, startIndex, length);
+}
+
+int* getWearIndex(const char* str)
+{
+    static int* (*wearIndex)(monoString* str) =
+    (int* (*)(monoString* str))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x141A810")));
+    return wearIndex(CreateIl2cppString(str));
 }
 
 void* webInstance()
@@ -232,16 +242,22 @@ void (*get_rotation)(void* obj);
 void (*set_position)(void* obj, Vector3 val);
 void (*provideWearNonArmor) (int* enumerator, monoString* name);
 void (*provideWear) (int* enumerator, monoString* name);
-void (*buyArmor) (void* instance, int* int1, int* int2, monoString* name);
+void (*buyArmor) (void* instance, int* id, int* level, monoString* reason);
 void (*purchaseWeaponSkin) (void* instance, int* int1); // might have to call migrate skins
+void (*tryAddSkin) (monoString*);
 void (*updateRank) (void* instance, int* rankIndex, int* trophies);
 void (*updateClanLevelAndExperience) (void* instance, int* level, int* exp);
 void (*setLeagueInTournament) (void* instance, int* league, int* tournament);
 void (*addModule) (int* count, monoString* moduleValue);
 bool (*isDead)(void* obj);
 void (*tryAddArmor) (monoString* armor, int* enumerator, bool* bool1);
+void (*addItem) (monoString* item, int* type);
+void (*addWear) (int* enumerator, monoString* item);
 
 void Pointers() {
+    addWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x141C9D4")));
+    tryAddSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34E9C88")));
+    addItem = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x32AE544")));
     tryAddArmor = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x332F008")));
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16D800C")));
     provideWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3335650")));
@@ -722,6 +738,36 @@ enum StickerType {
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
     if (obj != nullptr) {
+        if (addAllArmors) {
+            for (int i = 0; i < 35; i++)
+            {
+                addWear((int*)(10), CreateIl2cppString(bootsList[i]));
+            }
+            for (int i = 0; i < 28; i++)
+            {
+                addWear((int*)(6), CreateIl2cppString(hatList[i]));
+            }
+            for (int i = 0; i < 22; i++)
+            {
+                addWear((int*)(9), CreateIl2cppString(capeList[i]));
+            }
+            for (int i = 0; i < 37; i++)
+            {
+                addWear((int*)(12), CreateIl2cppString(maskList[i]));
+            }
+            for (int i = 0; i < 35; i++)
+            {
+                buyArmor(webInstance(), getWearIndex(armorList[i]), (int *)(65), CreateIl2cppString("")); // leave AS IS, works
+            }
+            addAllArmors = false;
+        }
+        if (addAllWepSkins) {
+            for (int i = 0; i < 457; i++)
+            {
+                addWear((int*)(240000),CreateIl2cppString(skinList[i]));
+            }
+            addAllWepSkins = false;
+        }
         if (isBuyEasterSticker) {
             isBuyEasterSticker = false;
             BuyStickerPack((int*)StickerType::easter);
@@ -729,24 +775,6 @@ void PixelTime(void *obj) {
         if (isLoadScenePressed) {
             LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
             isLoadScenePressed = false;
-        }
-        if (addAllArmors) {
-            for (int i = 0; i < 23; i++)
-            {
-                tryAddArmor(CreateIl2cppString(armorList[i]), (int*)(7), (bool*)(true));
-            }
-            for (int i = 0; i < 22; i++) {
-                tryAddArmor(CreateIl2cppString(capeList[i]), (int*)(9), (bool*)(true));
-            }
-            for (int i = 0; i < 28; i++)
-            {
-                tryAddArmor(CreateIl2cppString(hatList[i]), (int*)(6), (bool*)(true));
-            }
-            for (int i = 0; i < 35; i++)
-            {
-                tryAddArmor(CreateIl2cppString(bootsList[i]), (int*)(10), (bool*)(true));
-            }
-            addAllArmors = false;
         }
         if (bypassBan) {
             setState((int*)(15));
@@ -841,6 +869,7 @@ void Patches() {
     PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);
     PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x32AFE68", "200080D2C0035FD6", showItems);
   //  PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
   //  PATCH_SWITCH("0x4DF4DBC", "200080D2C0035FD6", ninjaJump);
     PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
@@ -875,8 +904,6 @@ void Patches() {
     PATCH_SWITCH("0x48F1E00", "00F0271EC0035FD6", speed);
     PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
     PATCH_SWITCH("0x2F87D98", "80388152C0035FD6", collectibles); // 0x48EF240
-    PATCH_SWITCH("0x2FA25A0", "00FA80D2C0035FD6", modules);
-    PATCH_SWITCH("0x3716C70", "200080D2C0035FD6", wepSkins); //
     PATCH("0x206D13C", "C0035FD6");
     PATCH("0x3C962E4", "C0035FD6");
     PATCH("0x4504710", "000080D2C0035FD6");
@@ -922,8 +949,14 @@ void DrawMenu(){
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
                     ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
-                    if (ImGui::CollapsingHeader("Unlock Weapons"))
+                    if (ImGui::CollapsingHeader("Unlocks"))
                     {
+                        if (ImGui::Button(OBFUSCATE("Add Armors"))) {
+                            addAllArmors = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add Weapon Skins"))) {
+                            addAllWepSkins = true;
+                        }
                         if (ImGui::Button(OBFUSCATE("Add All Weapons 1/8"))) {
                             isAddWeapons = true;
                         }
@@ -948,30 +981,23 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Weapons 8/8"))) {
                             isAddWeapons8 = true;
                         }
-                        ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
                     }
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It will take a while, Freezing is normal)")));
                     if (ImGui::Button(OBFUSCATE("BypassBan"))) {
                         bypassBan = true;
                     }
-                    ImGui::Checkbox(OBFUSCATE("All Weapon Skins"), &wepSkins);
-                    ImGui::TextUnformatted(OBFUSCATE("Makes all weapon skins purchasable"));
-#ifdef BIGSEX
-                    if (ImGui::Button(OBFUSCATE("Add All Armors"))) {
-                        addAllArmors = true;
-                    }
-#endif
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
                     ImGui::Checkbox(OBFUSCATE("ItemParams intSet"), &initParams);
                     ImGui::TextUnformatted(OBFUSCATE("For testing purposes only"));
+                    ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
                         isBuyEasterSticker = true;
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
-                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 3000);
+                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 10000);
                         ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
                         ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,IM_ARRAYSIZE(curList), 4);
                         if (ImGui::Button(OBFUSCATE("Add Currency"))) {
