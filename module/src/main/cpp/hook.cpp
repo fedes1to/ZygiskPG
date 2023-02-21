@@ -78,16 +78,15 @@ const char* wepList[] = { "", "FirstPistol", "FirstShotgun", "UziWeapon", "Revol
 const char* sceneList[] = { "Fort", "Farm", "Hill", "Dust", "Mine", "Jail", "rust", "Gluk", "Cube", "City", "Pool", "Ants", "Maze", "Arena", "Train", "Day_D", "Space", "Pizza", "Barge", "Pool2", "Winter", "Area52", "Castle", "Arena2", "Sniper", "Day_D2", "Matrix", "Heaven", "office", "Portal", "Hungry", "Bridge", "Gluk_2", "knife2", "Estate", "Glider", "Utopia", "School", "Gluk_3", "spleef1", "Slender", "Loading", "temple4", "sawmill", "Parkour", "pg_gold", "olympus", "Stadium", "ClanWar", "shipped", "Coliseum", "GGDScene", "Paradise", "valhalla", "Assault2", "Training", "Speedrun", "Hospital", "Hungry_2", "mine_new", "LevelArt", "facility", "office_z", "Pumpkins2", "red_light", "BioHazard", "ChatScene", "impositor", "PromScene", "New_tutor", "Cementery", "AppCenter", "aqua_park", "Aztec_old", "ClanWarV2", "toy_story", "checkmate", "CustomInfo", "tokyo_3019", "new_hangar", "Pool_night", "china_town", "FortAttack", "Ghost_town", "Area52Labs", "Ice_Palace", "Arena_Mine", "SkinEditor", "North_Pole", "Ghost_town2", "Arena_Swamp", "ToyFactory3", "NuclearCity", "space_ships", "FortDefence", "Two_Castles", "Ships_Night", "RacingTrack", "Coliseum_MP", "Underwater2", "ChooseLevel", "Sky_islands", "Menu_Custom", "Secret_Base", "white_house", "ProfileShop", "Arena_Space", "Cube_portals", "ClosingScene", "Mars_Station", "Arena_Castle", "checkmate_22", "Hungry_Night", "Sky_islands2", "Death_Escape", "Arena_Hockey", "WinterIsland", "Dust_entering", "pizza_sandbox", "alien_planet2", "LevelComplete", "COLAPSED_CITY", "ClanTankBuild", "train_robbery", "space_updated", "AfterBanScene", "corporate_war", "ships_updated", "templ4_winter", "Pool_entering", "supermarket_2", "DuelArenaSpace", "LoadAnotherApp", "checkmate_22.0", "Paradise_Night", "Slender_Multy2", "Code_campaign3", "Spleef_Arena_1", "infernal_forge", "china_town_day", "islands_sniper", "FortFieldBuild", "monster_hunter", "paladin_castle", "Spleef_Arena_2", "Bota_campaign4", "CampaignLoading", "Developer_Scene", "christmas_train", "Space_campaign3", "Ice_Palace_Duel", "clan_fortress01", "Christmas_Town3", "orbital_station", "Duel_ghost_town", "Swamp_campaign3", "WalkingFortress", "office_christmas", "Spooky_Lunapark3", "knife3_christmas", "Portal_Campaign4", "Arena_Underwater", "emperors_palace2", "hurricane_shrine", "Castle_campaign3", "christmas_town_22", "CampaignChooseBox", "Christmas_Dinner2", "Dungeon_dead_city", "aqua_park_sandbox", "Stadium_deathmatch", "AuthorizationScene", "sky_islands_updated", "LevelToCompleteProm", "sky_islands_sandbox", "AuthenticationScene", "NuclearCity_entering", "DownloadAssetBundles", "red_light_team_fight", "freeplay_city_summer", "four_seasons_updated", "tokyo_3018_campaign4", "COLAPSED_CITY_sniper", "ice_palace_christmas", "LoveIsland_deathmatch", "cubic_arena_campaign4", "Christmas_Town_Night3", "toy_factory_christmas", "battle_royale_arcade_2", "Dungeon_magical_valley", "Death_Escape_campaign4", "battle_royale_arcade_3", "battle_royale_09_summer", "WalkingFortress_campaign4" };
 const char* curList[] = { OBFUSCATE("GemsCurrency"), OBFUSCATE("Coins"), OBFUSCATE("ClanSilver"), OBFUSCATE("ClanLootBoxPoints"),  OBFUSCATE("Coupons"), OBFUSCATE("PixelPassCurrency"), OBFUSCATE("RouletteAdsCurrency"), OBFUSCATE("PixelBucks") };
 bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
-        removedrone, god, ammo, collectibles, changeID, bypassBan, spoofID,
-        crithit, charm, fte,enemymarker, enableEditor, killboost, electric, kspeedboost, daterweapon, grenade,
-        doublejump, coindrop, blackMarket, couponClicker, setsClicker,
-        negativeCollectibles, nullcollectibles, isDiscordPressed, webLevel, blindness, wepSkins, kniferange, expbull,
+        removedrone, god, ammo, collectibles, changeID, bypassBan,
+        crithit, charm, fte,enemymarker, enableEditor, electric, daterweapon, grenade,
+        doublejump, coindrop, isDiscordPressed, webLevel, blindness, kniferange, expbull,
         shotbull, railbull,jumpdisable, slowdown, headmagnify, destroy, recoilandspread, quickscope, speedup, speed,
-        isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, isAddWeapons6, shotBull,
-        ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex, playstantiate,
-        portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload, curButtonPressedC, firerate, forceW, isAimbot,Telekill, modules,
-        wantsDisplayKeyboard, initParams, addAllArmors, addAllModules, addAllWepSkins,catspam, gadgetcd,
-        showItems, gadgetduration, tmate, isAddWeapons7,isAddWeapons8,chams, uncapFps;
+        isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, isAddWeapons6,
+        ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex,
+        portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload,firerate,isAimbot,Telekill, modules,
+        addAllArmors, addAllWepSkins,catspam, gadgetcd,
+        showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps;
 
 float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -1009,8 +1008,7 @@ void Patches() {
 //    PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
 //    PATCH_SWITCH("0x1E11928", "200080D2C0035FD6", couponClicker);
 //    PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
-    PATCH_SWITCH("0x438120C", "200080D2C0035FD6", enableEditor);
-    PATCH_SWITCH("0x2ADECFC", "200080D2C0035FD6", enableEditor);
+    PATCH_SWITCH("0x441082C", "200080D2C0035FD6", enableEditor);
   //  PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump); isGrounded
     PATCH_SWITCH("0x2862258", "1F2003D5C0035FD6", xray);//attempt
     //PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
@@ -1024,19 +1022,16 @@ void Patches() {
     PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", firerate);
     PATCH_SWITCH("0x41FF420", "00F0271EC0035FD6", reload);
     PATCH_SWITCH("0x48F1E00", "00F0271EC0035FD6", speed);
-    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
-    PATCH_SWITCH("0x2F87D98", "80388152C0035FD6", collectibles); // 0x48EF240
-    PATCH("0x206D13C", "C0035FD6");
-    PATCH("0x3C962E4", "C0035FD6");
-    PATCH("0x4504710", "000080D2C0035FD6");
-    PATCH("0x3B4BA00", "200080D2C0035FD6");
+//    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
+    PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
+    PATCH("0x20D5D14", "C0035FD6");
+    PATCH("0x3C484C0", "C0035FD6");
+    PATCH("0x499903C", "000080D2C0035FD6");
+    PATCH("0x3BE5458", "200080D2C0035FD6");
     // vv deleted this one because it makes sandbox matches show up in daeathmatch
     //PATCH("0x3BBDEE0", "200080D2C0035FD6"); // all scenes available in all modes, can remove if you want
-    PATCH("0x3B4BC40", "200080D2C0035FD6");
-    PATCH("0x3986B9C", "C0035FD6");
-#ifdef BIGSEX
-    PATCH("0x4008E8B", "200080D2C0035FD6");
-#endif
+    PATCH("0x3BE5698", "200080D2C0035FD6");
+    PATCH("0x37A2660", "C0035FD6");
 }
 
 
@@ -1096,8 +1091,6 @@ void DrawMenu(){
                     }
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
-                    ImGui::Checkbox(OBFUSCATE("ItemParams intSet"), &initParams);
-                    ImGui::TextUnformatted(OBFUSCATE("For testing purposes only"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
