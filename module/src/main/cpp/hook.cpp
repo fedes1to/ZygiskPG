@@ -127,6 +127,8 @@ void* webInstance()
     return webInstance();
 }
 
+std::vector<unsigned int> keys_pressed;
+int refocus=0;
 bool isValidAuth, hasRegistered;
 
 void *MyPlayer;
@@ -146,7 +148,6 @@ bool isStartDebug;
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
 void (*OpenURL) (monoString* url);
-void (*OpenKeyboard) (monoString* TextUnformatted, int* keyboardType, bool* autoCorrection);
 void (*setSomething) (void* instance, monoString* currencyType, int* value, int* num);
 void (*addWeapon) (void* instance, monoString* weaponName, int* num);
 bool (*SetMasterClient) (void* masterClientPlayer);
@@ -265,19 +266,8 @@ void (*LookAt)(void* obj, Vector3);
 void (*set_rotation)(void* obj, Quaternion value);
 void (*get_rotation)(void* obj);
 void (*set_position)(void* obj, Vector3 val);
-void (*provideWearNonArmor) (int* enumerator, monoString* name);
-void (*provideWear) (int* enumerator, monoString* name);
 void (*buyArmor) (void* instance, int* id, int* level, monoString* reason);
-void (*purchaseWeaponSkin) (void* instance, int* int1); // might have to call migrate skins
 void (*provideDefSkin) (monoString* skinName);
-void (*tryAddSkin) (monoString*);
-void (*updateRank) (void* instance, int* rankIndex, int* trophies);
-void (*updateClanLevelAndExperience) (void* instance, int* level, int* exp);
-void (*setLeagueInTournament) (void* instance, int* league, int* tournament);
-void (*addModule) (int* count, monoString* moduleValue);
-//bool (*isDead)(void* obj);
-void (*tryAddArmor) (monoString* armor, int* enumerator, bool* bool1);
-void (*addItem) (monoString* item, int* type);
 void (*addWear) (int* enumerator, monoString* item);
 void (*targetFrameRate) (int* value);
 void (*purchaseGadget) (void* instance, int* id, int* level, monoString* reason);
@@ -287,21 +277,9 @@ void Pointers() {
     provideDefSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x42691C8")));
     targetFrameRate = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4380840")));
     addWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x141C9D4")));
-    tryAddSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34E9C88")));
-    addItem = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x32AE544")));
-    tryAddArmor = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x332F008")));
-    buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16D800C")));
-    provideWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3335650")));
-    provideWearNonArmor = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33357A4")));
-    purchaseWeaponSkin = (void(*)(void*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x170A440")));
-    updateRank = (void(*)(void*, int*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x17026E8")));
-    updateClanLevelAndExperience = (void(*)(void*, int*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16F6DF8")));
-    setLeagueInTournament = (void(*)(void*, int*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1702B4C")));
-    addModule = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16FBC7C")));
     setState = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x49B20B4")));
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x46F498C")));
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43807DC")));
-    OpenKeyboard = (void(*)(monoString*, int*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435E2D4")));
     SetString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2ECD530")));
     setSomething = (void(*) (void*, monoString*, int*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16EB844")));
     SendChat = (void(*) (void*, monoString*, bool, monoString *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x471AB70")));
@@ -1010,28 +988,27 @@ void Hooks() {
 }
 
 void Patches() {
-    PATCH_SWITCH("0x476323C", "1F2003D5C0035FD6", god);//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
-    PATCH_SWITCH("0x3C958B0", "1F2003D5C0035FD6", god);
-    PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);
-    PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);
-    PATCH_SWITCH("0x32AFE68", "200080D2C0035FD6", showItems);
+    PATCH_SWITCH("0x480525C", "1F2003D5C0035FD6", god);//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
+    PATCH_SWITCH("0x3C47A8C", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x4CBB678", "1F2003D5C0035FD6", god);
+    PATCH_SWITCH("0x4CBADE8", "1F2003D5C0035FD6", god);
   //  PATCH_SWITCH("0x44FB494", "200080D2C0035FD6", ninjaJump);
   //  PATCH_SWITCH("0x4DF4DBC", "200080D2C0035FD6", ninjaJump);
-    PATCH_SWITCH("0x1C26554", "A0F08FD2C0035FD6", maxLevel);
-    PATCH_SWITCH("0x257B7B4", "802580D2C0035FD6", uWear);
-    PATCH_SWITCH("0x2F87C14", "802580D2C0035FD6", cWear);
-    PATCH_SWITCH("0x2F87AFC", "802580D2C0035FD6", cWear);
-    PATCH_SWITCH("0x2C54AFC", "00008052C0035FD6", gadgetUnlock);
-    PATCH_SWITCH("0x48EF240", "603E8012C0035FD6", modKeys);
-    PATCH_SWITCH("0x1BC8EB8", "C0035FD6", tgod);
-    PATCH_SWITCH("0x1BCE010", "C0035FD6", tgod);
-    PATCH_SWITCH("0x1BCE2A8", "C0035FD6", tgod);
-    PATCH_SWITCH("0x4755120", "C0035FD6", removedrone);//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
-    PATCH_SWITCH("0x47551D8", "C0035FD6", removedrone);
-    PATCH_SWITCH("0x1714718", "200080D2C0035FD6", crithit);
-    PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
-    PATCH_SWITCH("0x1DD567C", "200080D2C0035FD6", couponClicker);
-    PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
+    PATCH_SWITCH("0x1C71944", "A0F08FD2C0035FD6", maxLevel);
+    PATCH_SWITCH("0x2254CB0", "802580D2C0035FD6", uWear);
+    PATCH_SWITCH("0x248B0A8", "802580D2C0035FD6", cWear);
+    PATCH_SWITCH("0x2486960", "802580D2C0035FD6", cWear);
+    PATCH_SWITCH("0x2CC71F0", "00008052C0035FD6", gadgetUnlock);
+    PATCH_SWITCH("0x21E709C", "603E8012C0035FD6", modKeys);
+    PATCH_SWITCH("0x1DDDA84", "C0035FD6", tgod);
+    PATCH_SWITCH("0x1DE2BDC", "C0035FD6", tgod);
+    PATCH_SWITCH("0x1DE2E74", "C0035FD6", tgod);
+    PATCH_SWITCH("0x47F6CB8", "C0035FD6", removedrone);//dear future self, if this game ever updates kys (look for player_move_c and try to find the enum with himself, headshot etc and pray you find the right thing, has alot of stuff in the args )
+    PATCH_SWITCH("0x47F6D70", "C0035FD6", removedrone);
+//    PATCH_SWITCH("0x1B08DE8", "200080D2C0035FD6", crithit);
+//    PATCH_SWITCH("0x1595AE0", "200080D2C0035FD6", blackMarket);
+//    PATCH_SWITCH("0x1E11928", "200080D2C0035FD6", couponClicker);
+//    PATCH_SWITCH("0x1DD609C", "200080D2C0035FD6", setsClicker);
     PATCH_SWITCH("0x438120C", "200080D2C0035FD6", enableEditor);
     PATCH_SWITCH("0x2ADECFC", "200080D2C0035FD6", enableEditor);
   //  PATCH_SWITCH("0x41FA918", "200180922C0035FD6", ninjaJump); isGrounded
