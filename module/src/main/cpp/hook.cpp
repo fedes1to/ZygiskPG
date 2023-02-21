@@ -143,7 +143,6 @@ static char email[64];
 bool isStartDebug;
 #endif
 
-
 void (*SetString) (monoString* key, monoString* value);
 void (*LoadLevel) (monoString* key);
 void (*OpenURL) (monoString* url);
@@ -191,6 +190,10 @@ float (Vector3$get_z)(void* ref) {
 // string
 bool (*string$StartsWith)(monoString* string, monoString* value);
 monoString* (*string$Substring)(monoString* string, int startIndex);
+
+// File
+monoArray<monoString*>* (*File$ReadAllLines)(monoString* path);
+bool (*File$Exists)(monoString* path);
 
 // Component
 void* (*Component$get_gameObject)(void* component);
@@ -318,6 +321,10 @@ void Pointers() {
     Component$get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375F80")));
     Component$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4375C54")));
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4D288E0")));
+    // NEED TO UPDATE THESE FOR AUTH //
+    File$ReadAllLines = (monoArray<monoString*>*(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x31D3C7C")));
+    File$Exists = (bool(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x31D2990")));
+    // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F850")));
     GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x435F88C")));
     GameObject$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4346414")));
@@ -340,6 +347,64 @@ void Pointers() {
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
 #endif
+}
+
+bool tryAutoLogin() {
+    if (!File$Exists(CreateIl2cppString(OBFUSCATE("/sdcard/license.key")))) {
+        return false;
+    }
+    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE("/sdcard/license.key")));
+
+    std::string username = array[0].getPointer()->getString();
+    std::string password = array[1].getPointer()->getString();
+
+    LOGW("got username at %s", username.c_str());
+    LOGW("got password at %s", password.c_str());
+
+    CURL *handle;
+    CURLcode result;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    // declare handle
+    handle = curl_easy_init();
+    curl_easy_setopt(handle, CURLOPT_URL, "https://api.auth.gg/v1/");
+
+    // prepare post request
+    curl_mime *multipart = curl_mime_init(handle);
+    curl_mimepart *part = curl_mime_addpart(multipart);
+    curl_mime_name(part, "type");
+    curl_mime_data(part, "login", CURL_ZERO_TERMINATED);
+    part = curl_mime_addpart(multipart);
+    curl_mime_name(part, "aid");
+    curl_mime_data(part, aid.c_str(), CURL_ZERO_TERMINATED);
+    part = curl_mime_addpart(multipart);
+    curl_mime_name(part, "apikey");
+    curl_mime_data(part, apikey.c_str(), CURL_ZERO_TERMINATED);
+    part = curl_mime_addpart(multipart);
+    curl_mime_name(part, "secret");
+    curl_mime_data(part, secret.c_str(), CURL_ZERO_TERMINATED);
+    part = curl_mime_addpart(multipart);
+    curl_mime_name(part, "username");
+    curl_mime_data(part, username.c_str(), CURL_ZERO_TERMINATED);
+    part = curl_mime_addpart(multipart);
+    curl_mime_name(part, "password");
+    curl_mime_data(part, password.c_str(), CURL_ZERO_TERMINATED);
+    part = curl_mime_addpart(multipart);
+    curl_mime_name(part, "hwid");
+    curl_mime_data(part, "no_hwid_set", CURL_ZERO_TERMINATED);
+
+    /* Set the form info */
+    curl_easy_setopt(handle, CURLOPT_MIMEPOST, multipart);
+
+    result = curl_easy_perform(handle); /* post away! */
+
+    /* free the post data again */
+    curl_mime_free(multipart);
+
+    sleep(1);
+
+    // need to do code to return whether login was successful or not
+    return hasAuthenticated;
 }
 
 // 0x435FA0C <- offset for gameobject.tag
@@ -1003,21 +1068,6 @@ void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.0.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
-
-// Open the text file for reading
-        std::ifstream file("/sdcard/Download/license.txt");
-
-        if (!file.is_open()) {
-            LOGE("RETARD UR FILE DOESNT EXIST OR I JUST CANT READ THE FILE CAUSE ANDROID IS RETARDEEED");
-        }
-
-// Read the file contents into a string
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        std::string fileContent = buffer.str();
-
-// Close the file
-        file.close();
         if (isValidAuth) {
             if (ImGui::Button(OBFUSCATE("Join Discord"))) {
                 isDiscordPressed = true;
@@ -1211,7 +1261,7 @@ void DrawMenu(){
         }
     }
     if (!isValidAuth) {
-        ImGui::TextUnformatted("license key is invalid");
+        ImGui::TextUnformatted("License key is invalid or not found");
     }
     ImGui::End();
 }
@@ -1258,7 +1308,7 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
-    isValidAuth = true;
+    isValidAuth = tryAutoLogin();
 
 #ifdef BIGSEX
     isValidAuth = true;
