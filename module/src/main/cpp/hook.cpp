@@ -160,8 +160,9 @@ void* (*GetComponent) (void* gameObject, void* type);
 void (*SendChat) (void* obj, monoString* text, bool isClan, monoString* logoid);
 void (*EnableXray) (void* obj, bool enable);
 void(*CharacterController$set_radius)(void* player, float val);
-
+void (*SetXrayShader) (void* obj, bool enable);
 void (*JoinToRoomPhotonAfterCheck) (void* obj);
+void(*SetImmortallity)(void* obj, float);
 
 // Type
 void* (*Type$GetType)(void* type);
@@ -289,6 +290,7 @@ void Pointers() {
     BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x413BA80")));//look in StickersController, compare and find the right function
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x39520EC")));//not obfuscated just search
     JoinToRoomPhotonAfterCheckCustom = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3500F0C")));//not obfuscated just search
+    SetImmortallity = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x480EC30")));//search immortal
     // UNITY FUNC
     Component$get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44052B0")));
     Component$get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44055A0")));
@@ -312,6 +314,7 @@ void Pointers() {
     set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4410ABC")));
     EnableJetpack = (void (*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47C1934")));
  //   isDead = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x143726C")));
+    SetXrayShader = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x47D58D8"));//analyze the xray field and you'll see it
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
@@ -513,7 +516,7 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x40C) = 99999;//electricShockTime
         }
 
-        *(bool*)((uint64_t) obj + 0x428) = true;//isDaterWeapon
+        //*(bool*)((uint64_t) obj + 0x428) = true;//isDaterWeapon
 
         if(blindness){
             *(bool*)((uint64_t) obj + 0x254) = true;//isBlindEffect
@@ -657,7 +660,7 @@ void FirstPersonControllSharp(void* obj){
         void* CharacterController = *(void**)((uint64_t) obj + 0xE8);
         if(CharacterController != nullptr){
             if(noclip){
-                CharacterController$set_radius(MyPlayer, INFINITY);
+                CharacterController$set_radius(CharacterController, INFINITY);
             }
         }
     }
@@ -778,12 +781,15 @@ void(PlayerMoveC)(void* obj){
 
 
         if (xray) {
+            SetXrayShader(obj, true);
             *(bool *) ((uint64_t) obj + 0x710) = true; // search ZombiManager then its above
         }
 
         if (ninjaJump) {
             EnableJetpack(obj, true);//search for jetpack in player_move_C
+            ninjaJump = false;
         }
+
         if (spoofMe) {
             void *argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
             PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID,
@@ -793,6 +799,10 @@ void(PlayerMoveC)(void* obj){
             PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All,
                            argsForSetPixelBookID);
             spoofMe = false;
+        }
+
+        if(god){
+            SetImmortallity(obj, 99999);
         }
 
         if (gadgetsEnabled) {
