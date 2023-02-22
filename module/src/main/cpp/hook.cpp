@@ -271,8 +271,8 @@ void (*providePet) (monoString* petName, int* level);
 void (*addWepSkin) (monoString* weaponSkin);
 
 void Pointers() {
-    addWepSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34E9C88")));
-    providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C0B490")));
+    addWepSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34EA900")));
+    providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2755758")));
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2AFF0")));
     provideSkin = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x333FC58")));//search "Приобретаем дефолтный скин для пушки:"
     provideGadget = (void(*) (monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CC93C4")));
