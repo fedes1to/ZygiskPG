@@ -854,7 +854,7 @@ void PixelTime(void *obj) {
             }
         }
         if (addAllPets) {
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < 93; i++) {
                 providePet(CreateIl2cppString(petsList[i]), (int*)(65));
             }
             addAllPets = false;
