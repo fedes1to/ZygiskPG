@@ -1202,7 +1202,7 @@ void DrawMenu(){
                 //    ImGui::SliderFloat(OBFUSCATE("Field Of View"), &fovModifier, 0.0, 360.0);
                     ImGui::EndTabItem();
                 }
-                if (ImGui::BeginTabItem(OBFUSCATE("Experimental"))) {
+                if (ImGui::BeginTabItem(OBFUSCATE("Misc"))) {
                     ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
                     if (ImGui::Button("Uncap Fps"))
                     {
