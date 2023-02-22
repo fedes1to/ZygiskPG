@@ -84,8 +84,8 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, isAddWeapons6,
         ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload,firerate,isAimbot,Telekill, modules,
-        addAllArmors, addAllWepSkins,catspam, gadgetcd,
-        showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker;
+        addAllArmors, addAllWepSkins,catspam, gadgetcd, addAllGadgets,
+        showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, addAllPets;
 
 float damage, rimpulseme, rimpulse, pspeed,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -265,9 +265,14 @@ void (*addWear) (int* enumerator, monoString* item);
 void (*targetFrameRate) (int* value);
 void (*purchaseGadget) (void* instance, int* id, int* level, monoString* reason);
 bool (*provideSkin) (monoString* value);
+void (*provideGadget) (monoString* name, int* level);
+void (*upgradePet) (void* instance, int* petIndex, int* level, int* enumerator);
 
 void Pointers() {
+    upgradePet = (void(*)(void*, int*, int*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B51020")));
+    buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2AFF0")));
     provideSkin = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x333FC58")));//search "Приобретаем дефолтный скин для пушки:"
+    provideGadget = (void(*) (monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CC93C4")));
     purchaseGadget = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B40E80")));//AdventCallendarCellView.U_WatchAd() analyze find the class then search for AddPurhasedGadget in that class and the func above it should be it
     provideDefSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x21356D4")));//search "Приобретаем дефолтный скин для пушки:"
     targetFrameRate = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FE60")));//search for SetTargetFrameRate in field/strings
@@ -845,6 +850,18 @@ void PixelTime(void *obj) {
                 provideSkin(CreateIl2cppString(skinList[i]));
             }
         }
+        if (addAllPets) {
+            for (int i = 0; i < 500; i++) {
+                upgradePet(webInstance(), (int*)(i), (int*)(65), (int*)(3));
+            }
+            addAllPets = false;
+        }
+        if (addAllGadgets) {
+            for (int i = 0; i < 68; i++)
+            {
+                provideGadget(CreateIl2cppString(gadgetList[i]), (int *)(65));
+            }
+        }
         if (addAllArmors) {
             for (int i = 0; i < 35; i++)
             {
@@ -856,7 +873,7 @@ void PixelTime(void *obj) {
             }
             for (int i = 0; i < 22; i++)
             {
-                addWear((int*)(9), CreateIl2cppString(capeList[i]));
+                addWear((int*)(9), CreateIl2cppString(capeList[i])); // hola
             }
             for (int i = 0; i < 37; i++)
             {
@@ -864,11 +881,7 @@ void PixelTime(void *obj) {
             }
             for (int i = 0; i < 35; i++)
             {
-                buyArmor(webInstance(), getWearIndex(armorList[i]), (int *)(65), CreateIl2cppString("")); // leave AS IS, works
-            }
-            for (int i = 0; i < 68; i++)
-            {
-               // purchaseGadget(webInstance(), getWearIndex(gadgetList[i]), (int *)(65), CreateIl2cppString(""));
+                buyArmor(webInstance(), getWearIndex(armorList[i]), (int *)(65), CreateIl2cppString("migr")); // leave AS IS, works
             }
             addAllArmors = false;
         }
@@ -982,7 +995,7 @@ void Patches() {
     PATCH_SWITCH("0x4598D28", "00F0271EC0035FD6", reload);//mask_hitman_1_up1 in strings
     PATCH_SWITCH("0x2342F74", "000080D2C0035FD6", gadgetcd);//search Action in player_move_c find the 2 fields with action exactly then above some bools should be a classname which is GADGET
 //    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
-  //  PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
+    PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
     PATCH("0x3C484C0", "C0035FD6");//ANTIBAN
     PATCH("0x499903C", "000080D2C0035FD6");//Swear filter
     PATCH("0x3BE5458", "200080D2C0035FD6");//ValidateNickName
@@ -1010,8 +1023,14 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Unlocks Craftables (Only works on Wear and Gadgets)"));
                     if (ImGui::CollapsingHeader("Unlocks"))
                     {
-                        if (ImGui::Button(OBFUSCATE("Add Armors"))) {
+                        if (ImGui::Button(OBFUSCATE("Add All Wear"))) {
                             addAllArmors = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Gadgets"))) {
+                            addAllGadgets = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
+                            addAllPets = true;
                         }
                         if (ImGui::Button(OBFUSCATE("Add Weapon Skins"))) {
                             addAllWepSkins = true;
