@@ -852,6 +852,7 @@ void PixelTime(void *obj) {
             for (int i = 0; i < 457; i++) {
                 addWepSkin(CreateIl2cppString(skinList[i]));
             }
+            addAllWepSkins = false;
         }
         if (addAllPets) {
             for (int i = 0; i < 93; i++) {
@@ -864,6 +865,7 @@ void PixelTime(void *obj) {
             {
                 provideGadget(CreateIl2cppString(gadgetList[i]), (int *)(65));
             }
+            addAllGadgets = false;
         }
         if (addAllArmors) {
             for (int i = 0; i < 35; i++)
