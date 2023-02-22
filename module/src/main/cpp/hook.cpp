@@ -678,7 +678,7 @@ void SendChatHooked(void* obj, monoString* message, bool isClan, monoString* cla
 float (*oldSpeeds)(void* obj);
 float Speed(void* obj){
     if(obj != nullptr && speed){
-        return 10;
+        return 1000;
     }
     return oldSpeeds(obj);
 }
