@@ -268,7 +268,7 @@ void Pointers() {
     purchaseGadget = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B40E80")));//AdventCallendarCellView.U_WatchAd() analyze find the class then search for AddPurhasedGadget in that class and the func above it should be it
     provideDefSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x21356D4")));//search "Приобретаем дефолтный скин для пушки:"
     targetFrameRate = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FE60")));//search for SetTargetFrameRate in field/strings
-   // addWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x141C9D4"))); if this works fede add it yourself im not your slave
+    addWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16AA328"))); // if this works fede add it yourself im not your slave (it did in fact work)
     //setState = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x49B20B4"))); fede u told me this doesnt work so im not updating it :)
     LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4794D74")));//search LoadLevel
     OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FDFC")));//search OpenURL
@@ -840,23 +840,23 @@ void PixelTime(void *obj) {
         if (addAllArmors) {
             for (int i = 0; i < 35; i++)
             {
-               // addWear((int*)(10), CreateIl2cppString(bootsList[i]));
+                addWear((int*)(10), CreateIl2cppString(bootsList[i]));
             }
             for (int i = 0; i < 28; i++)
             {
-                //addWear((int*)(6), CreateIl2cppString(hatList[i]));
+                addWear((int*)(6), CreateIl2cppString(hatList[i]));
             }
             for (int i = 0; i < 22; i++)
             {
-               // addWear((int*)(9), CreateIl2cppString(capeList[i]));
+                addWear((int*)(9), CreateIl2cppString(capeList[i]));
             }
             for (int i = 0; i < 37; i++)
             {
-                //addWear((int*)(12), CreateIl2cppString(maskList[i]));
+                addWear((int*)(12), CreateIl2cppString(maskList[i]));
             }
             for (int i = 0; i < 35; i++)
             {
-               // buyArmor(webInstance(), getWearIndex(armorList[i]), (int *)(65), CreateIl2cppString("")); // leave AS IS, works
+                buyArmor(webInstance(), getWearIndex(armorList[i]), (int *)(65), CreateIl2cppString("")); // leave AS IS, works
             }
             for (int i = 0; i < 68; i++)
             {
