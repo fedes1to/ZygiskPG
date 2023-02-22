@@ -1,5 +1,5 @@
 # ZygiskPG
-Mod Menu for Pixel Gun 3D 23.0.1
+Mod Menu for Pixel Gun 3D 23.1.0
 
 This is NOT a good project 
 You WILL encounter many problems
