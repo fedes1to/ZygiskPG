@@ -1347,7 +1347,7 @@ void *hack_thread(void *arg) {
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
 #ifdef BIGSEX
-    isValidAuth = true;
+    isValidAuth = tryAutoLogin();
 #endif
     Pointers();
     Hooks();
