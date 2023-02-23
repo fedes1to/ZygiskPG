@@ -268,6 +268,7 @@ void (*targetFrameRate) (int* value);
 void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
+monoString (*persistentDataPath) ();
 
 void Pointers() {
     purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34EAFEC")));
@@ -290,8 +291,8 @@ void Pointers() {
     BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x413BA80")));//look in StickersController, compare and find the right function
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x39520EC")));//not obfuscated just search
     JoinToRoomPhotonAfterCheckCustom = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3500F0C")));//not obfuscated just search
-    SetImmortallity = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x480EC30")));//search immortal
-    // UNITY FUNC
+    SetImmortallity = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x480EC30")));//search imm
+    // UNITY FUNCortal
     Component$get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44052B0")));
     Component$get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44055A0")));
     Component$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4405274")));
@@ -299,7 +300,8 @@ void Pointers() {
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
     // NEED TO UPDATE THESE FOR AUTH //
     File$ReadAllLines = (monoArray<monoString*>*(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CB964")));
-    File$Exists = (bool(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x31D2990")));
+    persistentDataPath = (monoString(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
+    File$Exists = (bool(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
     // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE70")));
     GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFEAC")));
@@ -787,17 +789,13 @@ void(PlayerMoveC)(void* obj){
 
         if (ninjaJump) {
             EnableJetpack(obj, true);//search for jetpack in player_move_C
-            ninjaJump = false;
         }
 
         if (spoofMe) {
             void *argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID,
-                           PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,
-                           PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All,
-                           argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID,PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetPixelBookID);
             spoofMe = false;
         }
 
@@ -1098,7 +1096,7 @@ void DrawMenu(){
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
                         ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 5000);//dont fucking change it you cocksucker, make it how you want in a dev build but for users its 5000
-                        ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use."));
+                        ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use. (I reccommend not getting more than 50K)"));
                         ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,IM_ARRAYSIZE(curList), 4);
                         if (ImGui::Button(OBFUSCATE("Add Currency"))) {
                             isAddCurPressed = true;
@@ -1110,7 +1108,9 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
-                    ImGui::Checkbox(OBFUSCATE("Fly"), &ninjaJump);
+                    if(ImGui::Button(OBFUSCATE("Get Jetpack/Fly"))){
+                        ninjaJump = true;
+                    }
                     ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
                     ImGui::Checkbox(OBFUSCATE("Noclip"), &noclip);
                     ImGui::SliderFloat(OBFUSCATE("Jump/Jetpack Height"), &jumpHeight, 0.0f,2.5f);
