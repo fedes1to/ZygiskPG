@@ -328,14 +328,14 @@ bool tryAutoLogin() {
     std::string faggot = Application$persistentDataPath()->getString();
     faggot += "/license.key";
     if (!File$Exists(CreateIl2cppString(faggot.c_str()))) {
-        LOGE("FAIL  FOUND");
+        LOGE("FAIL, KEY NOT FOUND");
         return false;
     }
     LOGE("SUCCESS FOUND");
     monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(faggot.c_str()));
     LOGE("SET");
-    std::string username = array[0].getPointer()->getString();
-    std::string password = array[1].getPointer()->getString();
+    std::string username = array->getPointer()[0].getString();
+    std::string password = array->getPointer()[1].getString();
     LOGE("READ");
     LOGW("got username at %s", username.c_str());
     LOGW("got password at %s", password.c_str());
