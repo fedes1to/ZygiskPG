@@ -126,6 +126,13 @@ void* webInstance()
     return webInstance();
 }
 
+monoString* getPersistentDataPath()
+{
+    static monoString* (*persistentDataPath)() = (monoString* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
+    return CreateIl2cppString(persistentDataPath);
+}
+
+
 std::vector<unsigned int> keys_pressed;
 int refocus=0;
 bool isValidAuth, hasRegistered;
@@ -268,7 +275,6 @@ void (*targetFrameRate) (int* value);
 void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
-monoString (*persistentDataPath) ();
 
 void Pointers() {
     purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34EAFEC")));
@@ -300,7 +306,7 @@ void Pointers() {
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
     // NEED TO UPDATE THESE FOR AUTH //
     File$ReadAllLines = (monoArray<monoString*>*(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CB964")));
-    persistentDataPath = (monoString(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
+    persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
     File$Exists = (bool(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
     // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE70")));
