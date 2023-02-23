@@ -325,12 +325,12 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    if (!File$Exists(CreateIl2cppString(OBFUSCATE(Application$persistentDataPath.getChars() + "/license.key")))) {
+    if (!File$Exists(CreateIl2cppString(Application$persistentDataPath()->getChars() + "/license.key"))) {
         LOGE("FAIL  FOUND");
         return false;
     }
     LOGE("SUCCESS FOUND");
-    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE(Application$persistentDataPath.getChars() + "license.key", )));
+    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(Application$persistentDataPath()->getChars() + "license.key"));
     LOGE("SET");
     std::string username = array[0].getPointer()->getString();
     std::string password = array[1].getPointer()->getString();
@@ -764,13 +764,67 @@ void Bullet(void* obj){
     oldBullet(obj);
 }
 
-void Aimbot(void* player, void* enemy){
+/*void Aimbot(void* player, void* enemy){
     Vector3 ownLocation = get_position(Component$get_transform(player));
     Vector3 enemyLocation = get_position(Component$get_transform(enemy));
     Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
     set_rotation(Component$get_transform(player), rotation);
     *(Quaternion*)((uint64_t) enemyPlayer + 0x7F4) = rotation;
-}
+        //LOGD("1");
+            //LOGD("1");
+    {
+        void *transform = Component$get_transform(player);
+        //void* cam = get_myCamera();
+
+        monoArray<void **> *playersList = PhotonNetwork_playerListothers();
+        //LOGD("3");
+        //LOGD("4");
+        for (int i = 0; i < playersList->getLength(); i++) {
+            //LOGD("5");
+            //void *player = players[i];
+            void *player = playersList->getPointer()[i];
+            void *damagable = get_PlayerDamageable(player);
+            void *themtransform = get_PlayerTransform(player);
+
+            Vector3 them;
+
+            Vector3 myPos = Transform_get_position(Component_GetTransform(transform));
+
+            float distance = 1000;
+
+            //LOGD("6");
+            if (isEnemy(damagable, character)) {
+                //LOGD("7");
+                them = Transform_get_position(Component_GetTransform(themtransform));
+                distance = Vector3::Distance(them, myPos);
+                //LOGD("8");
+            }
+
+            Vector3 them1 = Transform_get_position(Component_GetTransform(themtransform));
+
+            //;LOGD("9");
+            float potentionDistance = Vector3::Distance(them1, myPos);
+
+            if (isEnemy(damagable, get_MyPlayer()) && potentionDistance < distance) {
+                //LOGD("10");
+                them = them1;
+                distance = potentionDistance;
+                //LOGD("11");
+            }
+
+            //LOGD("12");
+            if (isEnemy(damagable, get_MyPlayer()) && distance < 30) {
+
+                //Quaternion rotation = Quaternion::LookRotation(them - myPos, Vector3::Up());
+                //LOGD("My Location: Vector3(%f,%f,%f)", myPos.X, myPos.Y, myPos.Z);
+                //LOGD("13");
+                //Transform_Set_Rotation(Component_GetTransform(transform), rotation);
+                Transform_LookAt(Component_GetTransform(transform), them);
+                //LOGD("14");
+            }
+        }
+    }
+}*/
 
 
 void(*oldPlayerMoveC)(void* obj);
@@ -1290,7 +1344,7 @@ void *hack_thread(void *arg) {
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
 #ifdef BIGSEX
-    isValidAuth = tryAutoLogin();
+    isValidAuth = true;
 #endif
     Pointers();
     Hooks();
