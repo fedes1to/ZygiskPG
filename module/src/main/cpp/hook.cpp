@@ -192,6 +192,9 @@ monoString* (*string$Substring)(monoString* string, int startIndex);
 monoArray<monoString*>* (*File$ReadAllLines)(monoString* path);
 bool (*File$Exists)(monoString* path);
 
+// Application
+monoString* (*Application$persistentDataPath)();
+
 // Component
 void* (*Component$get_gameObject)(void* component);
 void* (*Component$get_transform)(void* component);
@@ -268,7 +271,6 @@ void (*targetFrameRate) (int* value);
 void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
-monoString* (*persistentDataPath)();
 void Pointers() {
     purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34EAFEC")));
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C0B490")));
@@ -299,7 +301,7 @@ void Pointers() {
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
     // NEED TO UPDATE THESE FOR AUTH //
     File$ReadAllLines = (monoArray<monoString*>*(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CB964")));
-    persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
+    Application$persistentDataPath = (monoString*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4380714")));
     File$Exists = (bool(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
     // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE70")));
@@ -323,12 +325,12 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    if (!File$Exists(CreateIl2cppString(OBFUSCATE(persistentDataPath.getChars() + "/license.key")))) {
+    if (!File$Exists(CreateIl2cppString(OBFUSCATE(Application$persistentDataPath.getChars() + "/license.key")))) {
         LOGE("FAIL  FOUND");
         return false;
     }
     LOGE("SUCCESS FOUND");
-    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE(persistentDataPath.getChars() + "license.key", )));
+    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE(Application$persistentDataPath.getChars() + "license.key", )));
     LOGE("SET");
     std::string username = array[0].getPointer()->getString();
     std::string password = array[1].getPointer()->getString();
