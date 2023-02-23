@@ -1046,7 +1046,7 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
@@ -1091,7 +1091,7 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Weapons 901-1050"))) {
                             isAddWeapons7 = true;
                         }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 1051-1194"))) {
+                        if (ImGui::Button(OBFUSCATE("Add All Weapons 1051-1194"))) {
                             isAddWeapons8 = true;
                         }
                         ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It sometimes doesnt get all the weapons, Freezing is normal)")));
@@ -1287,8 +1287,6 @@ void *hack_thread(void *arg) {
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
-
-    isValidAuth = true;
 
 #ifdef BIGSEX
     isValidAuth = true;
