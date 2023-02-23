@@ -324,10 +324,10 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    if (!File$Exists(CreateIl2cppString(OBFUSCATE("/sdcard/license.key")))) {
+    if (!File$Exists(CreateIl2cppString(OBFUSCATE(persistentDataPath + "/license.key")))) {
         return false;
     }
-    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE("/sdcard/license.key")));
+    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE(persistentDataPath + "/license.key")));
 
     std::string username = array[0].getPointer()->getString();
     std::string password = array[1].getPointer()->getString();
@@ -1289,7 +1289,7 @@ void *hack_thread(void *arg) {
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
 #ifdef BIGSEX
-    isValidAuth = true;
+    isValidAuth = tryAutoLogin;
 #endif
     Pointers();
     Hooks();
