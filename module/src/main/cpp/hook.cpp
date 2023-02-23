@@ -325,12 +325,14 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    if (!File$Exists(CreateIl2cppString(Application$persistentDataPath()->getChars() + "/license.key"))) {
+    std::string faggot = Application$persistentDataPath()->getString();
+    faggot += "/license.key";
+    if (!File$Exists(CreateIl2cppString(faggot.c_str()))) {
         LOGE("FAIL  FOUND");
         return false;
     }
     LOGE("SUCCESS FOUND");
-    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(Application$persistentDataPath()->getChars() + "license.key"));
+    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(faggot.c_str()));
     LOGE("SET");
     std::string username = array[0].getPointer()->getString();
     std::string password = array[1].getPointer()->getString();
@@ -873,7 +875,8 @@ void(PlayerMoveC)(void* obj){
 
             if (isAimbot) {
                 if (!IsDead(obj)) {
-                    Aimbot(MyPlayer, obj);
+                    // facgoet
+                    //Aimbot(MyPlayer, obj);
                 }
             }
 
