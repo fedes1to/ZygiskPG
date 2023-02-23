@@ -126,13 +126,6 @@ void* webInstance()
     return webInstance();
 }
 
-monoString* getPersistentDataPath()
-{
-    static monoString* (*persistentDataPath)() = (monoString* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
-    return CreateIl2cppString(persistentDataPath);
-}
-
-
 std::vector<unsigned int> keys_pressed;
 int refocus=0;
 bool isValidAuth, hasRegistered;
@@ -275,7 +268,7 @@ void (*targetFrameRate) (int* value);
 void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
-
+monoString* (*persistentDataPath)();
 void Pointers() {
     purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34EAFEC")));
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C0B490")));
@@ -330,14 +323,16 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    if (!File$Exists(CreateIl2cppString(OBFUSCATE(persistentDataPath + "/license.key")))) {
+    if (!File$Exists(CreateIl2cppString(OBFUSCATE(persistentDataPath.getChars() + "/license.key")))) {
+        LOGE("FAIL  FOUND");
         return false;
     }
-    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE(persistentDataPath + "/license.key")));
-
+    LOGE("SUCCESS FOUND");
+    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(OBFUSCATE(persistentDataPath.getChars() + "license.key", )));
+    LOGE("SET");
     std::string username = array[0].getPointer()->getString();
     std::string password = array[1].getPointer()->getString();
-
+    LOGE("READ");
     LOGW("got username at %s", username.c_str());
     LOGW("got password at %s", password.c_str());
 
@@ -946,6 +941,7 @@ void PixelTime(void *obj) {
             //  setLevel(webInstance(), (int*)(65));
             webLevel = false;
         }
+
         if(destroy){
             auto photonplayers = PhotonNetwork_playerListothers();
             SetMasterClient(get_LocalPlayer());
@@ -1128,7 +1124,6 @@ void DrawMenu(){
                  //   ImGui::TextUnformatted(OBFUSCATE("Teleports you behind an enemy."));
                     ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
                     ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
-                   ImGui::Checkbox(OBFUSCATE("Weapons in any game-mode"), &daterweapon);
                   //  ImGui::TextUnformatted(OBFUSCATE("Allows you to kill anyone."));
                     ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
                     ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
@@ -1141,7 +1136,6 @@ void DrawMenu(){
                     if (ImGui::CollapsingHeader(OBFUSCATE("Gadget Mods"))) {
                         ImGui::Checkbox(OBFUSCATE("Drone Godmode"), &removedrone);
                         ImGui::TextUnformatted(OBFUSCATE("The drone gadget will never despawn. (Don't get more than 1 drone)"));
-                        ImGui::Checkbox(OBFUSCATE("Ignore Gadget Disabled Effect"), &gadgetsEnabled);
                         ImGui::Checkbox(OBFUSCATE("No Gadget Cooldown"), &gadgetcd);
                         ImGui::TextUnformatted(OBFUSCATE("Do not change gagets while its enabled."));
                         ImGui::Checkbox(OBFUSCATE("Infinite Gadget Duration"), &gadgetduration);
@@ -1169,7 +1163,6 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Shooting anywhere will hit others."));
                     ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"), &recoilandspread);
                     ImGui::Checkbox(OBFUSCATE("Force Scope"), &scopef);
-                    ImGui::Checkbox(OBFUSCATE("Force 3 Cat Spam"), &catspam);
                     ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"),&kniferangesex);
                     ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
