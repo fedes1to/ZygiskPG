@@ -85,8 +85,8 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         isAddCurPressed, isAddWeapons, isAddWeapons2, isAddWeapons3, isAddWeapons4, isAddWeapons5, isAddWeapons6,
         ninjaJump,spamchat,gadgetdisabler, xray, scopef,isBuyEasterSticker, gadgetsEnabled, xrayApplied, kniferangesex,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload,firerate,isAimbot,Telekill, modules,
-        addAllArmors, addAllWepSkins,catspam, gadgetcd, addAllGadgets,
-        showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, addAllPets, noclip, pgod, pspeed, pdamage, prespawntime;
+        addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
+        showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -132,7 +132,7 @@ bool isValidAuth, hasRegistered;
 
 void *MyPlayer;
 void *enemyPlayer;
-void *camera;
+void *myCamera;
 
 static char username[32];
 static char pass[32];
@@ -301,8 +301,8 @@ void Pointers() {
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
     // NEED TO UPDATE THESE FOR AUTH //
     File$ReadAllLines = (monoArray<monoString*>*(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CB964")));
-    Application$persistentDataPath = (monoString*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4380714")));
-    File$Exists = (bool(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
+    Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4380714")));
+    File$Exists = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
     // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE70")));
     GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFEAC")));
@@ -327,10 +327,7 @@ void Pointers() {
 bool tryAutoLogin() {
     std::string faggot = Application$persistentDataPath()->getString();
     faggot += "/license.key";
-    if (!File$Exists(CreateIl2cppString(faggot.c_str()))) {
-        LOGE("FAIL, KEY NOT FOUND");
-        return false;
-    }
+
     LOGE("SUCCESS FOUND");
     monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(faggot.c_str()));
     LOGE("SET");
@@ -731,17 +728,22 @@ float petAttack(void* obj){
     return oldpetAttack(obj);
 }
 
-bool isEnemy(void* player_move_c){
-    return *(bool*)((uint64_t) player_move_c + 0xA45);
+bool isEnemy(void* player, void* enemy)
+{
+    bool (*isEnemy)(void *player, void *enemy) = (bool(*)(void *, void *))(g_il2cppBaseMap.startAddress + string2Offset("0x473BCB0")); // PlayerDamageable$$IsEnemyTo
+    return isEnemy(player, enemy);
 }
 
 bool IsMine(void* SkinName){
     return *(bool*)((uint64_t) SkinName + 0xA8);
 }
 
-bool IsDead(void* player_move_c){
-    return *(bool*)((uint64_t) player_move_c + 0x590);
+bool isDead(void* player)
+{
+    bool (*IsDead)(void *player) = (bool(*)(void *))(g_il2cppBaseMap.startAddress + string2Offset("0x473C00C")); // PlayerDamageable$$IsDead
+    return IsDead(player);
 }
+
 
 float (*old_get_fieldOfView)(void *instance);
 float get_fieldOfView(void *instance) {
@@ -751,82 +753,21 @@ float get_fieldOfView(void *instance) {
     return old_get_fieldOfView(instance);
 }
 
-void(*oldBullet)(void* obj);
-void Bullet(void* obj){
-    if(obj != nullptr && isAimbot){
-        if(MyPlayer != nullptr && enemyPlayer != nullptr){
-            Vector3 enemyLocation = get_position(Component$get_transform(enemyPlayer));
-            Vector3 ownLocation = get_position(Component$get_transform(MyPlayer));
-            *(Vector3*)((uint64_t) obj + 0x50) = enemyLocation;
-            *(Vector3*)((uint64_t) obj + 0x44) = enemyLocation;
-            *(Vector3*)((uint64_t) obj + 0x2C) = enemyLocation;
-            //bullet tracer aimbot worthy
-        }
+void* get_PlayerTransform(void* player)
+{
+    void *var = player;
+    if (var)
+    {
+        void* var1 = *(void **)((uint64_t)player + 0x398);
+        return var1;
     }
-    oldBullet(obj);
 }
 
-/*void Aimbot(void* player, void* enemy){
-    Vector3 ownLocation = get_position(Component$get_transform(player));
-    Vector3 enemyLocation = get_position(Component$get_transform(enemy));
-    Quaternion rotation = Quaternion::LookRotation(enemyLocation - Vector3(0, 0.5f, 0) - ownLocation);
-    set_rotation(Component$get_transform(player), rotation);
-    *(Quaternion*)((uint64_t) enemyPlayer + 0x7F4) = rotation;
-        //LOGD("1");
-            //LOGD("1");
+void Aimbot(void* players){
     {
-        void *transform = Component$get_transform(player);
-        //void* cam = get_myCamera();
 
-        monoArray<void **> *playersList = PhotonNetwork_playerListothers();
-        //LOGD("3");
-        //LOGD("4");
-        for (int i = 0; i < playersList->getLength(); i++) {
-            //LOGD("5");
-            //void *player = players[i];
-            void *player = playersList->getPointer()[i];
-            void *damagable = get_PlayerDamageable(player);
-            void *themtransform = get_PlayerTransform(player);
-
-            Vector3 them;
-
-            Vector3 myPos = Transform_get_position(Component_GetTransform(transform));
-
-            float distance = 1000;
-
-            //LOGD("6");
-            if (isEnemy(damagable, character)) {
-                //LOGD("7");
-                them = Transform_get_position(Component_GetTransform(themtransform));
-                distance = Vector3::Distance(them, myPos);
-                //LOGD("8");
-            }
-
-            Vector3 them1 = Transform_get_position(Component_GetTransform(themtransform));
-
-            //;LOGD("9");
-            float potentionDistance = Vector3::Distance(them1, myPos);
-
-            if (isEnemy(damagable, get_MyPlayer()) && potentionDistance < distance) {
-                //LOGD("10");
-                them = them1;
-                distance = potentionDistance;
-                //LOGD("11");
-            }
-
-            //LOGD("12");
-            if (isEnemy(damagable, get_MyPlayer()) && distance < 30) {
-
-                //Quaternion rotation = Quaternion::LookRotation(them - myPos, Vector3::Up());
-                //LOGD("My Location: Vector3(%f,%f,%f)", myPos.X, myPos.Y, myPos.Z);
-                //LOGD("13");
-                //Transform_Set_Rotation(Component_GetTransform(transform), rotation);
-                Transform_LookAt(Component_GetTransform(transform), them);
-                //LOGD("14");
-            }
-        }
     }
-}*/
+}
 
 
 void(*oldPlayerMoveC)(void* obj);
@@ -874,15 +815,12 @@ void(PlayerMoveC)(void* obj){
             }
 
             if (isAimbot) {
-                if (!IsDead(obj)) {
-                    // facgoet
-                    //Aimbot(MyPlayer, obj);
-                }
+                  //  Aimbot(enemyPlayer);
             }
 
             if (Telekill) {
-                if (!IsDead(obj)) {
-                    Vector3 enemyPos = get_position(Component$get_transform(obj));
+                if(isDead(obj)){
+                    Vector3 enemyPos = get_position(Component$get_transform(enemyPlayer));
                     set_position(Component$get_transform(MyPlayer),Vector3(enemyPos.X, enemyPos.Y, enemyPos.Z - 1));
                 }
             }
@@ -1014,7 +952,13 @@ void PixelTime(void *obj) {
     old_PixelTime(obj);
 }
 
-
+float (*oldGetWeaponDamage)(void* obj);
+float GetWeaponDamage(void* obj){
+    if(obj != nullptr && gundmg){
+        return 5;
+    }
+    return oldGetWeaponDamage(obj);
+}
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -1059,13 +1003,13 @@ void Hooks() {
     HOOK("0x3953680", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x3500D28", CustomHandleJoinRoomFromEnterPasswordBtnClicked, old_CustomHandleJoinRoomFromEnterPasswordBtnClicked);
     HOOK("0x21E9C5C", Speed, oldSpeeds);
-    HOOK("0x4529688", Bullet, oldBullet);
     HOOK("0x2342FB0", gadgetDuration, oldGadgetDuration);//compare inside the gadget class
     HOOK("0x17E4150", FirstPersonControllSharp, oldFirstPersonControllerSharp);
     HOOK("0x47BC280", SendChatHooked, old_SendChatHooked);
     HOOK("0x40220F0", petSpeed, oldPetSpeeds);//PetInfo
     HOOK("0x4021E80", petHealth, oldpetHealth);
     HOOK("0x4021FB8", petAttack, oldpetAttack);
+    HOOK("0x481B1E8", GetWeaponDamage, oldGetWeaponDamage);//search isSectorsAOE in player_move_c
 }
 
 void Patches() {
@@ -1092,6 +1036,9 @@ void Patches() {
     PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
   //  PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", daterweapon); // gadget info property with enum
     PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", gadgetcd);//compare gadgetinfo cooldown to a deobfuscated version goodluck
+    PATCH_SWITCH("0x14D7520", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck
+    PATCH_SWITCH("0x14D8834", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
+    PATCH_SWITCH("0x4810EE8", "E923BB6D", firerate);//_Shot - search component["Shoot"].length; & _ShotPressed = search if ("WeaponGrenade" == null) and match it, set ShotPressed's first 4 bytes as Shot
     PATCH("0x3C484C0", "C0035FD6");//ANTIBAN
     PATCH("0x499903C", "000080D2C0035FD6");//Swear filter
     PATCH("0x3BE5458", "200080D2C0035FD6");//ValidateNickName
@@ -1178,12 +1125,13 @@ void DrawMenu(){
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Game"))) {
-                   // ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
-                  //  ImGui::Checkbox(OBFUSCATE("Telekill"), &Telekill);
+                  // ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
+                    ImGui::Checkbox(OBFUSCATE("Telekill"), &Telekill);
                  //   ImGui::TextUnformatted(OBFUSCATE("Teleports you behind an enemy."));
                     ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
                     ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
-                  //  ImGui::TextUnformatted(OBFUSCATE("Allows you to kill anyone."));
+                    ImGui::Checkbox(OBFUSCATE("Friendly-Fire"), &teamkill);
+                    ImGui::TextUnformatted(OBFUSCATE("Allows you to kill your teammates."));
                     ImGui::Checkbox(OBFUSCATE("Spam Chat"), &spamchat);
                     ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
                     ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
@@ -1214,7 +1162,8 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
                     ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
                     ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
-                    // ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
+                    ImGui::Checkbox(OBFUSCATE("One Shot Kill"), &gundmg);
+                     ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
                     ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
                     ImGui::TextUnformatted(OBFUSCATE("Reloads the gun almost instantly (Re-equip after enabling)"));
                     ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,2000.0f);
@@ -1225,7 +1174,6 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"),&kniferangesex);
                     ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                    ImGui::SliderFloat(OBFUSCATE("Shotgun Damage Buff"), &damage, 0.0f, 10.0f);
                     ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
                     if (ImGui::CollapsingHeader(OBFUSCATE("Bullet Mods"))) {
                         ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
@@ -1347,7 +1295,7 @@ void *hack_thread(void *arg) {
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
 #ifdef BIGSEX
-    isValidAuth = tryAutoLogin();
+    isValidAuth = true;
 #endif
     Pointers();
     Hooks();
