@@ -272,8 +272,8 @@ void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
 void Pointers() {
-    purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x34EAFEC")));
-    providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C0B490")));
+    purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x333FC58")));
+    providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3D03A74")));
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2AFF0")));
     provideGadget = (void(*) (monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CC93C4")));
     targetFrameRate = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FE60")));//search for SetTargetFrameRate in field/strings
@@ -337,6 +337,7 @@ bool tryAutoLogin() {
     std::string username = array->getPointer()[0].getString();
     std::string password = array->getPointer()[1].getString();
     LOGE("READ");
+
     LOGW("got username at %s", username.c_str());
     LOGW("got password at %s", password.c_str());
 
@@ -973,6 +974,18 @@ void PixelTime(void *obj) {
             }
             addAllArmors = false;
         }
+        if (addAllWepSkins) {
+            for (int i = 0; i < 457; i++) {
+                purchaseWeaponSkin(CreateIl2cppString(skinList[i]));
+            }
+            addAllWepSkins = false;
+        }
+        if (addAllPets) {
+            for (int i = 0; i < 93; i++) {
+                providePet(CreateIl2cppString(petsList[i]), (int*)(65));
+            }
+            addAllPets = false;
+        }
         if (isBuyEasterSticker) {
             isBuyEasterSticker = false;
             BuyStickerPack((int*)StickerType::easter);
@@ -1128,6 +1141,12 @@ void DrawMenu(){
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Gadgets"))) {
                             addAllGadgets = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
+                            addAllPets = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
+                            addAllWepSkins = true;
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
                             isAddWeapons = true;
@@ -1347,7 +1366,8 @@ void *hack_thread(void *arg) {
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
 #ifdef BIGSEX
-    isValidAuth = tryAutoLogin();
+    // isValidAuth = tryAutoLogin();
+    isValidAuth = true;
 #endif
     Pointers();
     Hooks();
