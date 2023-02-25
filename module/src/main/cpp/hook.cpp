@@ -327,7 +327,7 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    std::string faggot = Application$persistentDataPath()->getString();
+    std::string faggot = std::string(Application$persistentDataPath()->getChars());
     faggot += "/license.key";
     if (!File$Exists(CreateIl2cppString(faggot.c_str()))) {
         LOGE("FAIL, KEY NOT FOUND");
@@ -336,12 +336,12 @@ bool tryAutoLogin() {
     LOGE("SUCCESS FOUND");
     monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(faggot.c_str()));
     LOGE("SET");
-    std::string username = array->getPointer()[0].getString();
-    std::string password = array->getPointer()[1].getString();
+    const char* username = array->getPointer()[0].getChars();
+    const char* password = array->getPointer()[1].getChars();
     LOGE("READ");
 
-    LOGW("got username at %s", username.c_str());
-    LOGW("got password at %s", password.c_str());
+    LOGW("got username at %s", username);
+    LOGW("got password at %s", password);
 
     CURL *handle;
     CURLcode result;
@@ -367,10 +367,10 @@ bool tryAutoLogin() {
     curl_mime_data(part, secret.c_str(), CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
     curl_mime_name(part, "username");
-    curl_mime_data(part, username.c_str(), CURL_ZERO_TERMINATED);
+    curl_mime_data(part, username, CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
     curl_mime_name(part, "password");
-    curl_mime_data(part, password.c_str(), CURL_ZERO_TERMINATED);
+    curl_mime_data(part, password, CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
     curl_mime_name(part, "hwid");
     curl_mime_data(part, "no_hwid_set", CURL_ZERO_TERMINATED);
@@ -688,7 +688,8 @@ Vector3 GetPlayerLocation(void *player) {
 
 void behaviour_teleport(void* obj, monoString* message, monoString* prefix) {
     void* myTransform = Component$get_transform(Player_move_c$skinName(obj));
-    int myOffset = std::stoi(string$Substring(message, prefix->getLength())->getString());
+    std::string it = std::string(string$Substring(message, prefix->getLength())->getChars());
+    int myOffset = std::stoi(it);
     set_position(myTransform, get_position(myTransform)+(Transform$get_forward(myTransform)*myOffset));
 }
 

@@ -14,9 +14,9 @@
 #include <vector>
 #include <list>
 
-std::string secret = "1iiFtJqzRAsSQ5EAoXZ2SHsvEg9VsKJFZo7";
-std::string aid = "252530";
-std::string apikey = "3972111712928518569275628818854436378567856538451588";
+std::string secret = OBFUSCATE("1iiFtJqzRAsSQ5EAoXZ2SHsvEg9VsKJFZo7");
+std::string aid = OBFUSCATE("252530");
+std::string apikey = OBFUSCATE("3972111712928518569275628818854436378567856538451588");
 
 bool hasAuthenticated;
 
