@@ -1216,7 +1216,7 @@ void DrawMenu(){
         }
     }
     if (!isValidAuth) {
-        ImGui::TextUnformatted(OBFUSCATE("License key is invalid or not found"));
+        ImGui::TextUnformatted(jsonresult.c_str());
     }
     ImGui::End();
 }

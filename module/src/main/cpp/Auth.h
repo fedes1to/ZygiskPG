@@ -13,12 +13,21 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <json.h>
+
+using namespace nlohmann;
 
 std::string secret = OBFUSCATE("1iiFtJqzRAsSQ5EAoXZ2SHsvEg9VsKJFZo7");
 std::string aid = OBFUSCATE("252530");
 std::string apikey = OBFUSCATE("3972111712928518569275628818854436378567856538451588");
+std::string readBuffer;
+std::string jsonresult;
 
-bool hasAuthenticated;
+size_t WriteCallback(char* ptr, size_t size, size_t nmemb, void* resData) {
+    std::string& buf = *static_cast<std::string*>(resData);
+    buf.append(ptr, std::next(ptr, nmemb * size));
+    return nmemb * size;
+}
 
 std::string getLine(const std::string& str, int lineNo)
 {
@@ -35,85 +44,101 @@ bool tryAutoLogin() {
     LOGE("Appending license.key");
     faggot += "/license.key";
 
-    const char* username;
-    const char* password;
+    std::string username;
+    std::string password;
 
     LOGE("Trying to enter file: %s", faggot.c_str());
     std::string line;
     std::ifstream file (faggot);
-    if (file.is_open())
-    {
+    if (file.is_open()) {
         LOGW("FILE IS OPEN!");
         for (int lineno = 1; getline (file,line) && lineno < 3; lineno++) {
             if (lineno == 1)
             {
-                LOGW("Getting username at: %s", line.c_str());
-                username = line.c_str();
+                username = line;
             }
             if (lineno == 2) {
-                LOGW("Getting password at: %s", line.c_str());
-                password = line.c_str();
+                password = line;
             }
         }
         file.close();
+    } else {
+        return false;
     }
     const char* hwid = getDeviceUniqueIdentifier()->getChars();
-    LOGE("Got HWID at: %s ,starting cURL", hwid);
+
+    std::string::size_type i = 0;
+    while (i < username.length()) {
+        i = username.find('\n', i);
+        if (i == std::string::npos) {
+            break;
+        }
+        username.erase(i);
+    }
+
+    std::string::size_type i2 = 0;
+    while (i2 < password.length()) {
+        i2 = password.find('\n', i2);
+        if (i2 == std::string::npos) {
+            break;
+        }
+        password.erase(i);
+    }
+
+    LOGE("Got username at: %s", username.c_str());
+    LOGE("Got password at: %s", password.c_str());
+    LOGE("Got HWID at: %s, starting cURL", hwid);
 
     CURL *handle;
     CURLcode result;
-    curl_global_init(CURL_GLOBAL_DEFAULT);
+    long http_code;
+    curl_global_init(CURL_GLOBAL_ALL);
 
     // declare handle
     handle = curl_easy_init();
+
+    std::unique_ptr<std::string> httpData(new std::string());
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+    std::ostringstream oss;
+    oss << "type=login&aid=" << aid << "&apikey=" << apikey << "&secret=" << secret << "&username=" << username.c_str() << "&password=" << password.c_str() << "&hwid=" << hwid;
+    std::string var = oss.str();
+
+    curl_easy_setopt(handle, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(handle, CURLOPT_URL, "https://api.auth.gg/v1/");
 
-    // prepare post request
-    curl_mime *multipart = curl_mime_init(handle);
-    curl_mimepart *part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "type");
-    curl_mime_data(part, "login", CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "aid");
-    curl_mime_data(part, aid.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "apikey");
-    curl_mime_data(part, apikey.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "secret");
-    curl_mime_data(part, secret.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "username");
-    curl_mime_data(part, username, CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "password");
-    curl_mime_data(part, password, CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "hwid");
-    curl_mime_data(part, hwid, CURL_ZERO_TERMINATED);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, WriteCallback);
 
-    /* Set the form info */
-    curl_easy_setopt(handle, CURLOPT_MIMEPOST, multipart);
+    /* pass our list of custom made headers */
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+
+    LOGW("trying to post with: \n%s", var.c_str());
+    curl_easy_setopt(handle, CURLOPT_POSTFIELDS, var.c_str());
 
     result = curl_easy_perform(handle); /* post away! */
 
-    /* free the post data again */
-    curl_mime_free(multipart);
+    curl_easy_getinfo (handle, CURLINFO_RESPONSE_CODE, &http_code);
 
-    sleep(1);
+    LOGW("http_code is: %ld", http_code);
 
-    // need to do code to return whether login was successful or not
-    return hasAuthenticated;
-}
+    curl_slist_free_all(headers); /* free the header list */
 
-size_t curlCallback(void *contents, size_t size, size_t nmemb, std::string *s)
-{
-    size_t newLength = size*nmemb;
-    s->append((char*)contents, newLength);
-    if (s->find("success") != std::string::npos) {
-        hasAuthenticated = true;
+    if(result != CURLE_OK)
+        LOGE("curl_easy_perform() failed: %s\n", curl_easy_strerror(result));
+
+    if (http_code == 200 && result != CURLE_ABORTED_BY_CALLBACK) {
+        json j = json::parse(readBuffer);
+        jsonresult = j.dump(1);
+        LOGE("%s", jsonresult.c_str());
+        if (jsonresult.find("success") != std::string::npos) {
+            return true;
+        }
     }
-    return newLength;
+    return false;
 }
 
 #endif //ZYGISKPG_AUTH_H
