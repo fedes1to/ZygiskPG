@@ -273,7 +273,7 @@ void (*targetFrameRate) (int* value);
 void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
-monoString (*getDeviceUniqueIdentifier)();
+monoString* (*getDeviceUniqueIdentifier)();
 void Pointers() {
     purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x333F56C")));
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3D03A74")));
@@ -324,7 +324,7 @@ void Pointers() {
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
-    getDeviceUniqueIdentifier = (monoString(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43E8660")));
+    getDeviceUniqueIdentifier = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43E8660")));
 #endif
 }
 
@@ -1282,7 +1282,7 @@ void DrawMenu(){
         }
     }
     if (!isValidAuth) {
-        ImGui::TextUnformatted("License key is invalid or not found");
+        ImGui::TextUnformatted(OBFUSCATE("License key is invalid or not found"));
     }
     ImGui::End();
 }
@@ -1335,7 +1335,7 @@ void *hack_thread(void *arg) {
 #endif
     Pointers();
     Hooks();
-    LOGE("HWID : %s", getDeviceUniqueIdentifier().getChars());
+    LOGE("HWID : %s", getDeviceUniqueIdentifier()->getChars());
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
