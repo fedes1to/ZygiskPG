@@ -7,6 +7,11 @@
 
 #include <codecvt>
 #include <math.h>
+#include <cassert>
+#include <cstdint>
+#include <iostream>
+#include <locale>
+#include <string>
 
 struct Vector2
 {
@@ -570,30 +575,34 @@ public class Player {
 getting that string would look like this: monoString *username = *(monoString **)((uint64_t)player + 0xc8);
 C# strings are UTF-16. This means each character is two bytes instead of one.
 To get the length of a monoString, call getLength.
-To get a NSString from a monoString, call toNSString.
 To get a std::string from a monoString, call toCPPString.
 To get a C string from a monoString, call toCString.
+
+Had to also adapt the cast for android, as simple as getting the char16 and passing it to a string16,
+after that just call the conversion and that's it. TLDR: use getString() and getChars()
 */
 typedef struct _monoString
 {
     void *klass;
     void *monitor;
     int length;
-    char chars[1];
+    char16_t chars[1];
 
     int getLength()
     {
         return length;
     }
 
-    char *getRawChars()
+    char16_t *getRawChars()
     {
         return chars;
     }
 
     std::string getString()
     {
-        return std::string(chars);
+        std::u16string u16 = std::u16string(chars);
+        std::string u8_conv = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.to_bytes(u16);
+        return u8_conv;
     }
 
     const char *getChars()

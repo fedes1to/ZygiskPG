@@ -329,7 +329,7 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    std::string faggot = std::string(Application$persistentDataPath()->getChars());
+    std::string faggot = std::string(Application$persistentDataPath()->getString());
     faggot += "/license.key";
 
     LOGE("SUCCESS FOUND");
@@ -1329,13 +1329,17 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
 
-#ifdef BIGSEX
-    // isValidAuth = tryAutoLogin();
-    isValidAuth = true;
-#endif
     Pointers();
     Hooks();
-    LOGE("HWID : %s", getDeviceUniqueIdentifier()->getChars());
+
+    sleep(5);
+
+    LOGE("Trying to get HWID:");
+    LOGE("%s", getDeviceUniqueIdentifier()->getChars());
+    LOGE("SUCCESS!, calling autologin");
+
+    isValidAuth = tryAutoLogin();
+
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
