@@ -619,9 +619,9 @@ Vector3 GetPlayerLocation(void *player) {
     return get_position(Component$get_transform(player));
 }
 
-void behaviour_teleport(void* obj, monoString* message, monoString* prefix) {
+void behaviour_teleport(void* obj, monoString* message, const char* prefix) {
     void* myTransform = Component$get_transform(Player_move_c$skinName(obj));
-    std::string it = std::string(string$Substring(message, prefix->getLength())->getChars());
+    std::string it = std::string(string$Substring(message, strlen(prefix))->getChars());
     int myOffset = std::stoi(it);
     set_position(myTransform, get_position(myTransform)+(Transform$get_forward(myTransform)*myOffset));
 }
@@ -630,11 +630,11 @@ void (*old_SendChatHooked)(void* obj, monoString* message, bool isClan, monoStri
 void SendChatHooked(void* obj, monoString* message, bool isClan, monoString* clanIcon){
     if(obj != nullptr){
         if (string$StartsWith(message, CreateIl2cppString(OBFUSCATE("!teleport ")))) {
-            behaviour_teleport(obj, message, CreateIl2cppString(OBFUSCATE("!teleport ")));
+            behaviour_teleport(obj, message, OBFUSCATE("!teleport "));
             return;
         }
         if (string$StartsWith(message, CreateIl2cppString(OBFUSCATE("!tp ")))) {
-            behaviour_teleport(obj, message, CreateIl2cppString(OBFUSCATE("!tp ")));
+            behaviour_teleport(obj, message, OBFUSCATE("!tp "));
             return;
         }
     }
