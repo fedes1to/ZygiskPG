@@ -27,7 +27,6 @@
 #include "Include/Roboto-Regular.h"
 #include <iostream>
 #include <chrono>
-#include "Auth.h"
 #include "Include/Quaternion.h"
 #include "Rect.h"
 #include <fstream>
@@ -321,72 +320,10 @@ void Pointers() {
     getDeviceUniqueIdentifier = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43E8660")));
 #endif
 }
-
-bool tryAutoLogin() {
-    LOGE("STARTING AUTOLOGIN");
-    std::string faggot = Application$persistentDataPath()->getString();
-    LOGE("Appending license.key");
-    faggot += "/license.key";
-
-    LOGE("Trying to enter file: %s", faggot.c_str());
-    monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(faggot.c_str()));
-    LOGE("SET");
-    const char* username = array->getPointer()[0].getChars();
-    const char* password = array->getPointer()[1].getChars();
-    const char* hwid = getDeviceUniqueIdentifier()->getChars();
-    LOGE("READ");
-
-    LOGW("got username at %s", username);
-    LOGW("got password at %s", password);
-
-    CURL *handle;
-    CURLcode result;
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
-    // declare handle
-    handle = curl_easy_init();
-    curl_easy_setopt(handle, CURLOPT_URL, "https://api.auth.gg/v1/");
-
-    // prepare post request
-    curl_mime *multipart = curl_mime_init(handle);
-    curl_mimepart *part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "type");
-    curl_mime_data(part, "login", CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "aid");
-    curl_mime_data(part, aid.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "apikey");
-    curl_mime_data(part, apikey.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "secret");
-    curl_mime_data(part, secret.c_str(), CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "username");
-    curl_mime_data(part, username, CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "password");
-    curl_mime_data(part, password, CURL_ZERO_TERMINATED);
-    part = curl_mime_addpart(multipart);
-    curl_mime_name(part, "hwid");
-    curl_mime_data(part, hwid, CURL_ZERO_TERMINATED);
-
-    /* Set the form info */
-    curl_easy_setopt(handle, CURLOPT_MIMEPOST, multipart);
-
-    result = curl_easy_perform(handle); /* post away! */
-
-    /* free the post data again */
-    curl_mime_free(multipart);
-
-    sleep(1);
-
-    // need to do code to return whether login was successful or not
-    return hasAuthenticated;
-}
-
 // 0x435FA0C <- offset for gameobject.tag
 // 0x434733C <- offset for object.name
+
+#include "Auth.h"
 
 void (*old_WeaponManager)(void *obj);
 void WeaponManager(void *obj) {
