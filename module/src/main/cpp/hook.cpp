@@ -136,12 +136,6 @@ void *MyPlayer;
 void *enemyPlayer;
 void *myCamera;
 
-static char username[32];
-static char pass[32];
-static char license[32];
-const char* localHwid = "";
-static char email[64];
-
 #ifdef BIGSEX
 bool isStartDebug;
 #endif
@@ -191,7 +185,7 @@ bool (*string$StartsWith)(monoString* string, monoString* value);
 monoString* (*string$Substring)(monoString* string, int startIndex);
 
 // File
-monoArray<monoString*>* (*File$ReadAllLines)(monoString* path);
+monoArray<monoString*> *(*File$ReadAllLines)(monoString* path);
 bool (*File$Exists)(monoString* path);
 
 // Application
@@ -303,8 +297,8 @@ void Pointers() {
     CharacterController$set_radius = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x457B544")));
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
     // NEED TO UPDATE THESE FOR AUTH //
-    File$ReadAllLines = (monoArray<monoString*>*(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CB964")));
-    Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4380714")));
+    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x33CB964"));
+    Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
     File$Exists = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
     // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE70")));
@@ -329,14 +323,17 @@ void Pointers() {
 }
 
 bool tryAutoLogin() {
-    std::string faggot = std::string(Application$persistentDataPath()->getString());
+    LOGE("STARTING AUTOLOGIN");
+    std::string faggot = Application$persistentDataPath()->getString();
+    LOGE("Appending license.key");
     faggot += "/license.key";
 
-    LOGE("SUCCESS FOUND");
+    LOGE("Trying to enter file: %s", faggot.c_str());
     monoArray<monoString*>* array = File$ReadAllLines(CreateIl2cppString(faggot.c_str()));
     LOGE("SET");
     const char* username = array->getPointer()[0].getChars();
     const char* password = array->getPointer()[1].getChars();
+    const char* hwid = getDeviceUniqueIdentifier()->getChars();
     LOGE("READ");
 
     LOGW("got username at %s", username);
@@ -372,7 +369,7 @@ bool tryAutoLogin() {
     curl_mime_data(part, password, CURL_ZERO_TERMINATED);
     part = curl_mime_addpart(multipart);
     curl_mime_name(part, "hwid");
-    curl_mime_data(part, "no_hwid_set", CURL_ZERO_TERMINATED);
+    curl_mime_data(part, hwid, CURL_ZERO_TERMINATED);
 
     /* Set the form info */
     curl_easy_setopt(handle, CURLOPT_MIMEPOST, multipart);
@@ -1331,12 +1328,6 @@ void *hack_thread(void *arg) {
 
     Pointers();
     Hooks();
-
-    sleep(5);
-
-    LOGE("Trying to get HWID:");
-    LOGE("%s", getDeviceUniqueIdentifier()->getChars());
-    LOGE("SUCCESS!, calling autologin");
 
     isValidAuth = tryAutoLogin();
 
