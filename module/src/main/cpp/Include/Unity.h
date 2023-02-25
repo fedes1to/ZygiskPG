@@ -593,11 +593,7 @@ typedef struct _monoString
 
     std::string getString()
     {
-        std::u16string u16string(reinterpret_cast<const char16_t *>(chars));
-        std::wstring wstring(u16string.begin(), u16string.end());
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert;
-
-        return convert.to_bytes(wstring);
+        return std::string(chars);
     }
 
     const char *getChars()
