@@ -88,7 +88,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload,firerate,isAimbot,Telekill, modules,
         addAllArmors, addAllWepSkins,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, addAllPets, noclip, pgod, pspeed, pdamage, prespawntime,
-        isAddWepPress;
+        isAddWepPress, addAllAvatars;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -274,7 +274,7 @@ void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
 void Pointers() {
-    purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x333FC58")));
+    purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x333F56C")));
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3D03A74")));
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2AFF0")));
     provideGadget = (void(*) (monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CC93C4")));
@@ -959,6 +959,17 @@ void PixelTime(void *obj) {
             }
             addAllGadgets = false;
         }
+        if (addAllAvatars) {
+            for (int i = 0; i < 711; i++)
+            {
+                addWear((int*)(150000), CreateIl2cppString(avatarList[i]));
+                addWear((int*)(200000), CreateIl2cppString(avatarList[i]));
+                addWear((int*)(210000), CreateIl2cppString(avatarList[i]));
+                addWear((int*)(180000), CreateIl2cppString(avatarList[i]));
+                addWear((int*)(170000), CreateIl2cppString(avatarList[i]));
+                addWear((int*)(160000), CreateIl2cppString(avatarList[i]));
+            }
+        }
         if (addAllArmors) {
             for (int i = 0; i < 35; i++)
             {
@@ -1009,9 +1020,6 @@ void PixelTime(void *obj) {
         if (isDiscordPressed) {
             OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/g3pjD5M3BZ")));
             isDiscordPressed = false;
-        }
-        if (changeID) {
-
         }
         if (isAddCurPressed) {
             setSomething(webInstance(), CreateIl2cppString(curList[selectedCur]), (int *)(amountws), (int *)(8));
@@ -1155,6 +1163,9 @@ void DrawMenu(){
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
                             addAllWepSkins = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Avatars"))) {
+                            addAllAvatars = true;
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
                             isAddWeapons = true;
