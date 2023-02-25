@@ -292,8 +292,8 @@ void Pointers() {
     BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x413BA80")));//look in StickersController, compare and find the right function
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x39520EC")));//not obfuscated just search
     JoinToRoomPhotonAfterCheckCustom = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3500F0C")));//not obfuscated just search
-    SetImmortallity = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x480EC30")));//search imm
-    // UNITY FUNCortal
+    SetImmortallity = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x480EC30")));//search immortal
+    // UNITY FUNC
     Component$get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44052B0")));
     Component$get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44055A0")));
     Component$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4405274")));
@@ -791,6 +791,7 @@ void(PlayerMoveC)(void* obj){
 
         if (ninjaJump) {
             EnableJetpack(obj, true);//search for jetpack in player_move_C
+            ninjaJump = false;
         }
 
         if (spoofMe) {
@@ -1048,7 +1049,9 @@ void Patches() {
     PATCH_SWITCH("0x4021788", "00008052C0035FD6", prespawntime);
     //    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
     PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
-  //  PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", daterweapon); // gadget info property with enum
+    PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isDaterRegim to 16.6.1  version goodluck
+    PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isSpeedrun to 16.6.1  version goodluck
+    PATCH_SWITCH("0x14D7DA8", "00008052C0035FD6", daterweapon); // compare isMiniGame to 16.6.1  version goodluck (it should have the first thing in analyze GameConnect method )
     PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", gadgetcd);//compare gadgetinfo cooldown to a deobfuscated version goodluck
     PATCH_SWITCH("0x14D7520", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck
     PATCH_SWITCH("0x14D8834", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
@@ -1156,7 +1159,12 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
                     ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
                     ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
+<<<<<<< Updated upstream
                     ImGui::Checkbox(OBFUSCATE("Allow Weapons In Other Modes"), &xrayApplied);
+=======
+                    ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+                    ImGui::Checkbox(OBFUSCATE("Allow Weapons In Other Modes"), &daterweapon);
+>>>>>>> Stashed changes
                     if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
                         destroy = true;
                     }
