@@ -338,57 +338,49 @@ void WeaponManager(void *obj) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
         }
         if (isAddWeapons2) {
-            for (int i = 151; i < 300; i++) {
+            for (int i = 150; i < 300; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons2 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
         }
         if (isAddWeapons3) {
-            for (int i = 301; i < 450; i++) {
+            for (int i = 300; i < 450; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons3 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
         }
         if (isAddWeapons4) {
-            for (int i = 451; i < 600; i++) {
+            for (int i = 450; i < 600; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons4 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
         }
         if (isAddWeapons5) {
-            for (int i = 601; i < 750; i++) {
+            for (int i = 600; i < 750; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons5 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
 
         }
         if (isAddWeapons6) {
-            for (int i = 751; i < 900; i++) {
+            for (int i = 750; i < 900; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons6 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
         }
         if (isAddWeapons7) {
-            for (int i = 901; i < 1050; i++) {
+            for (int i = 900; i < 1050; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons7 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
         }
         if (isAddWeapons8) {
             for (int i = 1050; i < 1197; i++) {
                 addWeapon(obj, CreateIl2cppString(wepList[i]), (int *) (62));
             }
             isAddWeapons8 = false;
-            LoadLevel(CreateIl2cppString("AppCenter"));
         }
         if (isAddWepPress)
         {
@@ -1324,13 +1316,6 @@ void *hack_thread(void *arg) {
     Pointers();
     Hooks();
 
-<<<<<<< Updated upstream
-    sleep(1);
-
-    isValidAuth = tryAutoLogin();
-
-=======
->>>>>>> Stashed changes
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
