@@ -92,6 +92,8 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
 
+bool autolog = true;
+
 Vector3 WorldToScreenPoint(void *transform, Vector3 pos) {
     if (!transform)return Vector3();
     Vector3 position;
@@ -995,11 +997,11 @@ void Hooks() {
     HOOK("0x21E9C5C", Speed, oldSpeeds);
     HOOK("0x2342FB0", gadgetDuration, oldGadgetDuration);//compare inside the gadget class
     HOOK("0x17E4150", FirstPersonControllSharp, oldFirstPersonControllerSharp);
-    HOOK("0x47BC280", SendChatHooked, old_SendChatHooked);
+   // HOOK("0x47BC280", SendChatHooked, old_SendChatHooked);
     HOOK("0x40220F0", petSpeed, oldPetSpeeds);//PetInfo
     HOOK("0x4021E80", petHealth, oldpetHealth);
     HOOK("0x4021FB8", petAttack, oldpetAttack);
-    HOOK("0x481B1E8", GetWeaponDamage, oldGetWeaponDamage);//search isSectorsAOE in player_move_c
+  //  HOOK("0x481B1E8", GetWeaponDamage, oldGetWeaponDamage);//search isSectorsAOE in player_move_c
 }
 
 void Patches() {
@@ -1044,7 +1046,7 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
@@ -1142,13 +1144,12 @@ void DrawMenu(){
                         ninjaJump = true;
                     }
                     ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
-                    ImGui::Checkbox(OBFUSCATE("Noclip"), &noclip);
                     ImGui::SliderFloat(OBFUSCATE("Jump/Jetpack Height"), &jumpHeight, 0.0f,2.5f);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Game"))) {
                   // ImGui::Checkbox(OBFUSCATE("Aimbot"), &isAimbot);
-                    ImGui::Checkbox(OBFUSCATE("Telekill"), &Telekill);
+                 //   ImGui::Checkbox(OBFUSCATE("Telekill"), &Telekill);
                  //   ImGui::TextUnformatted(OBFUSCATE("Teleports you behind an enemy."));
                     ImGui::Checkbox(OBFUSCATE("Kill All"), &kniferange);
                     ImGui::TextUnformatted(OBFUSCATE("Kill everyone"));
@@ -1159,7 +1160,6 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
                     ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
-                    ImGui::Checkbox(OBFUSCATE("Allow Weapons In Other Modes"), &daterweapon);
                     if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
                         destroy = true;
                     }
@@ -1186,7 +1186,7 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
                     ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
                     ImGui::Checkbox(OBFUSCATE("One Shot Kill"), &gundmg);
-                     ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
+                  //   ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
                     ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
                     ImGui::TextUnformatted(OBFUSCATE("Reloads the gun almost instantly (Re-equip after enabling)"));
                     ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,2000.0f);
@@ -1196,7 +1196,6 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Force Scope"), &scopef);
                     ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"),&kniferangesex);
                     ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
-                    ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
                     ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
                     if (ImGui::CollapsingHeader(OBFUSCATE("Bullet Mods"))) {
                         ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
@@ -1270,7 +1269,7 @@ void DrawMenu(){
         }
     }
     if (!isValidAuth) {
-        ImGui::TextUnformatted(jsonresult.c_str());
+            ImGui::TextUnformatted(jsonresult.c_str());
     }
     ImGui::End();
 }
@@ -1297,6 +1296,11 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         setupimg = true;
     }
 
+    if(autolog){
+        isValidAuth = tryAutoLogin();
+        autolog = false;
+    }
+
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
@@ -1320,10 +1324,13 @@ void *hack_thread(void *arg) {
     Pointers();
     Hooks();
 
+<<<<<<< Updated upstream
     sleep(1);
 
     isValidAuth = tryAutoLogin();
 
+=======
+>>>>>>> Stashed changes
     auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
