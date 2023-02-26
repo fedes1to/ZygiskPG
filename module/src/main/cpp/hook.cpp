@@ -1103,7 +1103,6 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Force Coin Drop"), &coindrop);
                     ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
                     ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
-                    ImGui::Checkbox(OBFUSCATE("Allow Weapons In Other Modes"), &xrayApplied);
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
                     ImGui::Checkbox(OBFUSCATE("Allow Weapons In Other Modes"), &daterweapon);
                     if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
