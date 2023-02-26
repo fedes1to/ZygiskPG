@@ -16,7 +16,7 @@ android {
             cmake {
                 arguments "-DMODULE_NAME:STRING=$moduleLibraryName"
                 // DELETE THIS IF NOT DEBUG BUILD
-                cppFlags += "-DBIGSEX"
+                // cppFlags += "-DBIGSEX"
             }
         }
     }

@@ -87,7 +87,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload,firerate,isAimbot,Telekill, modules,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
-        isAddWepPress, addAllPets;
+        isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws;
@@ -154,10 +154,11 @@ void(*JoinToRoomPhotonAfterCheckCustom)(void* obj);
 void* (*GetComponent) (void* gameObject, void* type);
 void (*SendChat) (void* obj, monoString* text, bool isClan, monoString* logoid);
 void (*EnableXray) (void* obj, bool enable);
-void(*CharacterController$set_radius)(void* player, float val);
+void (*CharacterController$set_radius)(void* player, float val);
 void (*SetXrayShader) (void* obj, bool enable);
 void (*JoinToRoomPhotonAfterCheck) (void* obj);
-void(*SetImmortallity)(void* obj, float);
+void (*SetImmortallity)(void* obj, float);
+void (*provideRoyaleItem) (monoString* item, bool* idfk);
 
 // Type
 void* (*Type$GetType)(void* type);
@@ -267,8 +268,10 @@ void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
 monoString* (*getDeviceUniqueIdentifier)();
+
 void Pointers() {
-    purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x333F56C")));
+    provideRoyaleItem = (void(*)(monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C729F4")));
+    purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x21356D4")));
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3D03A74")));
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2AFF0")));
     provideGadget = (void(*) (monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CC93C4")));
@@ -827,6 +830,38 @@ void PixelTime(void *obj) {
             targetFrameRate((int*)(999));
             uncapFps = false;
         }
+        if (addAllRoyale1)
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                provideRoyaleItem(CreateIl2cppString(avatarList[i]), (bool*)(true));
+            }
+            addAllRoyale1 = false;
+        }
+        if (addAllRoyale2)
+        {
+            for (int i = 200; i < 400; i++)
+            {
+                provideRoyaleItem(CreateIl2cppString(avatarList[i]), (bool*)(true));
+            }
+            addAllRoyale2 = false;
+        }
+        if (addAllRoyale3)
+        {
+            for (int i = 400; i < 600; i++)
+            {
+                provideRoyaleItem(CreateIl2cppString(avatarList[i]), (bool*)(true));
+            }
+            addAllRoyale3 = false;
+        }
+        if (addAllRoyale4)
+        {
+            for (int i = 600; i < 711; i++)
+            {
+                provideRoyaleItem(CreateIl2cppString(avatarList[i]), (bool*)(true));
+            }
+            addAllRoyale4 = false;
+        }
         if (addAllGadgets) {
             for (int i = 0; i < 68; i++)
             {
@@ -1036,37 +1071,57 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
                             addAllPets = true;
                         }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
-                            addAllWepSkins = true;
+                        if (ImGui::CollapsingHeader("Royale Items Unlock"))
+                        {
+                            if (ImGui::Button(OBFUSCATE("Add All Royale 1/4"))) {
+                                addAllArmors = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Royale 2/4"))) {
+                                addAllArmors = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Royale 3/4"))) {
+                                addAllArmors = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Royale 4/4"))) {
+                                addAllArmors = true;
+                            }
                         }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
-                            isAddWeapons = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 151-300"))) {
-                            isAddWeapons2 = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 301-450"))) {
-                            isAddWeapons3 = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 451-600"))) {
-                            isAddWeapons4 = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 601-750"))) {
-                            isAddWeapons5 = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 751-900"))) {
-                            isAddWeapons6 = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 901-1050"))) {
-                            isAddWeapons7 = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Weapons 1051-1194"))) {
-                            isAddWeapons8 = true;
-                        }
-                        ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It sometimes doesnt get all the weapons, Freezing is normal)")));
-                        ImGui::ListBox(OBFUSCATE("Weapon"), &selectedWeapon, goofyWeps,IM_ARRAYSIZE(goofyWeps), 4);
-                        if (ImGui::Button(OBFUSCATE("Add Weapon"))) {
-                            isAddWepPress = true;
+                        if (ImGui::CollapsingHeader("Weapon Unlock"))
+                        {
+#ifdef BIGSEX
+                            if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
+                                addAllWepSkins = true;
+                            }
+#endif
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
+                                isAddWeapons = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 151-300"))) {
+                                isAddWeapons2 = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 301-450"))) {
+                                isAddWeapons3 = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 451-600"))) {
+                                isAddWeapons4 = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 601-750"))) {
+                                isAddWeapons5 = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 751-900"))) {
+                                isAddWeapons6 = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 901-1050"))) {
+                                isAddWeapons7 = true;
+                            }
+                            if (ImGui::Button(OBFUSCATE("Add All Weapons 1051-1194"))) {
+                                isAddWeapons8 = true;
+                            }
+                            ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It sometimes doesnt get all the weapons, Freezing is normal)")));
+                            ImGui::ListBox(OBFUSCATE("Weapon"), &selectedWeapon, goofyWeps,IM_ARRAYSIZE(goofyWeps), 4);
+                            if (ImGui::Button(OBFUSCATE("Add Weapon"))) {
+                                isAddWepPress = true;
+                            }
                         }
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
@@ -1264,6 +1319,8 @@ void *hack_thread(void *arg) {
 
     Pointers();
     Hooks();
+
+    sleep(1);
 
     isValidAuth = tryAutoLogin();
 
