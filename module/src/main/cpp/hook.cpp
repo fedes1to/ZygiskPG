@@ -31,7 +31,6 @@
 #include "Rect.h"
 #include <fstream>
 #include <limits>
-#include "Include/FileWrapper.h"
 #define GamePackageName "com.pixel.gun3d"
 
 int glHeight, glWidth;
@@ -87,10 +86,10 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         portalBull, snowstormbull, polymorph, harpoonBull,spoofMe, reload,firerate,isAimbot,Telekill, modules,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
-        isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4;
+        isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
-int reflection, amountws;
+int reflection, amountws, maxLevelam;
 
 bool autolog = true;
 
@@ -137,9 +136,6 @@ void *MyPlayer;
 void *enemyPlayer;
 void *myCamera;
 
-#ifdef BIGSEX
-bool isStartDebug;
-#endif
 
 void (*LoadLevel) (monoString* key);
 void (*OpenURL) (monoString* url);
@@ -270,8 +266,11 @@ void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
 monoString* (*getDeviceUniqueIdentifier)();
-
+void (*AddScoreOnEvent)(void* obj, int, float);
 void Pointers() {
+    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x33CB964"));
+    Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
+    File$Exists = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
     provideRoyaleItem = (void(*)(monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C729F4")));
     purchaseWeaponSkin = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x21356D4")));
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3D03A74")));
@@ -301,9 +300,7 @@ void Pointers() {
     CharacterController$set_radius = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x457B544")));
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
     // NEED TO UPDATE THESE FOR AUTH //
-    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x33CB964"));
-    Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
-    File$Exists = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
+
     // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE70")));
     GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFEAC")));
@@ -319,16 +316,17 @@ void Pointers() {
     EnableJetpack = (void (*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47C1934")));
  //   isDead = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x143726C")));
     SetXrayShader = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x47D58D8"));//analyze the xray field and you'll see it
+    getDeviceUniqueIdentifier = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43E8660")));
+    AddScoreOnEvent = (void(*)(void*, int, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473B0FC")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
     DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
-    getDeviceUniqueIdentifier = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43E8660")));
 #endif
 }
-// 0x435FA0C <- offset for gameobject.tag
-// 0x434733C <- offset for object.name
 
 #include "Auth.h"
+// 0x435FA0C <- offset for gameobject.tag
+// 0x434733C <- offset for object.name
 
 void (*old_WeaponManager)(void *obj);
 void WeaponManager(void *obj) {
@@ -401,6 +399,13 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x394) = damage;//shotgunOverDamageCoef
         }
 
+
+        if(gundmg){
+            *(float*)((uint64_t) obj + 0x3A4) = 10;//sectorsAOEDamageMultiplierFront
+            *(float*)((uint64_t) obj + 0x3A8) = 10;//sectorsAOEDamageMultiplierSide
+            *(float*)((uint64_t) obj + 0x3A8) = 10;//sectorsAOEDamageMultiplierBack
+        }
+
         if(gadgetdisabler){
             *(bool*)((uint64_t) obj + 0x1F0) = true;//isGadgetDisabler
             *(float*)((uint64_t) obj + 0x1F4) = 99999;//gadgetDisableTime
@@ -440,6 +445,10 @@ void WeaponSounds(void* obj){
             }
         }
 
+        if(playerScore){
+            *(bool*)((uint64_t) obj + 0x368) = true;//isBuffPoints
+            *(float*)((uint64_t) obj + 0x374) = 99999;//buffBonusPointsForKill
+        }
         if(polymorph){
             *(bool*)((uint64_t) obj + 0x2D4) = true;//polymorpher
             *(float*)((uint64_t) obj + 0x2D8) = 999999999;//polymorphDuarationTime
@@ -461,7 +470,26 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x40C) = 99999;//electricShockTime
         }
 
+
         //*(bool*)((uint64_t) obj + 0x428) = true;//isDaterWeapon
+
+        if(gbullets){
+            *(bool*)((uint64_t) obj + 0x42D) = true;//isGrenadeWeapon
+        }
+
+        if(reflections){
+            *(bool*)((uint64_t) obj + 0x2F9) = true;//isDamageReflection
+            *(bool*)((uint64_t) obj + 0x2FA) = false;//isDamageAbsorption
+            *(float*)((uint64_t) obj + 0x2FC) = -99999;//damageReflectionValue
+        }
+
+        if(firerate){
+            *(int*)((uint64_t) obj + 0x5B0) = 999;
+        }
+
+        if(flamethrower){
+            *(bool*)((uint64_t) obj + 0x334) = true;//flamethrower
+        }
 
         if(blindness){
             *(bool*)((uint64_t) obj + 0x254) = true;//isBlindEffect
@@ -471,10 +499,6 @@ void WeaponSounds(void* obj){
         if(crithit){
             *(float*)((uint64_t) obj + 0x438) = 9999;//criticalHitCoef
             *(float*)((uint64_t) obj + 0x434) = 9999;//criticalHitChance
-        }
-
-        if(grenade){
-            *(float*)((uint64_t) obj + 0x5B8) = 9999;//grenadeUseTime
         }
 
         if(doublejump){
@@ -570,6 +594,10 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0xAC) = 0;//timeForTekKoofVisual
             *(Vector2*)((uint64_t) obj + 0x84) = Vector2(0, 0);//startZone
             *(float*)((uint64_t) obj + 0x124) = 0;//recoilCoeffZoom
+        }
+
+        if(pnoclip){
+            *(bool*)((uint64_t) obj + 0x156) = true;//IsGhost
         }
 
         if(quickscope){
@@ -740,10 +768,6 @@ void(PlayerMoveC)(void* obj){
             PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,PhotonTargets::All, argsForSetPixelBookID);
             PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetPixelBookID);
             spoofMe = false;
-        }
-
-        if(god){
-            SetImmortallity(obj, 99999);
         }
 
         if (gadgetsEnabled) {
@@ -936,13 +960,14 @@ void PixelTime(void *obj) {
     old_PixelTime(obj);
 }
 
-float (*oldGetWeaponDamage)(void* obj);
-float GetWeaponDamage(void* obj){
-    if(obj != nullptr && gundmg){
-        return 10;
+int (*oldRewardedExp)(void* obj);
+int RewardedExp(void* obj){
+    if(obj != nullptr && maxLevel){
+        return 999;
     }
-    return oldGetWeaponDamage(obj);
+    return oldRewardedExp(obj);
 }
+
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -993,7 +1018,7 @@ void Hooks() {
     HOOK("0x40220F0", petSpeed, oldPetSpeeds);//PetInfo
     HOOK("0x4021E80", petHealth, oldpetHealth);
     HOOK("0x4021FB8", petAttack, oldpetAttack);
-  //  HOOK("0x481B1E8", GetWeaponDamage, oldGetWeaponDamage);//search isSectorsAOE in player_move_c
+    HOOK("0x1C71944", RewardedExp, oldRewardedExp);
 }
 
 void Patches() {
@@ -1024,13 +1049,14 @@ void Patches() {
     PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", gadgetcd);//compare gadgetinfo cooldown to a deobfuscated version goodluck
     PATCH_SWITCH("0x14D7520", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck
     PATCH_SWITCH("0x14D8834", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
-    PATCH_SWITCH("0x4810EE8", "E923BB6D", firerate);//_Shot - search component["Shoot"].length; & _ShotPressed = search if ("WeaponGrenade" == null) and match it, set ShotPressed's first 4 bytes as Shot
+    //PATCH_SWITCH("0x4810EE8", "E923BB6D", firerate);//_Shot - search component["Shoot"].length; & _ShotPressed = search if ("WeaponGrenade" == null) and match it, set ShotPressed's first 4 bytes as Shot
     PATCH("0x3C484C0", "C0035FD6");//ANTIBAN
     PATCH("0x499903C", "000080D2C0035FD6");//Swear filter
     PATCH("0x3BE5458", "200080D2C0035FD6");//ValidateNickName
     PATCH("0x3BE5698", "200080D2C0035FD6");//ValidateNickNameNoAnalytics
     PATCH("0x37A2660", "C0035FD6");
     PATCH("0x4B2A1AC", "C0035FD6");//CheatDetectorBanner
+    PATCH("0x1D4B3F2", "C0035FD6");//BannedOnServer
 }
 
 
@@ -1038,14 +1064,13 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.0a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
-                    ImGui::TextUnformatted((OBFUSCATE("Gives the player Max Level after you complete a match. (Use this after you get Level 3)")));
-                    ImGui::Checkbox(OBFUSCATE("Free Craftables"), &cWear);
+                    ImGui::TextUnformatted((OBFUSCATE("Gives the player max lvl after a match ends (reccomended to use after level3)")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
@@ -1056,6 +1081,7 @@ void DrawMenu(){
                     }
                     if (ImGui::CollapsingHeader("Unlockables"))
                     {
+                        ImGui::TextUnformatted((OBFUSCATE("Gives the player items you pick, Freezes are expected.")));
                         if (ImGui::Button(OBFUSCATE("Add All Wear"))) {
                             addAllArmors = true;
                         }
@@ -1068,16 +1094,16 @@ void DrawMenu(){
                         if (ImGui::CollapsingHeader("Royale Items Unlock"))
                         {
                             if (ImGui::Button(OBFUSCATE("Add All Royale 1/4"))) {
-                                addAllArmors = true;
+                                addAllRoyale1 = true;
                             }
                             if (ImGui::Button(OBFUSCATE("Add All Royale 2/4"))) {
-                                addAllArmors = true;
+                                addAllRoyale2 = true;
                             }
                             if (ImGui::Button(OBFUSCATE("Add All Royale 3/4"))) {
-                                addAllArmors = true;
+                                addAllRoyale3 = true;
                             }
                             if (ImGui::Button(OBFUSCATE("Add All Royale 4/4"))) {
-                                addAllArmors = true;
+                                addAllRoyale4 = true;
                             }
                         }
                         if (ImGui::CollapsingHeader("Weapon Unlock"))
@@ -1111,7 +1137,6 @@ void DrawMenu(){
                             if (ImGui::Button(OBFUSCATE("Add All Weapons 1051-1194"))) {
                                 isAddWeapons8 = true;
                             }
-                            ImGui::TextUnformatted((OBFUSCATE("Gives the player all the weapons (It sometimes doesnt get all the weapons, Freezing is normal)")));
                             ImGui::ListBox(OBFUSCATE("Weapon"), &selectedWeapon, goofyWeps,IM_ARRAYSIZE(goofyWeps), 4);
                             if (ImGui::Button(OBFUSCATE("Add Weapon"))) {
                                 isAddWepPress = true;
@@ -1152,6 +1177,8 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Always drops coins when someone dies."));
                     ImGui::Checkbox(OBFUSCATE("Glitch Everyone"), &xrayApplied);
                     ImGui::TextUnformatted(OBFUSCATE("Every weapon will have a scope."));
+                    ImGui::Checkbox(OBFUSCATE("Infinite Game Score"), &playerScore);
+                    ImGui::TextUnformatted(OBFUSCATE("Gives 2mil score when you kill someone."));
                     if (ImGui::Button(OBFUSCATE("Crash Everyone"))) {
                         destroy = true;
                     }
@@ -1170,6 +1197,8 @@ void DrawMenu(){
                         ImGui::Checkbox(OBFUSCATE("Speed"), &pspeed);
                         ImGui::Checkbox(OBFUSCATE("One Shot Kill"), &pdamage);
                         ImGui::Checkbox(OBFUSCATE("No Respawn Time"), &prespawntime);
+                        ImGui::Checkbox(OBFUSCATE("Pet No-Clip"), &pnoclip);
+                        ImGui::TextUnformatted(OBFUSCATE("Pet can move through walls."));
                     }
                     ImGui::EndTabItem();
                 }
@@ -1177,8 +1206,8 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
                     ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
                     ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
-                    ImGui::Checkbox(OBFUSCATE("One Shot Kill"), &gundmg);
-                  //   ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
+                  //  ImGui::Checkbox(OBFUSCATE("One Shot Kill"), &gundmg);
+                 //  ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
                     ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
                     ImGui::TextUnformatted(OBFUSCATE("Reloads the gun almost instantly (Re-equip after enabling)"));
                     ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,2000.0f);
@@ -1187,8 +1216,7 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("No Recoil and Spread"), &recoilandspread);
                     ImGui::Checkbox(OBFUSCATE("Force Scope"), &scopef);
                     ImGui::Checkbox(OBFUSCATE("Infinite Knife/Flamethrower Range"),&kniferangesex);
-                    ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knifer or a framethrower at any distance."));
-                    ImGui::TextUnformatted(OBFUSCATE("Amplifys the shotgun  damage. (Anything above 6 might kick after a few kills)"));
+                    ImGui::TextUnformatted(OBFUSCATE("Allows you to aim and hit people with a knife or a framethrower at any distance."));
                     if (ImGui::CollapsingHeader(OBFUSCATE("Bullet Mods"))) {
                         ImGui::Checkbox(OBFUSCATE("Force Explosive Bullets"), &expbull);
                         ImGui::TextUnformatted(OBFUSCATE("Forces any gun to shoot explosive bullets."));
@@ -1200,6 +1228,8 @@ void DrawMenu(){
                         ImGui::TextUnformatted(OBFUSCATE("Forces bullets to make players turn into sheep."));
                         ImGui::Checkbox(OBFUSCATE("Force Harpoon Bullets"), &harpoonBull);
                         ImGui::TextUnformatted(OBFUSCATE("Explosive Bullets that dont launch you."));
+                        ImGui::Checkbox(OBFUSCATE("Force Flamethrower Shots"), &flamethrower);
+                        ImGui::TextUnformatted(OBFUSCATE("Will make the gun shoot flames."));
                     }
 
                     if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
@@ -1233,12 +1263,10 @@ void DrawMenu(){
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Misc"))) {
-                    ImGui::Checkbox(OBFUSCATE("Spoof Editor"), &enableEditor);
                     if (ImGui::Button("Uncap Fps"))
                     {
                         uncapFps = true;
                     }
-                    ImGui::TextUnformatted(OBFUSCATE("Makes the game think its on the Unity Editor"));
                     ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
                     if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                         isLoadScenePressed = true;
@@ -1283,6 +1311,8 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     eglQuerySurface(dpy, surface, EGL_WIDTH, &glWidth);
     eglQuerySurface(dpy, surface, EGL_HEIGHT, &glHeight);
 
+    LOGE("ATTEMPTING TRYAUTOLOG");
+
     if (!setupimg) {
         SetupImgui();
         setupimg = true;
@@ -1292,11 +1322,11 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         isValidAuth = tryAutoLogin();
         autolog = false;
     }
-
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
     //LOGE("AccInfo %s", File("/sdcard/license.txt").read_content().c_str());
+
     DrawMenu();
 
     ImGui::EndFrame();
@@ -1325,5 +1355,7 @@ void *hack_thread(void *arg) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
     LOGI("Draw Done!");
+
+
     return nullptr;
 }
