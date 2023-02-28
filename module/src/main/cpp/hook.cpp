@@ -276,10 +276,8 @@ void (*providePet) (monoString* petName, int* level);
 void (*purchaseWeaponSkin) (monoString* weaponSkin);
 monoString* (*getDeviceUniqueIdentifier)();
 void (*addGraffiti) (void* instance, monoString* graffiti);
-void (*setID) (void* instance, monoString* ID);
 void (*AddScoreOnEvent)(void* obj, int, float);
 void Pointers() {
-    setID = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DAD448")));
     addGraffiti = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15B0D2C")));
     File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x33CB964"));
     Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
@@ -752,23 +750,6 @@ void Aimbot(void* players){
     }
 }
 
-void (*old_TransportControllerBase)(void *instance);
-void TransportControllerBase(void *instance)
-{
-    if (instance != nullptr && spoofMe)
-    {
-        setID(instance, CreateIl2cppString("zygiskPG on top"));
-    }
-}
-
-void (*old_NetworkStartTable)(void *instance);
-void NetworkStartTable(void *instance)
-{
-    if (instance != nullptr && spoofMe)
-    {
-        *(monoString **)((uint64_t)instance + 0xE8) = CreateIl2cppString("zygiskPG on top");
-    }
-}
 
 void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
@@ -790,6 +771,14 @@ void(PlayerMoveC)(void* obj){
         if (ninjaJump) {
             EnableJetpack(obj, true);//search for jetpack in player_move_C
             ninjaJump = false;
+        }
+
+        if (spoofMe) {
+            void *argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID,PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,PhotonTargets::All, argsForSetPixelBookID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetPixelBookID);
+            spoofMe = false;
         }
 
         if (gadgetsEnabled) {
@@ -1047,8 +1036,6 @@ void Hooks() {
     HOOK("0x4021E80", petHealth, oldpetHealth);
     HOOK("0x4021FB8", petAttack, oldpetAttack);
     HOOK("0x1C71944", RewardedExp, oldRewardedExp);
-    HOOK("0x4736048", NetworkStartTable, old_NetworkStartTable);
-    HOOK("0x4DA1254", TransportControllerBase, old_TransportControllerBase);
 }
 
 void Patches() {
@@ -1302,9 +1289,12 @@ void DrawMenu(){
                     if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                         isLoadScenePressed = true;
                     }
-                    if (ImGui::Button(OBFUSCATE("Spood ID & Username"))) {
-                        spoofMe = true;
-                    }
+                    /* if (ImGui::Button(OBFUSCATE("Playstantiate the playfab"))) {
+                         playstantiate = true;
+                     }
+                     if (ImGui::Button(OBFUSCATE("Mask me"))) {
+                         spoofMe = true;
+                     }*/
                     if (ImGui::Button(OBFUSCATE("Join Discord"))) {
                         isDiscordPressed = true;
                     }
