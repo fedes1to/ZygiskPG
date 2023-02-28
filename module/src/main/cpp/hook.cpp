@@ -1360,7 +1360,6 @@ void *hack_thread(void *arg) {
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
     } while (!g_il2cppBaseMap.isValid());
     KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
-
     Pointers();
     Hooks();
 
