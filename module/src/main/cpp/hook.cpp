@@ -1128,9 +1128,9 @@ void DrawMenu(){
                         }
                         if (ImGui::CollapsingHeader("Weapon Unlock"))
                         {
-                            if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
+                            /*if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
                                 addAllWepSkins = true;
-                            }
+                            }*/
                             if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
                                 isAddWeapons = true;
                             }
