@@ -15,7 +15,6 @@ public:
 
     void preAppSpecialize(AppSpecializeArgs *args) override {
         if (!args || !args->nice_name) {
-            LOGE("Skip unknown process");
             return;
         }
         enable_hack = isGame(env_, args->app_data_dir);
@@ -26,7 +25,6 @@ public:
             int ret;
             pthread_t ntid;
             if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
-                LOGE("can't create thread: %s\n", strerror(ret));
             }
         }
     }

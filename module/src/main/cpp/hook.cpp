@@ -164,7 +164,6 @@ void (*EnableXray) (void* obj, bool enable);
 void (*CharacterController$set_radius)(void* player, float val);
 void (*SetXrayShader) (void* obj, bool enable);
 void (*JoinToRoomPhotonAfterCheck) (void* obj);
-void (*SetImmortallity)(void* obj, float);
 void (*provideRoyaleItem) (monoString* item, bool* idfk);
 
 // Type
@@ -303,7 +302,6 @@ void Pointers() {
     BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x413BA80")));//look in StickersController, compare and find the right function
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x39520EC")));//not obfuscated just search
     JoinToRoomPhotonAfterCheckCustom = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3500F0C")));//not obfuscated just search
-    SetImmortallity = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x480EC30")));//search immortal
     // UNITY FUNC
     Component$get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44052B0")));
     Component$get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44055A0")));
@@ -640,13 +638,6 @@ void FirstPersonControllSharp(void* obj){
         if(jumpHeight != NULL){
             *(float*)((uint64_t) obj + 0x4A0) = jumpHeight;
         }
-
-        void* CharacterController = *(void**)((uint64_t) obj + 0xE8);
-        if(CharacterController != nullptr){
-            if(noclip){
-                CharacterController$set_radius(CharacterController, INFINITY);
-            }
-        }
     }
     oldFirstPersonControllerSharp(obj);
 }
@@ -854,11 +845,7 @@ enum StickerType {
 void (*old_PixelTime)(void *obj);
 void PixelTime(void *obj) {
     if (obj != nullptr) {
-        if (uncapFps)
-        {
-            targetFrameRate((int*)(999));
-            uncapFps = false;
-        }
+        targetFrameRate((int*)(999));
         if (isAddGraffitis) {
             for (int i = 0; i < 15; i++) {
                 addGraffiti(graffitiInstance(), CreateIl2cppString(graffitiList[i]));
@@ -952,7 +939,7 @@ void PixelTime(void *obj) {
             //bypassBan = false;
         }
         if (isDiscordPressed) {
-            OpenURL(CreateIl2cppString(OBFUSCATE("https://discord.gg/g3pjD5M3BZ")));
+            OpenURL(CreateIl2cppString(OBFUSCATE("http://bit.ly/3yck7Bw")));
             isDiscordPressed = false;
         }
         if (isAddCurPressed) {
@@ -1022,66 +1009,66 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 
 void Hooks() {
     // hooks
-    HOOK("0x3D3FEE0", PixelTime, old_PixelTime);
-    HOOK("0x1B080B8", WeaponSounds, oldWeaponSounds);
-    HOOK("0x142FE8C", WeaponManager, old_WeaponManager);
-    HOOK("0x47E0A14", PlayerMoveC, oldPlayerMoveC);
-    HOOK("0x3953680", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
-    HOOK("0x3500D28", CustomHandleJoinRoomFromEnterPasswordBtnClicked, old_CustomHandleJoinRoomFromEnterPasswordBtnClicked);
-    HOOK("0x21E9C5C", Speed, oldSpeeds);
-    HOOK("0x2342FB0", gadgetDuration, oldGadgetDuration);//compare inside the gadget class
-    HOOK("0x17E4150", FirstPersonControllSharp, oldFirstPersonControllerSharp);
-   // HOOK("0x47BC280", SendChatHooked, old_SendChatHooked);
-    HOOK("0x40220F0", petSpeed, oldPetSpeeds);//PetInfo
-    HOOK("0x4021E80", petHealth, oldpetHealth);
-    HOOK("0x4021FB8", petAttack, oldpetAttack);
-    HOOK("0x1C71944", RewardedExp, oldRewardedExp);
+        HOOK("0x3D3FEE0", PixelTime, old_PixelTime);
+        HOOK("0x1B080B8", WeaponSounds, oldWeaponSounds);
+        HOOK("0x142FE8C", WeaponManager, old_WeaponManager);
+        HOOK("0x47E0A14", PlayerMoveC, oldPlayerMoveC);
+        HOOK("0x3953680", HandleJoinRoomFromEnterPasswordBtnClicked,
+             old_HandleJoinRoomFromEnterPasswordBtnClicked);
+        HOOK("0x3500D28", CustomHandleJoinRoomFromEnterPasswordBtnClicked,
+             old_CustomHandleJoinRoomFromEnterPasswordBtnClicked);
+        HOOK("0x21E9C5C", Speed, oldSpeeds);
+        HOOK("0x2342FB0", gadgetDuration, oldGadgetDuration);//compare inside the gadget class
+        HOOK("0x17E4150", FirstPersonControllSharp, oldFirstPersonControllerSharp);
+        // HOOK("0x47BC280", SendChatHooked, old_SendChatHooked);
+        HOOK("0x40220F0", petSpeed, oldPetSpeeds);//PetInfo
+        HOOK("0x4021E80", petHealth, oldpetHealth);
+        HOOK("0x4021FB8", petAttack, oldpetAttack);
+        HOOK("0x1C71944", RewardedExp, oldRewardedExp);
 }
 
 void Patches() {
-    PATCH_SWITCH("0x480525C", "1F2003D5C0035FD6", god); // search int viewID and you'll find it
-    PATCH_SWITCH("0x3C48320", "1F2003D5C0035FD6", god); // search for SkinName skinName = this.mySkinName; and find a float in analyze (player_move_c for the one above too)
-    PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);//OnTriggerEnter
-    PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);//OnControllerColliderHit
-    PATCH_SWITCH("0x1C71944", "A0F08FD2C0035FD6", maxLevel); // first class in analyze should be ExpController not ArmouryCell
-    PATCH_SWITCH("0x248B0A8", "802580D2C0035FD6", cWear);//search for almanachmainui and find the refresh method then youll check analyze to find the class, then get both of the ints
-    PATCH_SWITCH("0x2486960", "802580D2C0035FD6", cWear);
-    PATCH_SWITCH("0x2CC71F0", "00008052C0035FD6", gadgetUnlock);
-    PATCH_SWITCH("0x21E709C", "603E8012C0035FD6", modKeys);//go to AmmoButtonInGame and find the function called onclick, analyze and try to find the same class once you do just goodluck finding the exact method it shouldn't be hard
-    PATCH_SWITCH("0x1DDDA84", "C0035FD6", tgod);//all the minus live
-    PATCH_SWITCH("0x1DE2BDC", "C0035FD6", tgod);
-    PATCH_SWITCH("0x1DE2E74", "C0035FD6", tgod);
-    PATCH_SWITCH("0x47F6CB8", "C0035FD6", removedrone);//my old self lied just search for player_move_c and DroneController droneController; droneController.Deactivate();
-    PATCH_SWITCH("0x47F6D70", "C0035FD6", removedrone);//search Dictionary<GadgetCategory in movec
-    PATCH_SWITCH("0x1B08DE8", "200080D2C0035FD6", crithit);//nexthitcritical in weaponsounds
-    PATCH_SWITCH("0x1E11928", "200080D2C0035FD6", couponClicker);//this requires abit of effort and luck, go to CollectButtonPressed the class is in the typeof handle then just try to match the bool to the one before by comparing it
-    PATCH_SWITCH("0x4598D28", "00F0271EC0035FD6", reload);//mask_hitman_1_up1 in strings
-    PATCH_SWITCH("0x2342F74", "000080D2C0035FD6", gadgetcd);//search Action in player_move_c find the 2 fields with action exactly then above some bools should be a classname which is GADGET
-    PATCH_SWITCH("0x4021788", "00008052C0035FD6", prespawntime);
-    //    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
-    PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
-    PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isDaterRegim to 16.6.1  version goodluck
-    PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isSpeedrun to 16.6.1  version goodluck
-    PATCH_SWITCH("0x14D7DA8", "00008052C0035FD6", daterweapon); // compare isMiniGame to 16.6.1  version goodluck (it should have the first thing in analyze GameConnect method )
-    PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", gadgetcd);//compare gadgetinfo cooldown to a deobfuscated version goodluck
-    PATCH_SWITCH("0x14D7520", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck
-    PATCH_SWITCH("0x14D8834", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
-    //PATCH_SWITCH("0x4810EE8", "E923BB6D", firerate);//_Shot - search component["Shoot"].length; & _ShotPressed = search if ("WeaponGrenade" == null) and match it, set ShotPressed's first 4 bytes as Shot
-    PATCH("0x3C484C0", "C0035FD6");//ANTIBAN
-    PATCH("0x499903C", "000080D2C0035FD6");//Swear filter
-    PATCH("0x3BE5458", "200080D2C0035FD6");//ValidateNickName
-    PATCH("0x3BE5698", "200080D2C0035FD6");//ValidateNickNameNoAnalytics
-    PATCH("0x37A2660", "C0035FD6");
-    PATCH("0x4B2A1AC", "C0035FD6");//CheatDetectorBanner
-    PATCH("0x1D4B3F2", "C0035FD6");//BannedOnServer
+        PATCH_SWITCH("0x480525C", "1F2003D5C0035FD6", god); // search int viewID and you'll find it
+        PATCH_SWITCH("0x3C48320", "1F2003D5C0035FD6", god); // search for SkinName skinName = this.mySkinName; and find a float in analyze (player_move_c for the one above too)
+        PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);//OnTriggerEnter
+        PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);//OnControllerColliderHit
+        PATCH_SWITCH("0x1C71944", "A0F08FD2C0035FD6", maxLevel); // first class in analyze should be ExpController not ArmouryCell
+        PATCH_SWITCH("0x248B0A8", "802580D2C0035FD6", cWear);//search for almanachmainui and find the refresh method then youll check analyze to find the class, then get both of the ints
+        PATCH_SWITCH("0x2486960", "802580D2C0035FD6", cWear);
+        PATCH_SWITCH("0x2CC71F0", "00008052C0035FD6", gadgetUnlock);
+        PATCH_SWITCH("0x21E709C", "603E8012C0035FD6", modKeys);//go to AmmoButtonInGame and find the function called onclick, analyze and try to find the same class once you do just goodluck finding the exact method it shouldn't be hard
+        PATCH_SWITCH("0x1DDDA84", "C0035FD6", tgod);//all the minus live
+        PATCH_SWITCH("0x1DE2BDC", "C0035FD6", tgod);
+        PATCH_SWITCH("0x1DE2E74", "C0035FD6", tgod);
+        PATCH_SWITCH("0x47F6CB8", "C0035FD6", removedrone);//my old self lied just search for player_move_c and DroneController droneController; droneController.Deactivate();
+        PATCH_SWITCH("0x47F6D70", "C0035FD6", removedrone);//search Dictionary<GadgetCategory in movec
+        PATCH_SWITCH("0x1B08DE8", "200080D2C0035FD6", crithit);//nexthitcritical in weaponsounds
+        PATCH_SWITCH("0x1E11928", "200080D2C0035FD6", couponClicker);//this requires abit of effort and luck, go to CollectButtonPressed the class is in the typeof handle then just try to match the bool to the one before by comparing it
+        PATCH_SWITCH("0x4598D28", "00F0271EC0035FD6", reload);//mask_hitman_1_up1 in strings
+        PATCH_SWITCH("0x2342F74", "000080D2C0035FD6", gadgetcd);//search Action in player_move_c find the 2 fields with action exactly then above some bools should be a classname which is GADGET
+        PATCH_SWITCH("0x4021788", "00008052C0035FD6", prespawntime);
+        //    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
+        PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
+        PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isDaterRegim to 16.6.1  version goodluck
+        PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isSpeedrun to 16.6.1  version goodluck
+        PATCH_SWITCH("0x14D7DA8", "00008052C0035FD6", daterweapon); // compare isMiniGame to 16.6.1  version goodluck (it should have the first thing in analyze GameConnect method )
+        PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", gadgetcd);//compare gadgetinfo cooldown to a deobfuscated version goodluck
+        PATCH_SWITCH("0x14D7520", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck
+        PATCH_SWITCH("0x14D8834", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
+     //  PATCH_SWITCH("0x457A428", "200080D2C0035FD6", noclip);
+        PATCH("0x3C484C0", "C0035FD6");//ANTIBAN
+        PATCH("0x499903C", "000080D2C0035FD6");//Swear filter
+        PATCH("0x3BE5458", "200080D2C0035FD6");//ValidateNickName
+        PATCH("0x3BE5698", "200080D2C0035FD6");//ValidateNickNameNoAnalytics
+        PATCH("0x37A2660", "C0035FD6");
+        PATCH("0x4B2A1AC", "C0035FD6");//CheatDetectorBanner
+        PATCH("0x1D4B3F2", "C0035FD6");//BannedOnServer
 }
-
-
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1b (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
@@ -1093,7 +1080,7 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
-                    if (ImGui::Button(OBFUSCATE("Buy Easter Pack"))) {
+                    if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
                     }
                     if (ImGui::CollapsingHeader("Unlockables"))
@@ -1108,10 +1095,10 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
                             addAllPets = true;
                         }
-                        if (ImGui::Button(OBFUSCATE("Add All Graffitis"))) {
+                        if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
                             isAddGraffitis = true;
                         }
-                        if (ImGui::CollapsingHeader("Royale Items Unlock"))
+                        if (ImGui::CollapsingHeader(OBFUSCATE("Royale Items Unlock")))
                         {
                             if (ImGui::Button(OBFUSCATE("Add All Royale 1/4"))) {
                                 addAllRoyale1 = true;
@@ -1126,7 +1113,7 @@ void DrawMenu(){
                                 addAllRoyale4 = true;
                             }
                         }
-                        if (ImGui::CollapsingHeader("Weapon Unlock"))
+                        if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Unlock")))
                         {
                             /*if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
                                 addAllWepSkins = true;
@@ -1175,6 +1162,7 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
+                  //  ImGui::Checkbox(OBFUSCATE("Noclip"), &noclip);
                     if(ImGui::Button(OBFUSCATE("Get Jetpack/Fly"))){
                         ninjaJump = true;
                     }
@@ -1281,10 +1269,6 @@ void DrawMenu(){
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Misc"))) {
-                    if (ImGui::Button("Uncap Fps"))
-                    {
-                        uncapFps = true;
-                    }
                     ImGui::ListBox(OBFUSCATE("Select Scene"), &selectedScene, sceneList, IM_ARRAYSIZE(sceneList), 4);
                     if (ImGui::Button(OBFUSCATE("Load Scene"))) {
                         isLoadScenePressed = true;
@@ -1303,21 +1287,48 @@ void DrawMenu(){
                 }
                 ImGui::EndTabBar();
             }
-            Patches();
+            if(isAuth()){
+                Patches();
+            }
         }
     }
     if (!isValidAuth) {
-            ImGui::TextUnformatted(jsonresult.c_str());
+        if (accessibleCode == 200 && results != CURLE_ABORTED_BY_CALLBACK) {
+            json j = json::parse(readBuffer);
+            jsonresult = j.dump(1);
+
+            if (jsonresult.find("invalid_details") != std::string::npos) {
+                ImGui::TextUnformatted(OBFUSCATE("Invalid Username or Password, check again."));
+            }
+            if (jsonresult.find("hwid_updated") != std::string::npos) {
+                ImGui::TextUnformatted(OBFUSCATE("Your HWID has updated! Restart the application again to see the menu."));
+            }
+            if (jsonresult.find("invalid_hwid") != std::string::npos) {
+                ImGui::TextUnformatted(OBFUSCATE("The license is set for a different HWID, if you have changed devices"));
+                ImGui::TextUnformatted(OBFUSCATE("or reset your phone, go back to the zygiskPG portal and press the button Update HWID."));
+            }
+            if (jsonresult.find("time_expired") != std::string::npos) {
+                ImGui::TextUnformatted(OBFUSCATE("Your license has expired, renew it to get access."));
+            }
+        }
+        else{
+            if(!fileExists){
+                ImGui::TextUnformatted(OBFUSCATE("You forgot to add license.key, check if its inside the files folder."));
+            }
+            else{
+                ImGui::TextUnformatted(OBFUSCATE("Failed to get a response from our auth."));
+                ImGui::TextUnformatted(OBFUSCATE("We are down, or your network is unstable."));
+            }
+        }
     }
     ImGui::End();
 }
 
 void SetupImgui() {
-    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
-    ImGui_ImplOpenGL3_Init("#version 100");
+    ImGui_ImplOpenGL3_Init(OBFUSCATE("#version 100"));
     ImGui::StyleColorsDark();
     ImGui::GetStyle().ScaleAllSizes(7.0f);
     io.Fonts->AddFontFromMemoryTTF(Roboto_Regular, 30, 30.0f);
@@ -1329,17 +1340,11 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     eglQuerySurface(dpy, surface, EGL_WIDTH, &glWidth);
     eglQuerySurface(dpy, surface, EGL_HEIGHT, &glHeight);
 
-    LOGE("ATTEMPTING TRYAUTOLOG");
-
     if (!setupimg) {
         SetupImgui();
         setupimg = true;
     }
 
-    if(autolog){
-        isValidAuth = tryAutoLogin();
-        autolog = false;
-    }
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
@@ -1357,22 +1362,24 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 void *hack_thread(void *arg) {
     do {
         sleep(1);
-        g_il2cppBaseMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
+        g_il2cppBaseMap = KittyMemory::getLibraryBaseMap(OBFUSCATE("libil2cpp.so"));
     } while (!g_il2cppBaseMap.isValid());
-    KITTY_LOGI("il2cpp base: %p", (void*)(g_il2cppBaseMap.startAddress));
-    Pointers();
-    Hooks();
 
-    auto eglhandle = dlopen("libunity.so", RTLD_LAZY);
-    auto eglSwapBuffers = dlsym(eglhandle, "eglSwapBuffers");
+    Pointers();
+
+    sleep(10);
+    auto eglhandle = dlopen(OBFUSCATE("libunity.so"), RTLD_LAZY);
+    auto eglSwapBuffers = dlsym(eglhandle, OBFUSCATE("eglSwapBuffers"));
+    if(autolog) {
+        isValidAuth = tryAutoLogin();
+        autolog = false;
+    }
+    Hooks();
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
               (void**)&old_eglSwapBuffers);
-    void *sym_input = DobbySymbolResolver(("/system/lib/libinput.so"), ("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE"));
+    void *sym_input = DobbySymbolResolver((OBFUSCATE("/system/lib/libinput.so")), (OBFUSCATE("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE")));
     if (NULL != sym_input) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
     }
-    LOGI("Draw Done!");
-
-
     return nullptr;
 }
