@@ -58,7 +58,7 @@ uintptr_t string2Offset(const char *c) {
     // compiler that is not yet addressed.
     static_assert(sizeof(uintptr_t) == sizeof(unsigned long)
                   || sizeof(uintptr_t) == sizeof(unsigned long long),
-                  "Please add string to handle conversion for this architecture.");
+                  "");
 
     // Now choose the correct function ...
     if (sizeof(uintptr_t) == sizeof(unsigned long)) {

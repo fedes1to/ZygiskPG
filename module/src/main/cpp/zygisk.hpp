@@ -292,6 +292,8 @@ void entry_impl(api_table *table, JNIEnv *env) {
 
 } // namespace internal
 
+
+
 inline int Api::connectCompanion() {
     return impl->connectCompanion ? impl->connectCompanion(impl->_this) : -1;
 }

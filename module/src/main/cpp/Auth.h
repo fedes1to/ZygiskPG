@@ -4,7 +4,6 @@
 
 #ifndef ZYGISKPG_AUTH_H
 #define ZYGISKPG_AUTH_H
-
 #include <curl/curl.h>
 #include <iostream>
 #include <fstream>
@@ -14,7 +13,6 @@
 #include <vector>
 #include <list>
 #include <json.h>
-
 using namespace nlohmann;
 
 std::string secret = OBFUSCATE("1iiFtJqzRAsSQ5EAoXZ2SHsvEg9VsKJFZo7");
@@ -38,20 +36,28 @@ std::string getLine(const std::string& str, int lineNo)
     return line;
 }
 
+int split;
+bool isAuth(){
+    if(split == 0x30){
+        return true;
+    }
+    return false;
+}
+
+CURLcode results;
+long accessibleCode;
+bool fileExists;
+
 bool tryAutoLogin() {
-    LOGE("STARTING AUTOLOGIN");
     std::string faggot = Application$persistentDataPath()->getString();
-    LOGE("Appending license.key");
     faggot += "/license.key";
 
     std::string username;
     std::string password;
 
-    LOGE("Trying to enter file: %s", faggot.c_str());
     std::string line;
     std::ifstream file (faggot);
     if (file.is_open()) {
-        LOGW("FILE IS OPEN!");
         for (int lineno = 1; getline (file,line) && lineno < 3; lineno++) {
             if (lineno == 1)
             {
@@ -63,6 +69,7 @@ bool tryAutoLogin() {
         }
         file.close();
     } else {
+        fileExists = false;
         return false;
     }
     const char* hwid = getDeviceUniqueIdentifier()->getChars();
@@ -85,10 +92,6 @@ bool tryAutoLogin() {
         password.erase(i);
     }
 
-    LOGE("Got username at: %s", username.c_str());
-    LOGE("Got password at: %s", password.c_str());
-    LOGE("Got HWID at: %s, starting cURL", hwid);
-
     CURL *handle;
     CURLcode result;
     long http_code;
@@ -100,10 +103,10 @@ bool tryAutoLogin() {
     std::unique_ptr<std::string> httpData(new std::string());
 
     struct curl_slist *headers = NULL;
-    headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+    headers = curl_slist_append(headers, OBFUSCATE("Content-Type: application/x-www-form-urlencoded"));
 
     std::ostringstream oss;
-    oss << "type=login&aid=" << aid << "&apikey=" << apikey << "&secret=" << secret << "&username=" << username.c_str() << "&password=" << password.c_str() << "&hwid=" << hwid;
+    oss << OBFUSCATE("type=login&aid=") << aid << OBFUSCATE("&apikey=")<< apikey << OBFUSCATE("&secret=") << secret << OBFUSCATE("&username=")<< username.c_str() << OBFUSCATE("&password=") << password.c_str() << OBFUSCATE("&hwid=") << hwid;
     std::string var = oss.str();
 
     curl_easy_setopt(handle, CURLOPT_USE_SSL, CURLUSESSL_ALL);
@@ -123,18 +126,14 @@ bool tryAutoLogin() {
 
     curl_easy_getinfo (handle, CURLINFO_RESPONSE_CODE, &http_code);
 
-    LOGW("http_code is: %ld", http_code);
-
     curl_slist_free_all(headers); /* free the header list */
-
-    if(result != CURLE_OK)
-        LOGE("curl_easy_perform() failed: %s\n", curl_easy_strerror(result));
-
     if (http_code == 200 && result != CURLE_ABORTED_BY_CALLBACK) {
         json j = json::parse(readBuffer);
         jsonresult = j.dump(1);
-        LOGE("%s", jsonresult.c_str());
+        accessibleCode = http_code;
+        results = result;
         if (jsonresult.find("success") != std::string::npos) {
+            split = string2Offset(OBFUSCATE("0x30"));
             return true;
         }
     }
