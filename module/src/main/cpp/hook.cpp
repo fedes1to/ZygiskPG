@@ -1385,8 +1385,7 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
 
     Pointers();
-
-    sleep(10);
+    sleep(5);
     auto eglhandle = dlopen(OBFUSCATE("libunity.so"), RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, OBFUSCATE("eglSwapBuffers"));
     if(autolog) {
