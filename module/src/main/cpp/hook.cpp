@@ -89,7 +89,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
-        isAddGraffitis, showWepSkins;
+        isAddGraffitis, showWepSkins, clanparts, buyall;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -1045,6 +1045,14 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x2B7EA68", "20008052C0035FD6", buyall);
+    PATCH_SWITCH("0x2B7F2BC", "20008052C0035FD6", buyall);
+    PATCH_SWITCH("0x4153440", "20008052C0035FD6", clanparts);
+    PATCH_SWITCH("0x41529C4", "00008052C0035FD6", clanparts); // 0x4153440
+    PATCH_SWITCH("0x4152CC0", "20008052C0035FD6", clanparts);
+    PATCH_SWITCH("0x4153654", "20008052C0035FD6", clanparts);
+    PATCH_SWITCH("0x4153B64", "20008052C0035FD6", clanparts); // 0x41529C4
+    PATCH_SWITCH("0x4154658", "20008052C0035FD6", clanparts);
     PATCH_SWITCH("0x480525C", "1F2003D5C0035FD6", god); // search int viewID and you'll find it
     PATCH_SWITCH("0x3C48320", "1F2003D5C0035FD6", god); // search for SkinName skinName = this.mySkinName; and find a float in analyze (player_move_c for the one above too)
     PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);//OnTriggerEnter
@@ -1087,7 +1095,7 @@ void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
         ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1b (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
-        if (isValidAuth) {
+        if (isValidAuth && isAuth()) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
@@ -1095,6 +1103,10 @@ void DrawMenu(){
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
+                    ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
+                    ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
+                    ImGui::Checkbox(OBFUSCATE("Buy All"), &buyall);
+                    ImGui::TextUnformatted(OBFUSCATE("On some stuff lets you buy anything"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
