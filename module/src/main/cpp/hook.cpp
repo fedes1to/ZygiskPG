@@ -91,7 +91,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
-        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2;
+        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, loadMenu;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -984,6 +984,10 @@ void PixelTime(void *obj) {
             isBuyEasterSticker = false;
             BuyStickerPack((int*)StickerType::easter);
         }
+        if (loadMenu) {
+            isBuyEasterSticker = false;
+            LoadLevel(CreateIl2cppString("Menu_Custom"));
+        }
         if (isLoadScenePressed) {
             LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
             isLoadScenePressed = false;
@@ -1350,6 +1354,9 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Its Recommended to join the discord server for mod updates etc."));
                     if (ImGui::Button(OBFUSCATE("Show Info"))) {
                         showInfo = true;
+                    }
+                    if (ImGui::Button(OBFUSCATE("Force Load Menu"))) {
+                        loadMenu = true;
                     }
                     ImGui::EndTabItem();
                 }
