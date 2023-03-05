@@ -119,7 +119,6 @@ bool tryAutoLogin() {
     /* pass our list of custom made headers */
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
-    LOGW("trying to post with: \n%s", var.c_str());
     curl_easy_setopt(handle, CURLOPT_POSTFIELDS, var.c_str());
 
     result = curl_easy_perform(handle); /* post away! */

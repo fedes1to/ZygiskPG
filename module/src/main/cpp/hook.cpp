@@ -63,6 +63,8 @@ static int selectedScene = 0;
 static int selectedCur = 0;
 static int selectedWeapon = 0;
 
+std::string IDacc;
+
 const char* loobyBundles[] = { "background_1_castle_1", "background_1_chess_1", "background_1_christmas_1", "background_1_future_1", "background_1_halloween_1", "background_1_heaven_3", "background_1_japan_1", "background_1_military_1", "background_1_presidential_1", "background_1_space_1", "background_1_western_1", "background_2_castle_1", "background_2_castle_2", "background_2_castle_3", "background_2_chess_1", "background_2_christmas_1", "background_2_custom_1", "background_2_future_1", "background_2_halloween_1", "background_2_heaven_1", "background_2_heaven_2", "background_2_heaven_3", "background_2_japan_1", "background_2_military_1", "background_2_military_2", "background_2_military_3", "background_2_presidential_1", "background_2_space_1", "background_2_space_2", "background_2_space_3", "background_2_western_1", "base_castle_1", "base_castle_2", "base_castle_3", "base_chess_1", "base_christmas_1", "base_future_1", "base_halloween_1", "base_heaven_1", "base_heaven_2", "base_heaven_3", "base_japan_1", "base_military_1", "base_military_2", "base_military_3", "base_presidential_1", "base_space_1", "base_space_2", "base_space_3", "base_western_1", "decor_big_arcade_1", "decor_big_castle_1", "decor_big_castle_2", "decor_big_castle_3", "decor_big_chess_1", "decor_big_christmas_1", "decor_big_custom_1", "decor_big_custom_2", "decor_big_custom_3", "decor_big_custom_4", "decor_big_future_1", "decor_big_halloween_1", "decor_big_heaven_1", "decor_big_heaven_2", "decor_big_heaven_3", "decor_big_military_1", "decor_big_military_2", "decor_big_military_3", "decor_big_phoenix_1", "decor_big_presidential_1", "decor_big_space_2", "decor_big_space_3", "decor_big_western_1", "decor_small_castle_1", "decor_small_castle_2", "decor_small_castle_3", "decor_small_chess_1", "decor_small_christmas_1", "decor_small_custom_1", "decor_small_custom_2", "decor_small_future_1", "decor_small_halloween_1", "decor_small_heaven_1", "decor_small_heaven_2", "decor_small_heaven_3", "decor_small_japan_1", "decor_small_military_1", "decor_small_military_2", "decor_small_military_3", "decor_small_phoenix_1", "decor_small_presidential_1", "decor_small_space_1", "decor_small_space_2", "decor_small_space_3", "decor_small_space_4", "decor_small_space_5", "decor_small_space_6", "decor_small_western_1", "device_1_1", "device_1_2", "device_1_4", "device_1_5", "device_1_6", "gate_castle_1", "gate_castle_2", "gate_castle_3", "gate_chess_1", "gate_christmas_1", "gate_future_1", "gate_halloween_1", "gate_heaven_1", "gate_heaven_2", "gate_heaven_3", "gate_japan_1", "gate_military_1", "gate_military_2", "gate_military_3", "gate_presidential_1", "gate_space_1", "gate_space_2", "gate_space_3", "gate_western_1", "kennel_base_1", "kennel_castle_1", "kennel_chess_1", "kennel_christmas_1", "kennel_fly_base_1", "kennel_fly_castle_1", "kennel_fly_heaven_1", "kennel_fly_military_1", "kennel_fly_premium_1", "kennel_fly_space_1", "kennel_future_1", "kennel_halloween_1", "kennel_heaven_1", "kennel_japan_1", "kennel_military_1", "kennel_premium_1", "kennel_presidential_1", "kennel_space_1", "kennel_western_1", "road_arcade_1", "road_castle_1", "road_castle_2", "road_castle_3", "road_chess_1", "road_christmas_1", "road_future_1", "road_halloween_1", "road_heaven_1", "road_heaven_2", "road_heaven_3", "road_japan_1", "road_military_1", "road_military_2", "road_military_3", "road_phoenix_1", "road_presidential_1", "road_space_1", "road_space_2", "road_space_3", "road_western_1", "skybox_1", "skybox_10", "skybox_11", "skybox_12", "skybox_14", "skybox_15", "skybox_16", "skybox_17", "skybox_18", "skybox_19", "skybox_2", "skybox_20", "skybox_21", "skybox_22", "skybox_23", "skybox_24", "skybox_25", "skybox_3", "skybox_4", "skybox_5", "skybox_6", "skybox_7", "skybox_8", "skybox_9", "terrain_arcade_1", "terrain_castle_1", "terrain_castle_2", "terrain_castle_3", "terrain_chess_1", "terrain_christmas_1", "terrain_future_1", "terrain_halloween_1", "terrain_heaven_1", "terrain_heaven_2", "terrain_heaven_3", "terrain_japan_1", "terrain_military_1", "terrain_military_2", "terrain_military_3", "terrain_phoenix_1", "terrain_presidential_1", "terrain_space_1", "terrain_space_2", "terrain_space_3", "terrain_western_1", "wall_castle_1", "wall_castle_2", "wall_castle_3", "wall_chess_1", "wall_christmas_1", "wall_future_1", "wall_halloween_1", "wall_heaven_1", "wall_heaven_2", "wall_heaven_3", "wall_japan_1", "wall_military_1", "wall_military_2", "wall_military_3", "wall_presidential_1", "wall_space_1", "wall_space_2", "wall_space_3", "wall_western_1", "bundle_my", "bundle_winter", "bundle_army", "bundle_heaven", "bundle_medieval", "bundle_space", "bundle_government", "bundle_christmas", "bundle_halloween", "bundle_oriental", "bundle_western", "bundle_future" };
 const char* graffitiList[] = { "graffiti_1028", "graffiti_2028", "graffiti_3028", "graffiti_4028", "graffiti_5028", "graffiti_6028", "graffiti_7028", "graffiti_8028", "graffiti_9028", "graffiti_10028", "graffiti_11028", "graffiti_13028", "graffiti_12028", "graffiti_14028", "graffiti_15028" };
 const char* goofyWeps[] = { "iron_sword", "hound_weapon_one", "desert_fighter", "locator", "advanced_scout_rifle_l", "harsh_punisher_l", "manual_inferno_l", "offensive_rocket_system_l", "headhunter_pistols_l" };
@@ -89,7 +91,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
-        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest;
+        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -284,7 +286,20 @@ void (*addGraffiti) (void* instance, monoString* graffiti);
 void (*AddScoreOnEvent)(void* obj, int, float);
 void (*buyButtonHandle)(void* obj, monoString* itemID);
 void (*buyWeaponSkinButton)(void* obj);
+monoString* (*getString) (monoString* key);
+void (*setString) (monoString* key, monoString* value);
+monoString* (*getID) ();
+void (*setID) (monoString* value);
+void (*setNetworkParams) (void* instance, monoString* name, monoString* ID, bool* something);
+
 void Pointers() {
+    setNetworkParams = (void(*)(void*, monoString*, monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4838618")));
+
+    getString = (monoString*(*)(monoString*)) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x454245C")));
+    setString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4541E00")));
+    getID = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4363374")));
+    setID = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43634A8")));
+
     buyWeaponSkinButton = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2138664")));
     buyButtonHandle = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38D2C88")));
     addGraffiti = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15B0D2C")));
@@ -317,7 +332,8 @@ void Pointers() {
     Component$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4405274")));
     CharacterController$set_radius = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x457B544")));
     Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
-    // NEED TO UPDATE THESE FOR AUTH //
+    // cool misc stuff //
+
 
     // OK ITS FINE NOW //
     GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFE70")));
@@ -747,9 +763,8 @@ void updateSkinButtons(void *instance) {
         setActive(buySkinGameObj, (bool*)(true));
         return;
     }
-    return old_ShopNGUIController(instance);
+    return old_updateSkinButtons(instance);
 }
-
 
 void* get_PlayerTransform(void* player)
 {
@@ -790,12 +805,14 @@ void(PlayerMoveC)(void* obj){
             ninjaJump = false;
         }
 
-        if (spoofMe) {
-            void *argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("ZYGISKPG ON TOP"))};
+        if (spoofMe2) {
+            void *argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("zygiskPGonTop"))};
+            void *argsForSetPlayerUniqID[] = {CreateIl2cppString(OBFUSCATE("zygiskPGonTop"))};
+            void *argsForSetNickName[] = {CreateIl2cppString(OBFUSCATE("zygiskPGonTop"))};
             PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID,PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetPixelBookID);
-            spoofMe = false;
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,PhotonTargets::All, argsForSetPlayerUniqID);
+            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetNickName);
+            spoofMe2 = false;
         }
 
         if (gadgetsEnabled) {
@@ -876,6 +893,23 @@ void PixelTime(void *obj) {
                 addGraffiti(graffitiInstance(), CreateIl2cppString(graffitiList[i]));
             }
             isAddGraffitis = false;
+        }
+        if (showInfo)
+        {
+            LOGE("AuthSecret: %s", getString(CreateIl2cppString("terceShtuA"))->getChars());
+            LOGE("AccountID: %s", getID()->getChars());
+            showInfo = false;
+        }
+        if (unban)
+        {
+            setString(CreateIl2cppString("banned-id"), CreateIl2cppString(""));
+            setString(CreateIl2cppString("banned-hash"), CreateIl2cppString(""));
+        }
+        if (spoofMe)
+        {
+            setID(CreateIl2cppString("-69"));
+            LoadLevel(CreateIl2cppString("Menu_Custom"));
+            spoofMe = false;
         }
         if (addAllRoyale1)
         {
@@ -1186,6 +1220,11 @@ void DrawMenu(){
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
+                    if (ImGui::Button("Spoof ID -69"))
+                    {
+                        spoofMe = true;
+                    }
+                    ImGui::TextUnformatted(OBFUSCATE("Makes your ID be -69, reverts after restart, has weird effects"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
                   //  ImGui::Checkbox(OBFUSCATE("Noclip"), &noclip);
                     if(ImGui::Button(OBFUSCATE("Get Jetpack/Fly"))){
@@ -1308,6 +1347,9 @@ void DrawMenu(){
                         isDiscordPressed = true;
                     }
                     ImGui::TextUnformatted(OBFUSCATE("Its Recommended to join the discord server for mod updates etc."));
+                    if (ImGui::Button(OBFUSCATE("Show Info"))) {
+                        showInfo = true;
+                    }
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();
