@@ -787,7 +787,7 @@ void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
     if(obj != nullptr) {
         if (spamchat) {
-            SendChat(obj, CreateIl2cppString("BUY ZYGISKPG - https://discord.gg/DGtgZkk6sR"), false,CreateIl2cppString("0"));
+            SendChat(obj, CreateIl2cppString("ZygiskPG - https://discord.gg/DGtgZkk6sR"), false,CreateIl2cppString("0"));
         }
 
         if (xrayApplied) {
@@ -907,7 +907,7 @@ void PixelTime(void *obj) {
         }
         if (spoofMe)
         {
-            setID(CreateIl2cppString("-69"));
+            setID(CreateIl2cppString("-213931294812948124"));
             sleep(3);
             LoadLevel(CreateIl2cppString("Menu_Custom"));
             spoofMe = false;
@@ -1149,7 +1149,7 @@ void DrawMenu(){
                         isBuyEasterSticker = true;
                     }
                     ImGui::Checkbox(OBFUSCATE("Force buy weapon skin"), &buyall);
-                    if (ImGui::CollapsingHeader("Unlockables"))
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables")))
                     {
                         ImGui::TextUnformatted((OBFUSCATE("Gives the player items you pick, Freezes are expected.")));
                         if (ImGui::Button(OBFUSCATE("Add All Wear"))) {
@@ -1389,6 +1389,7 @@ void DrawMenu(){
         else{
             if(!fileExists){
                 ImGui::TextUnformatted(OBFUSCATE("You forgot to add license.key, check if its inside the files folder."));
+                ImGui::TextUnformatted(OBFUSCATE("Check if its license-1.key, its suposed to be license.key."));
             }
             else{
                 ImGui::TextUnformatted(OBFUSCATE("Failed to get a response from our auth."));
@@ -1405,6 +1406,7 @@ void SetupImgui() {
     io.DisplaySize = ImVec2((float) glWidth, (float) glHeight);
     ImGui_ImplOpenGL3_Init(OBFUSCATE("#version 100"));
     ImGui::StyleColorsDark();
+
     ImGui::GetStyle().ScaleAllSizes(7.0f);
     io.Fonts->AddFontFromMemoryTTF(Roboto_Regular, 30, 30.0f);
 }
@@ -1420,10 +1422,11 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         setupimg = true;
     }
 
+    if(autolog) { isValidAuth = tryAutoLogin(); autolog = false;}
+
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
-    //LOGE("AccInfo %s", File("/sdcard/license.txt").read_content().c_str());
 
     DrawMenu();
 
@@ -1444,10 +1447,6 @@ void *hack_thread(void *arg) {
     sleep(5);
     auto eglhandle = dlopen(OBFUSCATE("libunity.so"), RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, OBFUSCATE("eglSwapBuffers"));
-    if(autolog) {
-        isValidAuth = tryAutoLogin();
-        autolog = false;
-    }
     Hooks();
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
               (void**)&old_eglSwapBuffers);

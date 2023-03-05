@@ -108,10 +108,10 @@ bool tryAutoLogin() {
     std::ostringstream oss;
     oss << OBFUSCATE("type=login&aid=") << aid << OBFUSCATE("&apikey=")<< apikey << OBFUSCATE("&secret=") << secret << OBFUSCATE("&username=")<< username.c_str() << OBFUSCATE("&password=") << password.c_str() << OBFUSCATE("&hwid=") << hwid;
     std::string var = oss.str();
-
+    const char* obfuscated = OBFUSCATE("https://api.auth.gg/v1/");
     curl_easy_setopt(handle, CURLOPT_USE_SSL, CURLUSESSL_ALL);
     curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
-    curl_easy_setopt(handle, CURLOPT_URL, "https://api.auth.gg/v1/");
+    curl_easy_setopt(handle, CURLOPT_URL, obfuscated);
 
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, WriteCallback);
