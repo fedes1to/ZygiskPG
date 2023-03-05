@@ -6,6 +6,7 @@
 #include <dlfcn.h>
 #include <cstdlib>
 #include <cinttypes>
+#include <chrono>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -31,6 +32,7 @@
 #include "Rect.h"
 #include <fstream>
 #include <limits>
+#include <thread>
 #define GamePackageName "com.pixel.gun3d"
 
 int glHeight, glWidth;
@@ -59,6 +61,7 @@ int glHeight, glWidth;
  * - BIGSEX: EXPERIMENTAL FEATURES, NOT FINAL AND SHOULDN'T BE BUILT UNTIL WORKING FINE
  *
  */
+
 static int selectedScene = 0;
 static int selectedCur = 0;
 static int selectedWeapon = 0;
@@ -145,7 +148,7 @@ void* graffitiInstance()
     static void*(*graffitiInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15AF6A8")));//Analyze LeprechauntManager.DropReward() and youll find it :)
     return graffitiInstance();
 }
-
+using namespace std::chrono_literals;
 std::vector<unsigned int> keys_pressed;
 int refocus=0;
 bool isValidAuth, hasRegistered;
@@ -907,10 +910,14 @@ void PixelTime(void *obj) {
         }
         if (spoofMe)
         {
-            setID(CreateIl2cppString("-213931294812948124"));
-            sleep(3);
-            LoadLevel(CreateIl2cppString("Menu_Custom"));
+            setID(CreateIl2cppString(OBFUSCATE("-213931294812948124")));
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            LoadLevel(CreateIl2cppString(OBFUSCATE("Menu_Custom")));
             spoofMe = false;
+        }
+        if (loadMenu) {
+            LoadLevel(CreateIl2cppString(OBFUSCATE("ClanWarV2")));
+            loadMenu = false;
         }
         if (addAllRoyale1)
         {
@@ -983,10 +990,6 @@ void PixelTime(void *obj) {
         if (isBuyEasterSticker) {
             isBuyEasterSticker = false;
             BuyStickerPack((int*)StickerType::easter);
-        }
-        if (loadMenu) {
-            isBuyEasterSticker = false;
-            LoadLevel(CreateIl2cppString("Menu_Custom"));
         }
         if (isLoadScenePressed) {
             LoadLevel(CreateIl2cppString(sceneList[selectedScene]));
@@ -1130,11 +1133,21 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1b (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1c (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth && isAuth()) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
+                    if (ImGui::Button("Spoof Account"))
+                    {
+                        spoofMe = true;
+                    }
+                    ImGui::TextUnformatted(OBFUSCATE("Hides your actual ID and Account stats, may break stuff, it reverts after restarting."));
+                    if (ImGui::Button("Force Load Menu"))
+                    {
+                        loadMenu = true;
+                    }
+                    ImGui::TextUnformatted((OBFUSCATE("Fixes if your game gets stuck (useful for spoof account)")));
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
@@ -1161,9 +1174,9 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
                             addAllPets = true;
                         }
-                        if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
-                            isAddGraffitis = true;
-                        }
+                        //if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
+                          //  isAddGraffitis = true;
+                       // }
                         if (ImGui::CollapsingHeader(OBFUSCATE("Royale Items Unlock")))
                         {
                             if (ImGui::Button(OBFUSCATE("Add All Royale 1/4"))) {
@@ -1225,11 +1238,6 @@ void DrawMenu(){
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
-                    if (ImGui::Button("Spoof ID -69"))
-                    {
-                        spoofMe = true;
-                    }
-                    ImGui::TextUnformatted(OBFUSCATE("Makes your ID be -69, reverts after restart, has weird effects"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
                   //  ImGui::Checkbox(OBFUSCATE("Noclip"), &noclip);
                     if(ImGui::Button(OBFUSCATE("Get Jetpack/Fly"))){
