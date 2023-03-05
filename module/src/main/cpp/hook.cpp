@@ -89,7 +89,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
-        isAddGraffitis, showWepSkins, clanparts, buyall;
+        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -118,6 +118,13 @@ monoString* CreateIl2cppString(const char* str)
     return CreateIl2cppString(str, startIndex, length);
 }
 
+void* setActive(void* gameObject, bool* value)
+{
+    static void* (*setActive)(void* instance, bool* value) =
+    (void* (*)(void* instance, bool* value))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43EFEF0")));
+    return setActive(gameObject, value);
+}
+
 int* getWearIndex(const char* str)
 {
     static int* (*wearIndex)(monoString* str) =
@@ -135,18 +142,6 @@ void* graffitiInstance()
 {
     static void*(*graffitiInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15AF6A8")));//Analyze LeprechauntManager.DropReward() and youll find it :)
     return graffitiInstance();
-}
-
-monoString* getPrefab(const char* item)
-{
-    static monoString*(*getPrefab)(monoString*) = (monoString* (*)(monoString*))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1EC1640")));// analyze weaponskinsettings
-    return getPrefab(CreateIl2cppString(item));
-}
-
-void* getWeaponSkin(const char* weaponSkin)
-{
-    static void*(*getWeaponSkin)(monoString*) = (void* (*)(monoString*))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2133904")));// analyze weaponskinsettings
-    return getWeaponSkin(getPrefab(weaponSkin));
 }
 
 std::vector<unsigned int> keys_pressed;
@@ -284,19 +279,19 @@ void (*addWear) (int* enumerator, monoString* item);
 void (*targetFrameRate) (int* value);
 void (*provideGadget) (monoString* name, int* level);
 void (*providePet) (monoString* petName, int* level);
-void (*purchaseWeaponSkin) (void* weaponSkin);
 monoString* (*getDeviceUniqueIdentifier)();
 void (*addGraffiti) (void* instance, monoString* graffiti);
 void (*AddScoreOnEvent)(void* obj, int, float);
 void (*buyButtonHandle)(void* obj, monoString* itemID);
+void (*buyWeaponSkinButton)(void* obj);
 void Pointers() {
+    buyWeaponSkinButton = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2138664")));
     buyButtonHandle = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38D2C88")));
     addGraffiti = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15B0D2C")));
     File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x33CB964"));
     Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x440FD34")));
     File$Exists = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x33CA678")));
     provideRoyaleItem = (void(*)(monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C729F4")));
-    purchaseWeaponSkin = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2131444")));
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3D03A74")));
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2AFF0")));
     provideGadget = (void(*) (monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CC93C4")));
@@ -744,6 +739,18 @@ void ShopNGUIController(void *instance) {
     return old_ShopNGUIController(instance);
 }
 
+void (*old_updateSkinButtons)(void *instance);
+void updateSkinButtons(void *instance) {
+    if (instance != nullptr && buyall)
+    {
+        void* buySkinGameObj = (void*)((uint64_t) instance + 0x98);
+        setActive(buySkinGameObj, (bool*)(true));
+        return;
+    }
+    return old_ShopNGUIController(instance);
+}
+
+
 void* get_PlayerTransform(void* player)
 {
     void *var = player;
@@ -765,7 +772,7 @@ void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
     if(obj != nullptr) {
         if (spamchat) {
-            SendChat(obj, CreateIl2cppString("BUY ZYGISKPG - https://discord.gg/ZVP2kuJXww"), false,CreateIl2cppString("0"));
+            SendChat(obj, CreateIl2cppString("BUY ZYGISKPG - https://discord.gg/DGtgZkk6sR"), false,CreateIl2cppString("0"));
         }
 
         if (xrayApplied) {
@@ -869,12 +876,6 @@ void PixelTime(void *obj) {
                 addGraffiti(graffitiInstance(), CreateIl2cppString(graffitiList[i]));
             }
             isAddGraffitis = false;
-        }
-        if (addAllWepSkins) {
-            for (int i = 0; i < 459; i++) {
-                purchaseWeaponSkin(getWeaponSkin(skinList[i]));
-            }
-            addAllWepSkins = false;
         }
         if (addAllRoyale1)
         {
@@ -1027,6 +1028,7 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 
 void Hooks() {
     // hooks
+    HOOK("0x2135C9C", updateSkinButtons, old_updateSkinButtons);
     HOOK("0x3D3FEE0", PixelTime, old_PixelTime);
     HOOK("0x38C1638", ShopNGUIController, old_ShopNGUIController);
     HOOK("0x1B080B8", WeaponSounds, oldWeaponSounds);
@@ -1045,6 +1047,7 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x38C5DAC", "20008052C0035FD6", shopnguitest);
     PATCH_SWITCH("0x4153B64", "20008052C0035FD6", clanparts); // 0x41529C4
     PATCH_SWITCH("0x4154658", "20008052C0035FD6", clanparts);
     PATCH_SWITCH("0x480525C", "1F2003D5C0035FD6", god); // search int viewID and you'll find it
@@ -1099,14 +1102,14 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
-                    ImGui::Checkbox(OBFUSCATE("Buy All"), &buyall);
-                    ImGui::TextUnformatted(OBFUSCATE("On some stuff lets you buy anything"));
+                    ImGui::Checkbox(OBFUSCATE("ShopNGUI test"), &shopnguitest);
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
                     }
+                    ImGui::Checkbox(OBFUSCATE("Force buy weapon skin"), &buyall);
                     if (ImGui::CollapsingHeader("Unlockables"))
                     {
                         ImGui::TextUnformatted((OBFUSCATE("Gives the player items you pick, Freezes are expected.")));
@@ -1139,9 +1142,6 @@ void DrawMenu(){
                         }
                         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Unlock")))
                         {
-                            if (ImGui::Button(OBFUSCATE("Force Buy Weapon / Weapon Skin"))) {
-                                addAllWepSkins = true;
-                            }
                             ImGui::Checkbox("Show All Weapon Skins", &showWepSkins);
                             if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
                                 isAddWeapons = true;
