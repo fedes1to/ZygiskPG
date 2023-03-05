@@ -1245,15 +1245,8 @@ void DrawMenu(){
                     }
                     ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
                     ImGui::SliderFloat(OBFUSCATE("Jump/Jetpack Height"), &jumpHeight, 0.0f,2.5f);
-                    if (ImGui::Button("Spoof ID -69"))
-                    {
-                        spoofMe = true;
-                    }
                     ImGui::TextUnformatted(OBFUSCATE("Makes your ID be -69, reverts after restart, has weird effects"));
                     ImGui::TextUnformatted(OBFUSCATE("After enabling this, you'll have to Force Load Menu scene"));
-                    if (ImGui::Button(OBFUSCATE("Force Load Menu"))) {
-                        loadMenu = true;
-                    }
 
                     ImGui::EndTabItem();
                 }
@@ -1373,7 +1366,6 @@ void DrawMenu(){
                     if (ImGui::Button(OBFUSCATE("Show Info"))) {
                         showInfo = true;
                     }
-                    if (ImGui::Button(OBFUSCATE("Force Load Menu"))) {
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();
