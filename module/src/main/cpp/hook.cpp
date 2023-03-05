@@ -983,7 +983,7 @@ void PixelTime(void *obj) {
             BuyStickerPack((int*)StickerType::easter);
         }
         if (loadMenu) {
-            isBuyEasterSticker = false;
+            loadMenu = false;
             LoadLevel(CreateIl2cppString("Menu_Custom"));
         }
         if (isLoadScenePressed) {
@@ -1223,11 +1223,6 @@ void DrawMenu(){
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
-                    if (ImGui::Button("Spoof ID -69"))
-                    {
-                        spoofMe = true;
-                    }
-                    ImGui::TextUnformatted(OBFUSCATE("Makes your ID be -69, reverts after restart, has weird effects"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
                   //  ImGui::Checkbox(OBFUSCATE("Noclip"), &noclip);
                     if(ImGui::Button(OBFUSCATE("Get Jetpack/Fly"))){
@@ -1235,6 +1230,16 @@ void DrawMenu(){
                     }
                     ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
                     ImGui::SliderFloat(OBFUSCATE("Jump/Jetpack Height"), &jumpHeight, 0.0f,2.5f);
+                    if (ImGui::Button("Spoof ID -69"))
+                    {
+                        spoofMe = true;
+                    }
+                    ImGui::TextUnformatted(OBFUSCATE("Makes your ID be -69, reverts after restart, has weird effects"));
+                    ImGui::TextUnformatted(OBFUSCATE("After enabling this, you'll have to Force Load Menu scene"));
+                    if (ImGui::Button(OBFUSCATE("Force Load Menu"))) {
+                        loadMenu = true;
+                    }
+
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Game"))) {
@@ -1352,9 +1357,6 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Its Recommended to join the discord server for mod updates etc."));
                     if (ImGui::Button(OBFUSCATE("Show Info"))) {
                         showInfo = true;
-                    }
-                    if (ImGui::Button(OBFUSCATE("Force Load Menu"))) {
-                        loadMenu = true;
                     }
                     ImGui::EndTabItem();
                 }
