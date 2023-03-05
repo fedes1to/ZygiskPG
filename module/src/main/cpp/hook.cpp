@@ -908,7 +908,6 @@ void PixelTime(void *obj) {
         if (spoofMe)
         {
             setID(CreateIl2cppString("-69"));
-            LoadLevel(CreateIl2cppString("Menu_Custom"));
             spoofMe = false;
         }
         if (addAllRoyale1)
