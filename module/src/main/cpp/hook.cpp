@@ -266,7 +266,7 @@ void* (Player_move_c$skinName)(void* ref) {
 
 
 #ifdef BIGSEX
-// DebugLogWindow
+                                                                                                                                                                                                                                // DebugLogWindow
 
 void* (*DebugLogWindow$get_debugLogWindow)();
 
@@ -1397,7 +1397,7 @@ void DrawMenu(){
         else{
             if(!fileExists){
                 ImGui::TextUnformatted(OBFUSCATE("You forgot to add license.key, check if its inside the files folder."));
-                ImGui::TextUnformatted(OBFUSCATE("Check if its license-1.key, its suposed to be license.key."));
+                ImGui::TextUnformatted(OBFUSCATE("Check if its license-1.key, its supposed to be license.key."));
             }
             else{
                 ImGui::TextUnformatted(OBFUSCATE("Failed to get a response from our auth."));
