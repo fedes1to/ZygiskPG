@@ -910,7 +910,7 @@ void PixelTime(void *obj) {
         }
         if (spoofMe)
         {
-            setID(CreateIl2cppString(OBFUSCATE("-213931294812948124")));
+            setID(CreateIl2cppString(OBFUSCATE("-23817812323123")));
             std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             LoadLevel(CreateIl2cppString(OBFUSCATE("Menu_Custom")));
             spoofMe = false;
@@ -1154,7 +1154,6 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
-                    ImGui::Checkbox(OBFUSCATE("ShopNGUI test"), &shopnguitest);
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
@@ -1245,9 +1244,6 @@ void DrawMenu(){
                     }
                     ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
                     ImGui::SliderFloat(OBFUSCATE("Jump/Jetpack Height"), &jumpHeight, 0.0f,2.5f);
-                    ImGui::TextUnformatted(OBFUSCATE("Makes your ID be -69, reverts after restart, has weird effects"));
-                    ImGui::TextUnformatted(OBFUSCATE("After enabling this, you'll have to Force Load Menu scene"));
-
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Game"))) {
