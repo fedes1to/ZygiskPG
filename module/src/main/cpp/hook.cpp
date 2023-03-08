@@ -1269,7 +1269,8 @@ void DrawMenu(){
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
-                    ImGui::Checkbox(OBFUSCATE("ID -1 (OG method)"), &spoofMe2);
+                    ImGui::Checkbox(OBFUSCATE("SetID manually"), &spoofMe2);
+                    ImGui::Checkbox(OBFUSCATE("ID -1 (OG method)"), &spoofMe3);
                     ImGui::TextUnformatted(OBFUSCATE("Hides all your actual account details, but breaks stuff"));
                     ImGui::TextUnformatted(OBFUSCATE("To make Team-Fight matches work, enable Friendly Fire"));
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
