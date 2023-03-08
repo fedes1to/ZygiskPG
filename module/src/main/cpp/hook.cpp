@@ -94,7 +94,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
-        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, loadMenu;
+        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -293,6 +293,8 @@ monoString* (*getString) (monoString* key);
 void (*setString) (monoString* key, monoString* value);
 monoString* (*getID) ();
 void (*setID) (monoString* value);
+void (*setIDN) (void* instance, monoString* value);
+void (*setNameN) (void* instance, monoString* value);
 void (*setNetworkParams) (void* instance, monoString* name, monoString* ID, bool* something);
 
 void Pointers() {
@@ -302,6 +304,9 @@ void Pointers() {
     setString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4541E00")));
     getID = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4363374")));
     setID = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43634A8")));
+
+    setIDN = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473404C")));
+    setNameN = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47204C8")));
 
     buyWeaponSkinButton = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2138664")));
     buyButtonHandle = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38D2C88")));
@@ -758,6 +763,29 @@ void ShopNGUIController(void *instance) {
     return old_ShopNGUIController(instance);
 }
 
+monoString* (*old_formatString)(monoString* input);
+monoString* formatString(monoString* input) {
+    return input;
+}
+
+void (*old_networkStartTableS)(void *instance);
+void networkStartTableS(void *instance) {
+    if (instance != nullptr && spoofMe3)
+    {
+        return;
+    }
+    return old_networkStartTableS(instance);
+}
+
+void (*old_networkStartTable)(void *instance);
+void networkStartTable(void *instance) {
+    if (instance != nullptr && spoofMe2)
+    {
+        setIDN(instance, CreateIl2cppString("https://discord.gg/VTKgfPcMwG"));
+    }
+    return old_networkStartTable(instance);
+}
+
 void (*old_updateSkinButtons)(void *instance);
 void updateSkinButtons(void *instance) {
     if (instance != nullptr && buyall)
@@ -806,16 +834,6 @@ void(PlayerMoveC)(void* obj){
         if (ninjaJump) {
             EnableJetpack(obj, true);//search for jetpack in player_move_C
             ninjaJump = false;
-        }
-
-        if (spoofMe2) {
-            void *argsForSetPixelBookID[] = {CreateIl2cppString(OBFUSCATE("zygiskPGonTop"))};
-            void *argsForSetPlayerUniqID[] = {CreateIl2cppString(OBFUSCATE("zygiskPGonTop"))};
-            void *argsForSetNickName[] = {CreateIl2cppString(OBFUSCATE("zygiskPGonTop"))};
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPixelBookID,PhotonTargets::All, argsForSetPixelBookID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetPlayerUniqID,PhotonTargets::All, argsForSetPlayerUniqID);
-            PhotonView$RPC(Player_move_c$photonView(obj), RPCList::SetNickName, PhotonTargets::All, argsForSetNickName);
-            spoofMe2 = false;
         }
 
         if (gadgetsEnabled) {
@@ -893,9 +911,15 @@ void PixelTime(void *obj) {
         targetFrameRate((int*)(999));
         if (isAddGraffitis) {
             for (int i = 0; i < 15; i++) {
-                addGraffiti(graffitiInstance(), CreateIl2cppString(graffitiList[i]));
+                addWear((int*)(250000), CreateIl2cppString(graffitiList[i]));
             }
             isAddGraffitis = false;
+        }
+        if (addAllWepSkins) {
+            for (int i = 0; i < 459; i++) {
+                addWear((int*)(240000), CreateIl2cppString(skinList[i]));
+            }
+            addAllWepSkins = false;
         }
         if (showInfo)
         {
@@ -911,7 +935,6 @@ void PixelTime(void *obj) {
         if (spoofMe)
         {
             setID(CreateIl2cppString(OBFUSCATE("-23817812323123")));
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             LoadLevel(CreateIl2cppString(OBFUSCATE("Menu_Custom")));
             spoofMe = false;
         }
@@ -1069,7 +1092,10 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 }
 
 void Hooks() {
-    // hooks
+    // hooks 0x4734994
+    HOOK("0x4734994", networkStartTableS, old_networkStartTableS);
+    HOOK("0x4736048", networkStartTable, old_networkStartTable);
+    HOOK("0x49985B4", formatString, old_formatString);
     HOOK("0x2135C9C", updateSkinButtons, old_updateSkinButtons);
     HOOK("0x3D3FEE0", PixelTime, old_PixelTime);
     HOOK("0x38C1638", ShopNGUIController, old_ShopNGUIController);
@@ -1089,9 +1115,13 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x3D633B0", "00008052C0035FD6", bundles); // credit to Dari
+    PATCH_SWITCH("0x3D636C0", "00008052C0035FD6", bundles); // credit to Dari
     PATCH_SWITCH("0x38C5DAC", "20008052C0035FD6", shopnguitest);
     PATCH_SWITCH("0x4153B64", "20008052C0035FD6", clanparts); // 0x41529C4
     PATCH_SWITCH("0x4154658", "20008052C0035FD6", clanparts);
+    PATCH_SWITCH("0x310DB24", "20008052C0035FD6", wepSkins);
+    PATCH_SWITCH("0x3789DA0", "20008052C0035FD6", showWepSkins);
     PATCH_SWITCH("0x480525C", "1F2003D5C0035FD6", god); // search int viewID and you'll find it
     PATCH_SWITCH("0x3C48320", "1F2003D5C0035FD6", god); // search for SkinName skinName = this.mySkinName; and find a float in analyze (player_move_c for the one above too)
     PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);//OnTriggerEnter
@@ -1103,7 +1133,6 @@ void Patches() {
     PATCH_SWITCH("0x21E709C", "603E8012C0035FD6", modKeys);//go to AmmoButtonInGame and find the function called onclick, analyze and try to find the same class once you do just goodluck finding the exact method it shouldn't be hard
     PATCH_SWITCH("0x1DDDA84", "C0035FD6", tgod);//all the minus live
     PATCH_SWITCH("0x1DE2BDC", "C0035FD6", tgod);
-    PATCH_SWITCH("0x38DFF10", "20008052C0035FD6", showWepSkins); //show all weapon skins (test)
     PATCH_SWITCH("0x1DE2E74", "C0035FD6", tgod);
     PATCH_SWITCH("0x47F6CB8", "C0035FD6", removedrone);//my old self lied just search for player_move_c and DroneController droneController; droneController.Deactivate();
     PATCH_SWITCH("0x47F6D70", "C0035FD6", removedrone);//search Dictionary<GadgetCategory in movec
@@ -1138,20 +1167,24 @@ void DrawMenu(){
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
-                    if (ImGui::Button("Spoof Account"))
+                    if (ImGui::Button(OBFUSCATE("Spoof Account")))
                     {
                         spoofMe = true;
                     }
-                    ImGui::TextUnformatted(OBFUSCATE("Hides your actual ID and Account stats, may break stuff, it reverts after restarting."));
-                    if (ImGui::Button("Force Load Menu"))
+                    ImGui::TextUnformatted(OBFUSCATE("Hides your actual ID, but has side-effects, reverts after restarting"));
+                    if (ImGui::Button(OBFUSCATE("Force Load Menu")))
                     {
                         loadMenu = true;
                     }
-                    ImGui::TextUnformatted((OBFUSCATE("Fixes if your game gets stuck (useful for spoof account)")));
+                    ImGui::TextUnformatted(OBFUSCATE("Fixes whenever you're stuck in the loading screen, useful for Spoof Account"));
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
+                    ImGui::Checkbox(OBFUSCATE("Show Shop Stuff"), &showWepSkins);
+                    ImGui::TextUnformatted((OBFUSCATE("Shows some hidden stuff")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
+                    ImGui::Checkbox(OBFUSCATE("Free Bundles"), &bundles);
+                    ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free (Credits to Dari#1333)"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
@@ -1160,7 +1193,6 @@ void DrawMenu(){
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
                     }
-                    ImGui::Checkbox(OBFUSCATE("Force buy weapon skin"), &buyall);
                     if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables")))
                     {
                         ImGui::TextUnformatted((OBFUSCATE("Gives the player items you pick, Freezes are expected.")));
@@ -1173,9 +1205,12 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
                             addAllPets = true;
                         }
-                        //if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
-                          //  isAddGraffitis = true;
-                       // }
+                        // if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
+                        //     isAddGraffitis = true;
+                        // }
+                        // if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
+                        //     addAllWepSkins = true;
+                        // }
                         if (ImGui::CollapsingHeader(OBFUSCATE("Royale Items Unlock")))
                         {
                             if (ImGui::Button(OBFUSCATE("Add All Royale 1/4"))) {
@@ -1193,7 +1228,6 @@ void DrawMenu(){
                         }
                         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Unlock")))
                         {
-                            ImGui::Checkbox("Show All Weapon Skins", &showWepSkins);
                             if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
                                 isAddWeapons = true;
                             }
@@ -1235,6 +1269,9 @@ void DrawMenu(){
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
+                    ImGui::Checkbox(OBFUSCATE("ID -1 (OG method)"), &spoofMe2);
+                    ImGui::TextUnformatted(OBFUSCATE("Hides all your actual account details, but breaks stuff"));
+                    ImGui::TextUnformatted(OBFUSCATE("To make Team-Fight matches work, enable Friendly Fire"));
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invincible (others can kill you but you won't die and just become invisible)"));
                     ImGui::Checkbox(OBFUSCATE("Force Double Jump"), &doublejump);
