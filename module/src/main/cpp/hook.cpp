@@ -95,7 +95,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy;
+        modUp, clanEnergy, hookcheck;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -1165,16 +1165,11 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1c (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1e (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth && isAuth()) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
-                    if (ImGui::Button(OBFUSCATE("Spoof Account")))
-                    {
-                        spoofMe = true;
-                    }
-                    ImGui::TextUnformatted(OBFUSCATE("Hides your actual ID, but has side-effects, reverts after restarting"));
                     if (ImGui::Button(OBFUSCATE("Force Load Menu")))
                     {
                         loadMenu = true;
@@ -1199,6 +1194,15 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
+                    }
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Spoof Methods")))
+                    {
+                        if (ImGui::Button(OBFUSCATE("Spoof Account")))
+                        {
+                            spoofMe = true;
+                        }
+                        ImGui::Checkbox(OBFUSCATE("SetID manually"), &spoofMe2);
+                        ImGui::Checkbox(OBFUSCATE("Original ID -1"), &spoofMe3);
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables")))
                     {
@@ -1276,8 +1280,6 @@ void DrawMenu(){
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
-                    ImGui::Checkbox(OBFUSCATE("SetID manually"), &spoofMe2);
-                    ImGui::Checkbox(OBFUSCATE("ID -1 (OG method)"), &spoofMe3);
                     ImGui::TextUnformatted(OBFUSCATE("Hides all your actual account details, but breaks stuff"));
                     ImGui::TextUnformatted(OBFUSCATE("To make Team-Fight matches work, enable Friendly Fire"));
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
@@ -1473,6 +1475,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
     if(autolog) { isValidAuth = tryAutoLogin(); autolog = false;}
 
+    if(hookcheck && isAuth()){ Hooks(); hookcheck = false; }
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
@@ -1493,10 +1496,9 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
 
     Pointers();
-    sleep(5);
+    sleep(10);
     auto eglhandle = dlopen(OBFUSCATE("libunity.so"), RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, OBFUSCATE("eglSwapBuffers"));
-    Hooks();
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
               (void**)&old_eglSwapBuffers);
     void *sym_input = DobbySymbolResolver((OBFUSCATE("/system/lib/libinput.so")), (OBFUSCATE("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE")));
