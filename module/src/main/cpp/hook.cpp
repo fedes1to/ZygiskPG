@@ -819,7 +819,7 @@ void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
     if(obj != nullptr) {
         if (spamchat) {
-            SendChat(obj, CreateIl2cppString("ZygiskPG - https://discord.gg/DGtgZkk6sR"), false,CreateIl2cppString("0"));
+            SendChat(obj, CreateIl2cppString("zyCheats - https://discord.gg/qRuG7NzGZh"), false,CreateIl2cppString("0"));
         }
 
         if (xrayApplied) {
@@ -1165,7 +1165,7 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1e (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("zyCheats PG3D - Premium 1.2a (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth && isAuth()) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
@@ -1179,14 +1179,14 @@ void DrawMenu(){
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Module Upgrades"), &modUp);
                     ImGui::TextUnformatted((OBFUSCATE("Makes the module upgrades free from parts")));
-                    ImGui::Checkbox(OBFUSCATE("Clan Energy"), &clanEnergy);
+                    ImGui::Checkbox(OBFUSCATE("Infinite Clan Energy"), &clanEnergy);
                     ImGui::TextUnformatted((OBFUSCATE("Gives infinite energy")));
                     ImGui::Checkbox(OBFUSCATE("Show Shop Stuff"), &showWepSkins);
                     ImGui::TextUnformatted((OBFUSCATE("Shows some hidden stuff")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
                     ImGui::Checkbox(OBFUSCATE("Free Bundles"), &bundles);
-                    ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free (Credits to Dari#1333)"));
+                    ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
