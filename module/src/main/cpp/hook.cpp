@@ -94,7 +94,8 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         addAllArmors, gundmg,catspam, gadgetcd, addAllGadgets,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
-        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins;
+        isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
+        modUp, clanEnergy;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -1115,6 +1116,8 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x23776F8", "00008052C0035FD6", modUp); // credit to Dari
+    PATCH_SWITCH("0x415385C", "00008052C0035FD6", clanEnergy); // credit to Dari
     PATCH_SWITCH("0x3D633B0", "00008052C0035FD6", bundles); // credit to Dari
     PATCH_SWITCH("0x3D636C0", "00008052C0035FD6", bundles); // credit to Dari
     PATCH_SWITCH("0x38C5DAC", "20008052C0035FD6", shopnguitest);
@@ -1179,6 +1182,10 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Fixes whenever you're stuck in the loading screen, useful for Spoof Account"));
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
+                    ImGui::Checkbox(OBFUSCATE("Free Module Upgrades"), &modUp);
+                    ImGui::TextUnformatted((OBFUSCATE("Makes the module upgrades free from parts")));
+                    ImGui::Checkbox(OBFUSCATE("Clan Energy"), &clanEnergy);
+                    ImGui::TextUnformatted((OBFUSCATE("Gives infinite energy")));
                     ImGui::Checkbox(OBFUSCATE("Show Shop Stuff"), &showWepSkins);
                     ImGui::TextUnformatted((OBFUSCATE("Shows some hidden stuff")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
