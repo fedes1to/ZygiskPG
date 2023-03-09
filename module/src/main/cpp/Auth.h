@@ -38,7 +38,7 @@ std::string getLine(const std::string& str, int lineNo)
 
 int split;
 bool isAuth(){
-    if(split == 0x30){
+    if(split == 0x30 && isValidAuth){
         return true;
     }
     return false;
