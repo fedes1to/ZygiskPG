@@ -1057,6 +1057,16 @@ int RewardedExp(void* obj){
     return oldRewardedExp(obj);
 }
 
+void (*oldCallCommand)(void* obj, int* num, monoDictionary<monoString *, void *> *params, void* classinst);
+void CallCommand(void* obj, int* num, monoDictionary<monoString *, void *> *params, void* classinst) {
+    if(obj != nullptr){
+        LOGE("Got num at: %i", *num);
+        LOGE("Got strings at: %s", params->getKeys()->getChars());
+        LOGE("Got values at: %s", reinterpret_cast<monoString*>(params->getValues())->getChars());
+    }
+    return oldCallCommand(obj, num, params, classinst);
+}
+
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -1094,6 +1104,7 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 
 void Hooks() {
     // hooks 0x4734994
+    HOOK("0x1B28CE4", CallCommand, oldCallCommand); // test, will 100% break its just for TESTING
     HOOK("0x4734994", networkStartTableS, old_networkStartTableS);
     HOOK("0x4736048", networkStartTable, old_networkStartTable);
     HOOK("0x49985B4", formatString, old_formatString);
