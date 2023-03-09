@@ -1,9 +1,9 @@
 ext {
-    moduleLibraryName = "zyCheatsPG3D"
-    magiskModuleId = "zyCheatsPG3D"
-    moduleName = "Pixel Gun 3D Mod Menu - ZyCheats "
-    moduleAuthor = "chr1s, networkCommand() and NitrogenDioxide ---- Credits to : oobbb - module, jmpews - Dobby, MJx0 - KittyMemory, ocornut - ImGui, Red16 - Kill All, Dari - Energy Module"
+    moduleLibraryName = "ZygiskPG"
+    magiskModuleId = "ZygiskPG"
+    moduleName = "Pixel Gun 3D Mod Menu - ZygiskPG"
+    moduleAuthor = "chr1s, networkCommand() and NitrogenDioxide ---- Credits to : oobbb - module, jmpews - Dobby, MJx0 - KittyMemory, ocornut - ImGui, Red16 - Kill All"
     moduleDescription = "Mod Menu for PG3D 23.1.0"
-    moduleVersion = "v1.2b (23.1)"
+    moduleVersion = "v1.1c (23.1)"
     moduleVersionCode = 1
 }

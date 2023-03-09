@@ -95,7 +95,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic;
+        modUp, clanEnergy;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -432,15 +432,6 @@ void WeaponManager(void *obj) {
     old_WeaponManager(obj);
 }
 
-struct NullableFloat {
-    bool hasValue;
-    float value;
-};
-
-NullableFloat multiplierHealth;
-
-// To set a value to the nullable float
-float* healthmultiplier = nullptr;
 void(*oldWeaponSounds)(void* obj);
 void WeaponSounds(void* obj){
     if(obj != nullptr){
@@ -451,28 +442,11 @@ void WeaponSounds(void* obj){
             *(float*)((uint64_t) obj + 0x394) = damage;//shotgunOverDamageCoef
         }
 
-        if(firerate){
-            *(float*)((uint64_t) obj + 0x1B0) = 0;
-            *(float*)((uint64_t) obj + 0x1AC) = 0;
-        }
-
 
         if(gundmg){
-            *(bool*)((uint64_t) obj + 0x398) = true;//isSectorsAOE
-            *(float*)((uint64_t) obj + 0x3A8) = 2.5;//sectorsAOEDamageMultiplierFront
-            *(float*)((uint64_t) obj + 0x3AC) = 2.5;//sectorsAOEDamageMultiplierSide
-            *(float*)((uint64_t) obj + 0x3A4) = 2.5;//sectorsAOEDamageMultiplierBack
-            *(float*)((uint64_t) obj + 0x3B0) = 16;//sectorsAOERadiusSectorsAoE
-        }
-
-        if(invisible){
-            *(bool*)((uint64_t) obj + 0x361) = true;//isInvisibleAfterRespawn
-            *(float*)((uint64_t) obj + 0x364) = 9999999;//isInvisibleAfterRespawnTime
-        }
-
-        if(ignorereflect) {
-            *(bool *) ((uint64_t) obj + 0x2F9) = false;//isDamageReflection
-            *(bool *) ((uint64_t) obj + 0x2FA) = false;//isDamageAbsortion
+            *(float*)((uint64_t) obj + 0x3A4) = 10;//sectorsAOEDamageMultiplierFront
+            *(float*)((uint64_t) obj + 0x3A8) = 10;//sectorsAOEDamageMultiplierSide
+            *(float*)((uint64_t) obj + 0x3A8) = 10;//sectorsAOEDamageMultiplierBack
         }
 
         if(gadgetdisabler){
@@ -518,7 +492,6 @@ void WeaponSounds(void* obj){
             *(bool*)((uint64_t) obj + 0x368) = true;//isBuffPoints
             *(float*)((uint64_t) obj + 0x374) = 99999;//buffBonusPointsForKill
         }
-
         if(polymorph){
             *(bool*)((uint64_t) obj + 0x2D4) = true;//polymorpher
             *(float*)((uint64_t) obj + 0x2D8) = 999999999;//polymorphDuarationTime
@@ -541,8 +514,7 @@ void WeaponSounds(void* obj){
         }
 
 
-        *(bool*)((uint64_t) obj + 0x428) = false;//isDaterWeapon
-        *(bool*)((uint64_t) obj + 0x571) = false;//isDaterWeapon
+        //*(bool*)((uint64_t) obj + 0x428) = true;//isDaterWeapon
 
         if(gbullets){
             *(bool*)((uint64_t) obj + 0x42D) = true;//isGrenadeWeapon
@@ -669,23 +641,6 @@ void WeaponSounds(void* obj){
 
         if(pnoclip){
             *(bool*)((uint64_t) obj + 0x156) = true;//IsGhost
-        }
-
-        if(god){
-            *(bool*)((uint64_t) obj + 0x3C4) = true;//isArmorRegeneration
-            *(float*)((uint64_t) obj + 0x3C8) = 9999;//armorRegenerationPercent
-            *(float*)((uint64_t) obj + 0x3CC) = 0;//armorRegenerationTime
-            *(bool*)((uint64_t) obj + 0x1E9) = true;//isDamageHeal
-            *(bool*)((uint64_t) obj + 0x1EA) = true;//isDamageAndArmorHeal
-            *(float*)((uint64_t) obj + 0x1EC) = 9999;//damageHealMultiplier
-            *(bool*)((uint64_t) obj + 0x554) = true;//healingArea
-            *(bool*)((uint64_t) obj + 0x555) = true;//healingHimSelf
-            //*(float*)((uint64_t) obj + 0x558) = 9999;//radiusHealing
-        }
-
-        if(mythic){
-            *(int*)((uint64_t) obj + 0x5FC) = 5;
-            *(int*)((uint64_t) obj + 0x620) = 69420;
         }
 
         if(quickscope){
@@ -864,7 +819,7 @@ void(*oldPlayerMoveC)(void* obj);
 void(PlayerMoveC)(void* obj){
     if(obj != nullptr) {
         if (spamchat) {
-            SendChat(obj, CreateIl2cppString("zyCheats - https://discord.gg/qRuG7NzGZh"), false,CreateIl2cppString("0"));
+            SendChat(obj, CreateIl2cppString("ZygiskPG - https://discord.gg/DGtgZkk6sR"), false,CreateIl2cppString("0"));
         }
 
         if (xrayApplied) {
@@ -1094,15 +1049,12 @@ void PixelTime(void *obj) {
     old_PixelTime(obj);
 }
 
-float (*oldTeammateHealMultiplier)(void* obj);
-float TeammateHealMultiplier(void* obj){
-    if(obj != nullptr){
-        LOGE("CALLED");
-        if(god){
-            return 9999.0f;
-        }
+int (*oldRewardedExp)(void* obj);
+int RewardedExp(void* obj){
+    if(obj != nullptr && maxLevel){
+        return 999;
     }
-    return oldTeammateHealMultiplier(obj);
+    return oldRewardedExp(obj);
 }
 
 void (*oldCallCommand)(void* obj, int* num, monoDictionary<monoString *, void *> *params, void* classinst);
@@ -1114,6 +1066,7 @@ void CallCommand(void* obj, int* num, monoDictionary<monoString *, void *> *para
     }
     return oldCallCommand(obj, num, params, classinst);
 }
+
 
 int isGame(JNIEnv *env, jstring appDataDir) {
     if (!appDataDir)
@@ -1170,6 +1123,7 @@ void Hooks() {
     HOOK("0x40220F0", petSpeed, oldPetSpeeds);//PetInfo
     HOOK("0x4021E80", petHealth, oldpetHealth);
     HOOK("0x4021FB8", petAttack, oldpetAttack);
+    HOOK("0x1C71944", RewardedExp, oldRewardedExp);
 }
 
 void Patches() {
@@ -1182,10 +1136,10 @@ void Patches() {
     PATCH_SWITCH("0x4154658", "20008052C0035FD6", clanparts);
     PATCH_SWITCH("0x310DB24", "20008052C0035FD6", wepSkins);
     PATCH_SWITCH("0x3789DA0", "20008052C0035FD6", showWepSkins);
-    //PATCH_SWITCH("0x480525C", "C0035FD6", god); // search int viewID and you'll find it
-    //PATCH_SWITCH("0x3C48320", "C0035FD6", god); // search for SkinName skinName = this.mySkinName; and find a float in analyze (player_move_c for the one above too)
-    PATCH_SWITCH("0x4CBB678", "C0035FD6", god);//OnTriggerEnter
-    PATCH_SWITCH("0x4CBADE8", "C0035FD6", god);//OnControllerColliderHit
+    PATCH_SWITCH("0x480525C", "1F2003D5C0035FD6", god); // search int viewID and you'll find it
+    PATCH_SWITCH("0x3C48320", "1F2003D5C0035FD6", god); // search for SkinName skinName = this.mySkinName; and find a float in analyze (player_move_c for the one above too)
+    PATCH_SWITCH("0x4FBDCF0", "1F2003D5C0035FD6", god);//OnTriggerEnter
+    PATCH_SWITCH("0x4FBD460", "1F2003D5C0035FD6", god);//OnControllerColliderHit
     PATCH_SWITCH("0x1C71944", "A0F08FD2C0035FD6", maxLevel); // first class in analyze should be ExpController not ArmouryCell
     PATCH_SWITCH("0x248B0A8", "802580D2C0035FD6", cWear);//search for almanachmainui and find the refresh method then youll check analyze to find the class, then get both of the ints
     PATCH_SWITCH("0x2486960", "802580D2C0035FD6", cWear);
@@ -1203,6 +1157,9 @@ void Patches() {
     PATCH_SWITCH("0x4021788", "00008052C0035FD6", prespawntime);
     //    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
     PATCH_SWITCH("0x2379F48", "80388152C0035FD6", collectibles); // 0x48EF240
+    PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isDaterRegim to 16.6.1  version goodluck
+    PATCH_SWITCH("0x14C80C0", "00008052C0035FD6", daterweapon); // compare isSpeedrun to 16.6.1  version goodluck
+    PATCH_SWITCH("0x14D7DA8", "00008052C0035FD6", daterweapon); // compare isMiniGame to 16.6.1  version goodluck (it should have the first thing in analyze GameConnect method )
     PATCH_SWITCH("0x14CC548", "200080D2C0035FD6", gadgetcd);//compare gadgetinfo cooldown to a deobfuscated version goodluck
     PATCH_SWITCH("0x14D7520", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck
     PATCH_SWITCH("0x14D8834", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
@@ -1219,11 +1176,16 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("zyCheats PG3D - Premium 1.2b (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("ZygiskPG Premium 1.1c (23.1) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth && isAuth()) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
                 if (ImGui::BeginTabItem(OBFUSCATE("Account"))) {
+                    if (ImGui::Button(OBFUSCATE("Spoof Account")))
+                    {
+                        spoofMe = true;
+                    }
+                    ImGui::TextUnformatted(OBFUSCATE("Hides your actual ID, but has side-effects, reverts after restarting"));
                     if (ImGui::Button(OBFUSCATE("Force Load Menu")))
                     {
                         loadMenu = true;
@@ -1233,14 +1195,14 @@ void DrawMenu(){
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Module Upgrades"), &modUp);
                     ImGui::TextUnformatted((OBFUSCATE("Makes the module upgrades free from parts")));
-                    ImGui::Checkbox(OBFUSCATE("Infinite Clan Energy"), &clanEnergy);
+                    ImGui::Checkbox(OBFUSCATE("Clan Energy"), &clanEnergy);
                     ImGui::TextUnformatted((OBFUSCATE("Gives infinite energy")));
                     ImGui::Checkbox(OBFUSCATE("Show Shop Stuff"), &showWepSkins);
                     ImGui::TextUnformatted((OBFUSCATE("Shows some hidden stuff")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
                     ImGui::Checkbox(OBFUSCATE("Free Bundles"), &bundles);
-                    ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free"));
+                    ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free (Credits to Dari#1333)"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
@@ -1248,15 +1210,6 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
-                    }
-                    if (ImGui::CollapsingHeader(OBFUSCATE("Spoof Methods")))
-                    {
-                        if (ImGui::Button(OBFUSCATE("Spoof Account")))
-                        {
-                            spoofMe = true;
-                        }
-                        ImGui::Checkbox(OBFUSCATE("SetID manually"), &spoofMe2);
-                        ImGui::Checkbox(OBFUSCATE("Original ID -1"), &spoofMe3);
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables")))
                     {
@@ -1334,6 +1287,8 @@ void DrawMenu(){
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem(OBFUSCATE("Player"))) {
+                    ImGui::Checkbox(OBFUSCATE("SetID manually"), &spoofMe2);
+                    ImGui::Checkbox(OBFUSCATE("ID -1 (OG method)"), &spoofMe3);
                     ImGui::TextUnformatted(OBFUSCATE("Hides all your actual account details, but breaks stuff"));
                     ImGui::TextUnformatted(OBFUSCATE("To make Team-Fight matches work, enable Friendly Fire"));
                     ImGui::Checkbox(OBFUSCATE("Godmode"), &god);
@@ -1344,8 +1299,6 @@ void DrawMenu(){
                         ninjaJump = true;
                     }
                     ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
-                    ImGui::Checkbox(OBFUSCATE("Invisible"), &invisible);
-                    ImGui::TextUnformatted(OBFUSCATE("Makes you invisible after you respawn."));
                     ImGui::SliderFloat(OBFUSCATE("Jump/Jetpack Height"), &jumpHeight, 0.0f,2.5f);
                     ImGui::EndTabItem();
                 }
@@ -1390,10 +1343,9 @@ void DrawMenu(){
                 if (ImGui::BeginTabItem(OBFUSCATE("Weapon"))) {
                     ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
                     ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
-                    ImGui::Checkbox(OBFUSCATE("Make All Weapons Mythical"), &mythic);
                     ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
-                    ImGui::Checkbox(OBFUSCATE("More Damage"), &gundmg);
-                 //   ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
+                  //  ImGui::Checkbox(OBFUSCATE("One Shot Kill"), &gundmg);
+                 //  ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
                     ImGui::Checkbox(OBFUSCATE("No Reload Length"), &reload);
                     ImGui::TextUnformatted(OBFUSCATE("Reloads the gun almost instantly (Re-equip after enabling)"));
                     ImGui::SliderFloat(OBFUSCATE("Silent Aim Power"), &snowstormbullval, 0.0f,2000.0f);
@@ -1419,8 +1371,6 @@ void DrawMenu(){
                     }
 
                     if (ImGui::CollapsingHeader(OBFUSCATE("Effect Mods"))) {
-                        ImGui::Checkbox(OBFUSCATE("Ignore Reflection"), &ignorereflect);
-                        ImGui::TextUnformatted(OBFUSCATE("Ignores the reflection effect."));
                         ImGui::Checkbox(OBFUSCATE("Force Charm"), &charm);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the charm effect (Used to reduce half of the enemy's weapon efficiency)"));
                         ImGui::Checkbox(OBFUSCATE("Force Electric Shock"), &electric);
@@ -1437,8 +1387,6 @@ void DrawMenu(){
                         ImGui::TextUnformatted(OBFUSCATE("Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
-                        ImGui::Checkbox(OBFUSCATE("Force Ammo Steal Effect"), &ammosteal);
-                        ImGui::TextUnformatted(OBFUSCATE("Adds the Ammo Steal effect (Will steal an enemys ammo after they hit you)"));
                     }
                     ImGui::EndTabItem();
                 }
@@ -1536,10 +1484,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
     if(autolog) { isValidAuth = tryAutoLogin(); autolog = false;}
 
-    if(!hookcheck && isAuth()){
-        Hooks();
-        hookcheck = true;
-    }
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
@@ -1560,10 +1504,12 @@ void *hack_thread(void *arg) {
     } while (!g_il2cppBaseMap.isValid());
 
     Pointers();
-    sleep(10);
+    sleep(5);
     auto eglhandle = dlopen(OBFUSCATE("libunity.so"), RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, OBFUSCATE("eglSwapBuffers"));
-    DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers, (void**)&old_eglSwapBuffers);
+    Hooks();
+    DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers,
+              (void**)&old_eglSwapBuffers);
     void *sym_input = DobbySymbolResolver((OBFUSCATE("/system/lib/libinput.so")), (OBFUSCATE("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE")));
     if (NULL != sym_input) {
         DobbyHook(sym_input,(void*)myInput,(void**)&origInput);
