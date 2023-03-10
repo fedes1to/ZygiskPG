@@ -1166,8 +1166,8 @@ void Patches() {
     PATCH_SWITCH("0x4CE9F4C", "C0035FD6", god);//OnTriggerEnter
     PATCH_SWITCH("0x4CE96BC", "C0035FD6", god);//OnControllerColliderHit
     PATCH_SWITCH("0x1C7781C", "A0F08FD2C0035FD6", maxLevel); // go to PlayerPanel.Update and the property inside the method should be lvl
-    PATCH_SWITCH("0x3061B14", "802580D2C0035FD6", cWear);//search for almanachmainui (the class) and find the refresh method then youll check analyze to find the class, then get both of the ints
-    PATCH_SWITCH("0x305D3CC", "802580D2C0035FD6", cWear);
+    //PATCH_SWITCH("0x3061B14", "802580D2C0035FD6", cWear);//search for almanachmainui (the class) and find the refresh method then youll check analyze to find the class, then get both of the ints
+  //  PATCH_SWITCH("0x305D3CC", "802580D2C0035FD6", cWear);
     PATCH_SWITCH("0x2CFF860", "00008052C0035FD6", gadgetUnlock);//search for GadgetsContent/GadgetsArmoryInfoPreview/empty below is the method
     PATCH_SWITCH("0x21F4B9C", "603E8012C0035FD6", modKeys);//search for EventCurrency and try finding the right class
     PATCH_SWITCH("0x1DEFB38", "C0035FD6", tgod);//all the minus live
@@ -1229,7 +1229,6 @@ void DrawMenu(){
                         {
                             spoofMe = true;
                         }
-                        ImGui::Checkbox(OBFUSCATE("SetID manually"), &spoofMe2);
                         ImGui::Checkbox(OBFUSCATE("Original ID -1"), &spoofMe3);
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables")))
@@ -1409,8 +1408,6 @@ void DrawMenu(){
                         ImGui::TextUnformatted(OBFUSCATE("Adds the head magnifier effect (Will magnify the player's head once shot until they die)"));
                         ImGui::Checkbox(OBFUSCATE("Force Gadget Disabler Effect"), &gadgetdisabler);
                         ImGui::TextUnformatted(OBFUSCATE("Adds the head gadget disabler effect (Will disable player's gadget once shot until they die)"));
-                        ImGui::Checkbox(OBFUSCATE("Force Ammo Steal Effect"), &ammosteal);
-                        ImGui::TextUnformatted(OBFUSCATE("Adds the Ammo Steal effect (Will steal an enemys ammo after they hit you)"));
                     }
                     ImGui::EndTabItem();
                 }
@@ -1512,6 +1509,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         Hooks();
         hookcheck = true;
     }
+
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
