@@ -158,7 +158,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wepSkins1, wepSkins2,wepSkins3, wepSkins4, wepSkins5, wepSkins6 ;
+        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2,portalLog, wepSkins6;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -386,7 +386,7 @@ void Pointers() {
     File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x329E4C0"));
     Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4441D70")));
     File$Exists = (bool(*)(monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x329D1D4")));
-    provideRoyaleItem = (void(*)(monoString*, bool*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C90BA0")));//search for GlidersInfo.GLIDER_EQUIPPED_KEY and find the right method in that class
+    provideRoyaleItem = (void(*)(monoString*, bool*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C9154C")));//search for GlidersInfo.GLIDER_EQUIPPED_KEY and find the right method in that class
     providePet = (void(*)(monoString*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3CCDA78")));//search for [TEST] call StoreKitEventListener.CheckIfFirstTimePayment() and find the method in the class
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B30F28")));//search Armor_Army_1 find the one from Progress and above it its the one
     provideGadget = (void(*) (monoString*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CED8B4")));//search Provid_eGadget gadget_Id == null
@@ -1040,8 +1040,12 @@ void PixelTime(void *obj) {
             spoofMe = false;
         }
         if (loadMenu) {
-            LoadLevel(CreateIl2cppString(OBFUSCATE("ClanWarV2")));
+            LoadLevel(CreateIl2cppString(OBFUSCATE("AppCeneter")));
             loadMenu = false;
+        }
+        if(portalLog){
+            OpenURL(CreateIl2cppString(OBFUSCATE("https://auth.gg/portal/zygiskPG")));
+            portalLog = false;
         }
         if (addAllRoyale1)
         {
@@ -1291,9 +1295,8 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
-                    ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     ImGui::Checkbox(OBFUSCATE("Purchase any weapon skin"), &wepSkins6);
-                    ImGui::TextUnformatted((OBFUSCATE("Lets you purchase any weapon skin")));
+                    ImGui::TextUnformatted((OBFUSCATE("Allows you to buy any skin, just press on it and buy!")));
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
@@ -1302,8 +1305,9 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Spoof ID -1"), &spoofMe3);
                     ImGui::TextUnformatted(OBFUSCATE("Hides your ID from other players"));
                     if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables"))) {
-                        ImGui::TextUnformatted((OBFUSCATE(
-                                "Gives the player items you pick, Freezes are expected.")));
+                        ImGui::TextUnformatted((OBFUSCATE("Gives the player items you pick, Freezes are expected.")));
+                        ImGui::TextUnformatted(OBFUSCATE("If you didnt get all the shit you wanted, retry the same button again."));
+                        ImGui::TextUnformatted(OBFUSCATE("If you didnt get all the shit you wanted, retry the same button again."));
                         if (ImGui::Button(OBFUSCATE("Add All Wear"))) {
                             addAllArmors = true;
                         }
@@ -1339,6 +1343,7 @@ void DrawMenu(){
                         }
                         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Unlock")))
                         {
+
                             if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
                                 isAddWeapons = true;
                             }
@@ -1434,7 +1439,6 @@ void DrawMenu(){
                 if (ImGui::BeginTabItem(OBFUSCATE("Weapon"))) {
                     ImGui::Checkbox(OBFUSCATE("Force Critical Hits"), &crithit);
                     ImGui::TextUnformatted(OBFUSCATE("Forces Critical Shots each time you hit someone."));
-                    ImGui::Checkbox(OBFUSCATE("Make All Weapons Mythical"), &mythic);
                     ImGui::Checkbox(OBFUSCATE("Unlimited Ammo"), &ammo);
                     ImGui::Checkbox(OBFUSCATE("More Damage"), &gundmg);
                  //   ImGui::Checkbox(OBFUSCATE("Fire-Rate"), &firerate);
@@ -1504,14 +1508,7 @@ void DrawMenu(){
                      }
                      if (ImGui::Button(OBFUSCATE("Mask me"))) {
                          spoofMe = true;
-                     }*/
-                    if (ImGui::Button(OBFUSCATE("Join Discord"))) {
-                        isDiscordPressed = true;
-                    }
-                    ImGui::TextUnformatted(OBFUSCATE("Its Recommended to join the discord server for mod updates etc."));
-                    if (ImGui::Button(OBFUSCATE("Show Info"))) {
-                        showInfo = true;
-                    }
+                         */
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();
@@ -1535,6 +1532,11 @@ void DrawMenu(){
             if (jsonresult.find("invalid_hwid") != std::string::npos) {
                 ImGui::TextUnformatted(OBFUSCATE("The license is set for a different HWID, if you have changed devices"));
                 ImGui::TextUnformatted(OBFUSCATE("or reset your phone, go back to the zygiskPG portal and press the button Update HWID."));
+                ImGui::TextUnformatted(OBFUSCATE("It could be a false positive, just restart, if you still see it then you need to reset."));
+                if (ImGui::Button(OBFUSCATE("ZyCheats Portal")))
+                {
+                    portalLog = true;
+                }
             }
             if (jsonresult.find("time_expired") != std::string::npos) {
                 ImGui::TextUnformatted(OBFUSCATE("Your license has expired, renew it to get access."));
@@ -1579,7 +1581,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     if(autolog) { isValidAuth = tryAutoLogin(); autolog = false;}
 
     if(!hookcheck && isAuth()){
-        LOGE("YEAH");
         Hooks();
         hookcheck = true;
     }
