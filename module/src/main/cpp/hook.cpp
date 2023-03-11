@@ -130,6 +130,7 @@ static int selectedWeapon = 0;
 
 std::string IDacc;
 
+const char* skinsArray[] = { "0", "1", "2", "3", "4", "endmanskinBoughtSett", "super_socialman", "6", "7", "8", "9", "10", "chiefBoughtSett", "spaceengineerBoughtSett", "nanosoldierBoughtSett", "steelmanBoughtSett", "captainSett", "hawkSett", "greenGuySett", "TunderGodSett", "gordonSett", "20", "21", "22", "magicGirlSett", "braveGirlSett", "glamGirlSett", "kityyGirlSett", "famosBoySett", "newskin_0", "newskin_1", "newskin_2", "newskin_3", "newskin_4", "newskin_5", "newskin_6", "newskin_7", "newskin_8", "newskin_9", "newskin_10", "newskin_11", "newskin_12", "newskin_13", "newskin_14", "newskin_15", "newskin_16", "newskin_17", "newskin_18", "skin810_1", "skin810_2", "skin810_3", "skin810_4", "skin810_5", "skin810_6", "skin931_1", "skin931_2", "skin_fiance", "skin_bride", "skin_bigalien", "skin_minialien", "skin_hippo", "skin_alligator", "skin_tiger", "skin_pitbull", "skin_santa", "skin_elf_new_year", "skin_girl_new_year", "skin_cookie_new_year", "skin_snowman_new_year", "skin_jetti_hnight", "skin_startrooper", "easter_skin1", "easter_skin2", "skin_rapid_girl", "skin_silent_killer", "skin_daemon_fighter", "skin_scary_demon", "skin_orc_warrior", "skin_kung_fu_master", "skin_fire_wizard", "skin_ice_wizard", "skin_storm_wizard", "skin_may1", "skin_may2", "skin_may3", "skin_may4", "skin_july1", "skin_july2", "skin_july3", "skin_july4", "league_skin_wooden", "league_skin_steel", "league_skin_golden", "league_skin_crystal", "league_skin_ruby", "league_skin_adamant", "schoolboy_skin", "schoolgirl_skin", "teacher_skin", "pedagog_skin", "evil_clown_skin", "bad_mime_skin", "skin_scarecrow", "skin_frankenstein", "skin_other", "ugly_guy_skin", "succubus_girl", "frozen_newbie_skin", "candyman_skin", "big_foot_skin", "ice_king_skin", "ice_queen_skin", "cupid_skin", "lovely_cupid_skin", "skin_worker", "skin_builder", "skin_punk", "skin_punk_girl", "skin_red_fighter", "skin_blue_fighter", "skin_yellow_fighter", "skin_green_fighter", "skin_cyborg", "skin_cyborg_girl", "skin_uncle_sam", "skin_royal_solder", "skin_colonist", "skin_president", "skin_first_lady", "skin_mr_chocolate", "skin_eyemouth_monster", "skin_chestman", "skin_clan_leader", "skin_clan_officer", "skin_clan_fighter", "skin_exoskeleton_pilot", "skin_christmas_ninja", "skin_deer", "skin_eskimo", "skin_frozen_warrior", "skin_hockey_4", "skin_hockey_8", "skin_icy_villain", "skin_leader_north", "skin_winter_camouflage", "skin_evil_samurai", "skin_fire_lizard", "skin_flower_frog", "skin_monk", "skin_pet_lover", "skin_water_turtle", "skin_exo_berserk", "skin_exo_demolition", "skin_exo_engineer", "skin_exo_hitman", "skin_exo_sniper", "skin_exo_storm", "skin_accurate_archer", "skin_city_camouflage", "skin_desert_camouflage", "skin_forest_camouflage", "skin_legendary_sniper", "skin_winter_camouflage_1", "league_skin_champion", "skin_primeval_guy", "skin_primeval_girl", "skin_shaman", "skin_bone_warrior", "skin_archaeologist", "skin_paratrooper_boy", "skin_paratrooper_girl", "skin_pink_bear", "skin_living_armor", "skin_sneaky_bombardier", "skin_lightning_striker", "skin_inventive_forward", "skin_severe_captain", "skin_narrowed_midfielder", "skin_main_goalkeeper", "skin_cheerful_fan", "skin_beautiful_fan_girl", "skin_fair_referee", "skin_blocka_cola_worker", "skin_goblin", "skin_sphinx", "skin_unknown", "skin_fisherman", "league_skin_pro" };
 const char* loobyBundles[] = { "background_1_castle_1", "background_1_chess_1", "background_1_christmas_1", "background_1_future_1", "background_1_halloween_1", "background_1_heaven_3", "background_1_japan_1", "background_1_military_1", "background_1_presidential_1", "background_1_space_1", "background_1_western_1", "background_2_castle_1", "background_2_castle_2", "background_2_castle_3", "background_2_chess_1", "background_2_christmas_1", "background_2_custom_1", "background_2_future_1", "background_2_halloween_1", "background_2_heaven_1", "background_2_heaven_2", "background_2_heaven_3", "background_2_japan_1", "background_2_military_1", "background_2_military_2", "background_2_military_3", "background_2_presidential_1", "background_2_space_1", "background_2_space_2", "background_2_space_3", "background_2_western_1", "base_castle_1", "base_castle_2", "base_castle_3", "base_chess_1", "base_christmas_1", "base_future_1", "base_halloween_1", "base_heaven_1", "base_heaven_2", "base_heaven_3", "base_japan_1", "base_military_1", "base_military_2", "base_military_3", "base_presidential_1", "base_space_1", "base_space_2", "base_space_3", "base_western_1", "decor_big_arcade_1", "decor_big_castle_1", "decor_big_castle_2", "decor_big_castle_3", "decor_big_chess_1", "decor_big_christmas_1", "decor_big_custom_1", "decor_big_custom_2", "decor_big_custom_3", "decor_big_custom_4", "decor_big_future_1", "decor_big_halloween_1", "decor_big_heaven_1", "decor_big_heaven_2", "decor_big_heaven_3", "decor_big_military_1", "decor_big_military_2", "decor_big_military_3", "decor_big_phoenix_1", "decor_big_presidential_1", "decor_big_space_2", "decor_big_space_3", "decor_big_western_1", "decor_small_castle_1", "decor_small_castle_2", "decor_small_castle_3", "decor_small_chess_1", "decor_small_christmas_1", "decor_small_custom_1", "decor_small_custom_2", "decor_small_future_1", "decor_small_halloween_1", "decor_small_heaven_1", "decor_small_heaven_2", "decor_small_heaven_3", "decor_small_japan_1", "decor_small_military_1", "decor_small_military_2", "decor_small_military_3", "decor_small_phoenix_1", "decor_small_presidential_1", "decor_small_space_1", "decor_small_space_2", "decor_small_space_3", "decor_small_space_4", "decor_small_space_5", "decor_small_space_6", "decor_small_western_1", "device_1_1", "device_1_2", "device_1_4", "device_1_5", "device_1_6", "gate_castle_1", "gate_castle_2", "gate_castle_3", "gate_chess_1", "gate_christmas_1", "gate_future_1", "gate_halloween_1", "gate_heaven_1", "gate_heaven_2", "gate_heaven_3", "gate_japan_1", "gate_military_1", "gate_military_2", "gate_military_3", "gate_presidential_1", "gate_space_1", "gate_space_2", "gate_space_3", "gate_western_1", "kennel_base_1", "kennel_castle_1", "kennel_chess_1", "kennel_christmas_1", "kennel_fly_base_1", "kennel_fly_castle_1", "kennel_fly_heaven_1", "kennel_fly_military_1", "kennel_fly_premium_1", "kennel_fly_space_1", "kennel_future_1", "kennel_halloween_1", "kennel_heaven_1", "kennel_japan_1", "kennel_military_1", "kennel_premium_1", "kennel_presidential_1", "kennel_space_1", "kennel_western_1", "road_arcade_1", "road_castle_1", "road_castle_2", "road_castle_3", "road_chess_1", "road_christmas_1", "road_future_1", "road_halloween_1", "road_heaven_1", "road_heaven_2", "road_heaven_3", "road_japan_1", "road_military_1", "road_military_2", "road_military_3", "road_phoenix_1", "road_presidential_1", "road_space_1", "road_space_2", "road_space_3", "road_western_1", "skybox_1", "skybox_10", "skybox_11", "skybox_12", "skybox_14", "skybox_15", "skybox_16", "skybox_17", "skybox_18", "skybox_19", "skybox_2", "skybox_20", "skybox_21", "skybox_22", "skybox_23", "skybox_24", "skybox_25", "skybox_3", "skybox_4", "skybox_5", "skybox_6", "skybox_7", "skybox_8", "skybox_9", "terrain_arcade_1", "terrain_castle_1", "terrain_castle_2", "terrain_castle_3", "terrain_chess_1", "terrain_christmas_1", "terrain_future_1", "terrain_halloween_1", "terrain_heaven_1", "terrain_heaven_2", "terrain_heaven_3", "terrain_japan_1", "terrain_military_1", "terrain_military_2", "terrain_military_3", "terrain_phoenix_1", "terrain_presidential_1", "terrain_space_1", "terrain_space_2", "terrain_space_3", "terrain_western_1", "wall_castle_1", "wall_castle_2", "wall_castle_3", "wall_chess_1", "wall_christmas_1", "wall_future_1", "wall_halloween_1", "wall_heaven_1", "wall_heaven_2", "wall_heaven_3", "wall_japan_1", "wall_military_1", "wall_military_2", "wall_military_3", "wall_presidential_1", "wall_space_1", "wall_space_2", "wall_space_3", "wall_western_1", "bundle_my", "bundle_winter", "bundle_army", "bundle_heaven", "bundle_medieval", "bundle_space", "bundle_government", "bundle_christmas", "bundle_halloween", "bundle_oriental", "bundle_western", "bundle_future" };
 const char* graffitiList[] = { "graffiti_1028", "graffiti_2028", "graffiti_3028", "graffiti_4028", "graffiti_5028", "graffiti_6028", "graffiti_7028", "graffiti_8028", "graffiti_9028", "graffiti_10028", "graffiti_11028", "graffiti_13028", "graffiti_12028", "graffiti_14028", "graffiti_15028" };
 const char* goofyWeps[] = { "iron_sword", "hound_weapon_one", "desert_fighter", "locator", "advanced_scout_rifle_l", "harsh_punisher_l", "manual_inferno_l", "offensive_rocket_system_l", "headhunter_pistols_l" };
@@ -157,7 +158,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic;
+        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wepSkins1, wepSkins2,wepSkins3, wepSkins4, wepSkins5, wepSkins6 ;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -180,37 +181,38 @@ void *get_camera() {
 monoString* CreateIl2cppString(const char* str)
 {
     static monoString* (*CreateIl2cppString)(const char* str, int *startIndex, int *length) =
-    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44CD7A8")));
+    (monoString* (*)(const char* str, int *startIndex, int *length))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44B4A9C")));
     int* startIndex = 0;
     int* length = (int *)strlen(str);
     return CreateIl2cppString(str, startIndex, length);
 }
 
-void* setActive(void* gameObject, bool* value)
-{
-    static void* (*setActive)(void* instance, bool* value) =
-    (void* (*)(void* instance, bool* value))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x443671C")));
-    return setActive(gameObject, value);
-}
-
 int* getWearIndex(const char* str)
 {
     static int* (*wearIndex)(monoString* str) =
-    (int* (*)(monoString* str))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16AC39C")));//search for ERROR!!!!!!! Нет серверной айдишки для одежды {0}
+    (int* (*)(monoString* str))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16AD3BC")));//search for ERROR!!!!!!! Нет серверной айдишки для одежды {0}
     return wearIndex(CreateIl2cppString(str));
 }
 
 void* webInstance()
 {
-    static void*(*webInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B3A7AC")));//Analyze LeprechauntManager.DropReward() and youll find it :)
+    static void*(*webInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B3BA40")));//Analyze LeprechauntManager.DropReward() and youll find it :)
     return webInstance();
 }
 
+void* weaponSkinInstance(const char* str)
+{
+    static void*(*skinInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3046000")));
+    static void*(*weaponSkinInstance)(void*, int, monoString*) = (void* (*)(void*, int, monoString*))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3060088")));
+    return weaponSkinInstance(skinInstance(), 1170, CreateIl2cppString(str));
+}
+
 void* graffitiInstance()
-{//not updated
-    static void*(*graffitiInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15AF6A8")));//Analyze LeprechauntManager.DropReward() and youll find it :)
+{
+    static void*(*graffitiInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1506D04")));
     return graffitiInstance();
 }
+
 using namespace std::chrono_literals;
 std::vector<unsigned int> keys_pressed;
 int refocus=0;
@@ -359,58 +361,65 @@ void (*setID) (monoString* value);
 void (*setIDN) (void* instance, monoString* value);
 void (*setNameN) (void* instance, monoString* value);
 void (*setNetworkParams) (void* instance, monoString* name, monoString* ID, bool* something);
+void (*addSkin) (void* instance, monoString* name);
+void (*addWeaponSkin) (void* weaponSkin);
+void (*addWeaponSkin2) (void* weaponSkin);
 
 void Pointers() {
+    addGraffiti = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1508388")));
+    addWeaponSkin = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2134A14")));
+    addWeaponSkin2 = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2134750")));
+    addSkin = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B5D194")));
     //setNetworkParams = (void(*)(void*, monoString*, monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4838618")));
 
   //  getString = (monoString*(*)(monoString*)) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x454245C")));
   //  setString = (void(*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4541E00")));
    // getID = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4363374")));
-    setID = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x43A76A0")));//search for AccountCreated
+    setID = (void(*)(monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4394994")));//search for AccountCreated
 
-    setIDN = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x477C7CC")));//search for TextureFormat.RGBA32 and the one below should be it
+    setIDN = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4762EFC")));//search for Texture2D texture2D = new Texture2D(64, 32, TextureFormat.RGBA32, num != 0L); in networkstarttable
     //setNameN = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47204C8")));
 
     //buyWeaponSkinButton = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2138664")));
    // buyButtonHandle = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38D2C88")));
     //addGraffiti = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15B0D2C")));
-    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (find_pattern_in_module("libil2cpp.so", "F4 0F 1E F8 F3 7B 01 A9 60 01 00 B4 08 10 40 B9 F3 03 00 AA C8 02 00 34 E0 03"));
-    Application$persistentDataPath = (monoString*(*)()) (monoString*) (find_pattern_in_module("libil2cpp.so", "F3 7B BF A9 53 41 01 F0 60 02 43 F9 A0 00 00 B5 60 6D 00 F0 00 34 2E 91 40 40"));
-    File$Exists = (bool(*)(monoString*)) (bool*) (find_pattern_in_module("libil2cpp.so", "F4 0F 1E F8 F3 7B 01 A9 34 CE 01 D0 88 7A 50 39 F3 03 00 AA 28 01 00 37 80 AA"));
-    provideRoyaleItem = (void(*)(monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3CB0630")));//search for GlidersInfo.GLIDER_EQUIPPED_KEY and find the right method in that class
-    providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3CECB5C")));//search for [TEST] call StoreKitEventListener.CheckIfFirstTimePayment() and find the method in the class
-    buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2FC94")));//search Armor_Army_1 find the one from Progress and above it its the one
-    provideGadget = (void(*) (monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2D01A34")));//search Provid_eGadget gadget_Id == null
-    targetFrameRate = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4458BA8")));//search for SetTargetFrameRate in field/strings
-    addWear = (void(*)(int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16AE0F0"))); // search for WearScriptableObject_GENERATED
+    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x329E4C0"));
+    Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4441D70")));
+    File$Exists = (bool(*)(monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x329D1D4")));
+    provideRoyaleItem = (void(*)(monoString*, bool*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C90BA0")));//search for GlidersInfo.GLIDER_EQUIPPED_KEY and find the right method in that class
+    providePet = (void(*)(monoString*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3CCDA78")));//search for [TEST] call StoreKitEventListener.CheckIfFirstTimePayment() and find the method in the class
+    buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B30F28")));//search Armor_Army_1 find the one from Progress and above it its the one
+    provideGadget = (void(*) (monoString*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2CED8B4")));//search Provid_eGadget gadget_Id == null
+    targetFrameRate = (void(*)(int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4441E9C")));//search for SetTargetFrameRate in field/strings
+    addWear = (void(*)(int*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16AF110"))); // search for WearScriptableObject_GENERATED
     //setState = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x49B20B4"))); fede u told me this doesnt work so im not updating it :)
-    LoadLevel = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47C1A84")));//search LoadScene
-    OpenURL = (void(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4458B44")));//search OpenURL
-    setSomething = (void(*) (void*, monoString*, int*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B43A2C")));//search up ClanLootBoxPoints and look for Progress
-    SendChat = (void(*) (void*, monoString*, bool, monoString *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47E7F90")));//search SendChat
-    addWeapon = (void(*) (void*, monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1435B3C")));//search AddW_eaponToInv rec == null , tag =  {0}
-    SetMasterClient = (bool(*)(void*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset("0x44852F4"));//search SetMasterClient in strings
-    get_LocalPlayer = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x447DD18"));//find the photonplayer class name and just search it until you find something similiar to the old version
-    DestroyPlayerObjects = (void (*)(void *)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x44857B0"));//search DestroyPlayerObjects in strings
-    PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (monoArray<void**>*) (g_il2cppBaseMap.startAddress + string2Offset("0x447E028"));//same steps as localplayer, its the 2nd array, so below the first array method you see
-    EnableXray = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x47DA260"));//search "use_zoom"
-    BuyStickerPack = (void(*)(int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x417DB54")));//look in StickersController, compare and find the right function
-    JoinToRoomPhotonAfterCheck = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x399DF8C")));//not obfuscated just search
-    JoinToRoomPhotonAfterCheckCustom = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x338A98C")));//not obfuscated just search
+    LoadLevel = (void(*)(monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47A81B4")));//search LoadScene
+    OpenURL = (void(*)(monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4441E38")));//search OpenURL
+    setSomething = (void(*) (void*, monoString*, int*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B44CC0")));//search up ClanLootBoxPoints and look for Progress
+    SendChat = (void(*) (void*, monoString*, bool, monoString *)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47CE6C0")));//search SendChat
+    addWeapon = (void(*) (void*, monoString*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1437B5C")));//search AddW_eaponToInv rec == null , tag =  {0}
+    SetMasterClient = (bool(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset("0x446D5E8"));//search SetMasterClient in strings
+    get_LocalPlayer = (void*(*)()) (g_il2cppBaseMap.startAddress + string2Offset("0x446600C"));//find the photonplayer class name and just search it until you find something similiar to the old version
+    DestroyPlayerObjects = (void (*)(void *)) (g_il2cppBaseMap.startAddress + string2Offset("0x446DAA4"));//search DestroyPlayerObjects in strings
+    PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (g_il2cppBaseMap.startAddress + string2Offset("0x446631C"));//same steps as localplayer, its the 2nd array, so below the first array method you see
+    EnableXray = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset("0x47C0990"));//search "use_zoom"
+    BuyStickerPack = (void(*)(int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x416EBF0")));//look in StickersController, compare and find the right function
+    JoinToRoomPhotonAfterCheck = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x397DDE4")));//not obfuscated just search
+    JoinToRoomPhotonAfterCheckCustom = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x336D7E4")));//not obfuscated just search
     // UNITY FUNC
-    Component$get_gameObject = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x444DC60")));
-    Component$get_tag = (monoString*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x444E138")));
-    Component$get_transform = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x444DC24")));
+    Component$get_gameObject = (void*(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4436F54")));
+    Component$get_tag = (monoString*(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x443742C")));
+    Component$get_transform = (void*(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4436F18")));
    // CharacterController$set_radius = (void(*)(void*, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x457B544")));
     //Type$GetType = (void*(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4DDCC58")));
     // cool misc stuff //
 
 
     // OK ITS FINE NOW //
-    GameObject$get_active = (bool(*)(void*)) (bool) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x443669C")));
-    GameObject$set_active = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44366D8")));
-    Transform$get_forward = (Vector3 (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4459D44")));
-    string$StartsWith = (bool (*)(monoString*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44C7670")));
+    GameObject$get_active = (bool(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4421990")));
+    GameObject$set_active = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44219CC")));
+    Transform$get_forward = (Vector3 (*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4443038")));
+    string$StartsWith = (bool (*)(monoString*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44AE908")));
    // string$Substring = (monoString* (*)(monoString*, int)) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x44848C4")));
     //get_position = (Vector3 (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4459764")));
     //PhotonView$RPC = (void(*)(void*, int, int, void*[])) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4444180")));//go look for it in photonview you'll find it out using the args
@@ -418,10 +427,10 @@ void Pointers() {
     //set_rotation = (void (*)(void*, Quaternion)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4410D38")));
    //get_rotation = (void (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4410CB4")));
     //set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4410ABC")));
-    EnableJetpack = (void (*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47ED644")));//search for AddBonusAfterKillPlayerRPC, PhotonTargets.Others in player_move_c
+    EnableJetpack = (void (*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47D3D74")));//search for AddBonusAfterKillPlayerRPC, PhotonTargets.Others in player_move_c
  //   isDead = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x143726C")));
-    SetXrayShader = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x48015E8"));//in player_move_c search for .XRay, below is the methos
-    getDeviceUniqueIdentifier = (monoString*(*)()) (monoString*) (find_pattern_in_module("libil2cpp.so", "F3 7B BF A9 93 42 01 D0 60 BE 45 F9 A0 00 00 B5 80 6E 00 F0 00 28 13 91 C4 DF"));
+    SetXrayShader = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset("0x47E7D18"));//in player_move_c search for .XRay, below is the methos
+    getDeviceUniqueIdentifier = (monoString*(*)()) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4419F38")));
  //   AddScoreOnEvent = (void(*)(void*, int, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473B0FC")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
@@ -430,8 +439,6 @@ void Pointers() {
 }
 
 #include "Auth.h"
-// 0x435FA0C <- offset for gameobject.tag
-// 0x434733C <- offset for object.name
 
 void (*old_WeaponManager)(void *obj);
 void WeaponManager(void *obj) {
@@ -885,17 +892,6 @@ void networkStartTable(void *instance) {
     return old_networkStartTable(instance);
 }
 
-void (*old_updateSkinButtons)(void *instance);
-void updateSkinButtons(void *instance) {
-    if (instance != nullptr && buyall)
-    {
-        void* buySkinGameObj = (void*)((uint64_t) instance + 0x98);
-        setActive(buySkinGameObj, (bool*)(true));
-        return;
-    }
-    return old_updateSkinButtons(instance);
-}
-
 void* get_PlayerTransform(void* player)
 {
     void *var = player;
@@ -1010,13 +1006,19 @@ void PixelTime(void *obj) {
         targetFrameRate((int*)(999));
         if (isAddGraffitis) {
             for (int i = 0; i < 15; i++) {
-                addWear((int*)(250000), CreateIl2cppString(graffitiList[i]));
+                addGraffiti(graffitiInstance(), CreateIl2cppString(graffitiList[i]));
             }
             isAddGraffitis = false;
         }
+        if (addAllWepSkins2) {
+            for (int i = 0; i < 459; i++) {
+                addWeaponSkin2(weaponSkinInstance(skinList[i]));
+            }
+            addAllWepSkins2 = false;
+        }
         if (addAllWepSkins) {
             for (int i = 0; i < 459; i++) {
-                addWear((int*)(240000), CreateIl2cppString(skinList[i]));
+                addWeaponSkin(weaponSkinInstance(skinList[i]));
             }
             addAllWepSkins = false;
         }
@@ -1033,7 +1035,7 @@ void PixelTime(void *obj) {
         }
         if (spoofMe)
         {
-            setID(CreateIl2cppString(OBFUSCATE("-23817812323123")));
+            setID(CreateIl2cppString(OBFUSCATE("-69420")));
             LoadLevel(CreateIl2cppString(OBFUSCATE("Menu_Custom")));
             spoofMe = false;
         }
@@ -1102,6 +1104,13 @@ void PixelTime(void *obj) {
                 buyArmor(webInstance(), getWearIndex(armorList[i]), (int *)(65), CreateIl2cppString("migr")); // leave AS IS, works
             }
             addAllArmors = false;
+        }
+        if (addAllSkins)
+        {
+            for (int i = 0; i < 188; i++)
+            {
+                addSkin(webInstance(), CreateIl2cppString(skinsArray[i]));
+            }
         }
         if (addAllPets) {
             for (int i = 0; i < 94; i++) {
@@ -1193,68 +1202,75 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 }
 
 void Hooks() {
-      //  HOOK("0x477E754", networkStartTable, old_networkStartTable);
-      //  HOOK("0x49C67C4", formatString, old_formatString);
+        HOOK("0x4764E84", networkStartTable, old_networkStartTable);
+        HOOK("0x49AE8B0", formatString, old_formatString);
         //HOOK("0x2135C9C", updateSkinButtons, old_updateSkinButtons);
-      //  HOOK("0x3D7D43C", PixelTime, old_PixelTime);
+        HOOK("0x3D5F358", PixelTime, old_PixelTime);
        // HOOK("0x38C1638", ShopNGUIController, old_ShopNGUIController);
-      //  HOOK("0x1B0DD5C", WeaponSounds, oldWeaponSounds);
-      //  HOOK("0x1431A50", WeaponManager, old_WeaponManager);// HOOK("0x480C724", PlayerMoveC, oldPlayerMoveC);
-       // HOOK("0x399F4DC", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
-       // HOOK("0x338A7A8", CustomHandleJoinRoomFromEnterPasswordBtnClicked, old_CustomHandleJoinRoomFromEnterPasswordBtnClicked);
+        HOOK("0x1B0EFF0", WeaponSounds, oldWeaponSounds);
+        HOOK("0x1433A70", WeaponManager, old_WeaponManager);
+        HOOK("0x47F2E54", PlayerMoveC, oldPlayerMoveC);
+        HOOK("0x397F334", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
+        HOOK("0x336D600", CustomHandleJoinRoomFromEnterPasswordBtnClicked, old_CustomHandleJoinRoomFromEnterPasswordBtnClicked);
         HOOK("0x21F377C", Speed, oldSpeeds);
-        //HOOK("0x237569C", gadgetDuration, oldGadgetDuration);//search for gadget_combat_spinner and find the float via analyze
-        //HOOK("0x17EEE48", FirstPersonControllSharp, oldFirstPersonControllerSharp);
-        //HOOK("0x41227DC", petSpeed, oldPetSpeeds);//PetInfo
-       // HOOK("0x412256C", petHealth, oldpetHealth);
-       // HOOK("0x41226A4", petAttack, oldpetAttack);
+        HOOK("0x236F6BC", gadgetDuration, oldGadgetDuration);//search for gadget_combat_spinner and find the float via analyze
+        HOOK("0x17ECE68", FirstPersonControllSharp, oldFirstPersonControllerSharp);
+        // HOOK("0x47BC280", SendChatHooked, old_SendChatHooked);
+        HOOK("0x4113878", petSpeed, oldPetSpeeds);//PetInfo
+        HOOK("0x4113608", petHealth, oldpetHealth);
+        HOOK("0x4113740", petAttack, oldpetAttack);
+        //HOOK("0x1B04ED4", TeammateHealMultiplier, oldTeammateHealMultiplier);
 }
 
 void Patches() {
-    PATCH_SWITCH("0x24B63EC", "00008052C0035FD6", modUp); //search OfferMiniIcons/module and look for the right method in the class
-    PATCH_SWITCH("0x4195930", "00008052C0035FD6", clanEnergy); // search Energy
-    PATCH_SWITCH("0x3DA0C74", "00008052C0035FD6", bundles); // just analyze LobbyItemsBundle and compare it to the other one to find
-    PATCH_SWITCH("0x3DA0F84", "00008052C0035FD6", bundles); // after you find the class ^^^^^^^^^^^^ search for LobbyItemBuff and get the set
+    PATCH_SWITCH("0x301C3E8", "20008052C0035FD6", wepSkins6);
+
+    PATCH_SWITCH("0x4763844", "C0035FD6", spoofMe3); // networkstarttable.start() -> used there
+    PATCH_SWITCH("0x24B140C", "00008052C0035FD6", modUp); //search OfferMiniIcons/module and look for the right method in the class
+    PATCH_SWITCH("0x41869CC", "00008052C0035FD6", clanEnergy); // search Energy
+    PATCH_SWITCH("0x3D82B90", "00008052C0035FD6", bundles); // just analyze LobbyItemsBundle and compare it to the other one to find
+    PATCH_SWITCH("0x3D82EA0", "00008052C0035FD6", bundles); // after you find the class ^^^^^^^^^^^^ search for LobbyItemBuff and get the set
+    PATCH_SWITCH("0x3F7B220", "20008052C0035FD6", bundles);
    // PATCH_SWITCH("0x38C5DAC", "20008052C0035FD6", shopnguitest);
-    PATCH_SWITCH("0x419672C", "20008052C0035FD6", clanparts); // just compare it
-    PATCH_SWITCH("0x4195C38", "20008052C0035FD6", clanparts); // just compare it
+    PATCH_SWITCH("0x41877C8", "00008052C0035FD6", clanparts); // just compare it
+    PATCH_SWITCH("0x4186CD4", "00008052C0035FD6", clanparts); // just compare it
    // PATCH_SWITCH("0x310DB24", "20008052C0035FD6", wepSkins);
    // PATCH_SWITCH("0x3789DA0", "20008052C0035FD6", showWepSkins);
-    PATCH_SWITCH("0x4830F6C", "C0035FD6", god); // search int viewID and you'll find it (player_move_c)
-    PATCH_SWITCH("0x3C85F5C", "C0035FD6", god); // search for SkinName skinName = this.mySkinName; dont panic, itll be used alot, try to find the one which only takes SkinName and has the argument CategoryNames
-    PATCH_SWITCH("0x4CE9F4C", "C0035FD6", god);//OnTriggerEnter
-    PATCH_SWITCH("0x4CE96BC", "C0035FD6", god);//OnControllerColliderHit
-    PATCH_SWITCH("0x1C7781C", "A0F08FD2C0035FD6", maxLevel); // go to PlayerPanel.Update and the property inside the method should be lvl
+    PATCH_SWITCH("0x481769C", "C0035FD6", god); // search int viewID and you'll find it (player_move_c)
+    PATCH_SWITCH("0x3C66E78", "C0035FD6", god); // search for SkinName skinName = this.mySkinName; dont panic, itll be used alot, try to find the one which only takes SkinName and has the argument CategoryNames
+    PATCH_SWITCH("0x4CD2064", "C0035FD6", god);//OnTriggerEnter
+    PATCH_SWITCH("0x4CD17D4", "C0035FD6", god);//OnControllerColliderHit
+    PATCH_SWITCH("0x1C79AB0", "A0F08FD2C0035FD6", maxLevel); // go to PlayerPanel.Update and the property inside the method should be lvl
     //PATCH_SWITCH("0x3061B14", "802580D2C0035FD6", cWear);//search for almanachmainui (the class) and find the refresh method then youll check analyze to find the class, then get both of the ints
   //  PATCH_SWITCH("0x305D3CC", "802580D2C0035FD6", cWear);
-    PATCH_SWITCH("0x2CFF860", "00008052C0035FD6", gadgetUnlock);//search for GadgetsContent/GadgetsArmoryInfoPreview/empty below is the method
-    PATCH_SWITCH("0x21F4B9C", "603E8012C0035FD6", modKeys);//search for EventCurrency and try finding the right class
-    PATCH_SWITCH("0x1DEFB38", "C0035FD6", tgod);//all the minus live
-    PATCH_SWITCH("0x1DF4C90", "C0035FD6", tgod);
-    PATCH_SWITCH("0x1DF4F28", "C0035FD6", tgod);
-    PATCH_SWITCH("0x48229C8", "C0035FD6", removedrone);//player_move_c and DroneController droneController;
-    PATCH_SWITCH("0x4822A80", "C0035FD6", removedrone);//right below this ^^^
-    PATCH_SWITCH("0x1B0EA8C", "200080D2C0035FD6", crithit);//nexthitcritical in weaponsounds
-    PATCH_SWITCH("0x1E238B8", "200080D2C0035FD6", couponClicker);//this requires abit of effort and luck, go to CollectButtonPressed the class is in the typeof handle then just try to match the bool to the one before by comparing it
-    PATCH_SWITCH("0x45E3264", "00F0271EC0035FD6", reload);//mask_hitman_1_up1 in strings and the method with weaponsounds
-    PATCH_SWITCH("0x237569C", "000080D2C0035FD6", gadgetcd);//search Action in player_move_c find the 2 fields with action exactly then above some bools should be a classname which is GADGET
-    PATCH_SWITCH("0x4121E74", "00008052C0035FD6", prespawntime);//search RespawnTime in petinfo
+    PATCH_SWITCH("0x2CEB6E0", "00008052C0035FD6", gadgetUnlock);//search for GadgetsContent/GadgetsArmoryInfoPreview/empty below is the method
+    PATCH_SWITCH("0x21F0BBC", "603E8012C0035FD6", modKeys);//search for EventCurrency and try finding the right class or just use "C"
+    PATCH_SWITCH("0x4B44450", "C0035FD6", tgod);//all the minus live
+    PATCH_SWITCH("0x1DEFDCC", "C0035FD6", tgod);
+    PATCH_SWITCH("0x1DF4F24", "C0035FD6", tgod);
+    PATCH_SWITCH("0x48090F8", "C0035FD6", removedrone);//player_move_c and DroneController droneController;
+    PATCH_SWITCH("0x48091B0", "C0035FD6", removedrone);//right below this ^^^
+    PATCH_SWITCH("0x1B0FD20", "200080D2C0035FD6", crithit);//nexthitcritical in weaponsounds
+    PATCH_SWITCH("0x1E23B4C", "200080D2C0035FD6", couponClicker);//this requires abit of effort and luck, go to CollectButtonPressed the class is in the typeof handle then just try to match the bool to the one before by comparing it
+    PATCH_SWITCH("0x45CA398", "00F0271EC0035FD6", reload);//mask_hitman_1_up1 in strings and the method with weaponsounds
+    PATCH_SWITCH("0x236F6BC", "000080D2C0035FD6", gadgetcd);//search Action in player_move_c find the 2 fields with action exactly then above some bools should be a classname which is GADGET
+    PATCH_SWITCH("0x4112F10", "00008052C0035FD6", prespawntime);//search RespawnTime in petinfo
     //    PATCH_SWITCH("0x2F87D18", "00FA80D2C0035FD6", initParams); // do it 0x2F87D18 0x2F944C8 0x2F87D98 0x2F95CF8
-    PATCH_SWITCH("0x24B8C3C", "80388152C0035FD6", collectibles); //search [{0}]{1}:{2}:{3} and just compare
-    PATCH_SWITCH("0x14DA398", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck (hint it should be the same as in 16.6.1)
-    PATCH_SWITCH("0x14DB6AC", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
+    PATCH_SWITCH("0x24B3C5C", "80388152C0035FD6", collectibles); //search [{0}]{1}:{2}:{3} and just compare
+    PATCH_SWITCH("0x14DB3B8", "00008052C0035FD6", teamkill);//compare isTeamMode to 16.6.1  version goodluck (hint it should be the same as in 16.6.1)
+    PATCH_SWITCH("0x14DC6CC", "00008052C0035FD6", teamkill);//look for Random in PlayerBotInstance, you'll find the bool at the end of the method
     //PATCH_SWITCH("0x4810EE8", "E923BB6D", firerate);//_Shot - search component["Shoot"].length; & _ShotPressed = search if ("WeaponGrenade" == null) and match it, set ShotPressed's first 4 bytes as Shot
-    PATCH("0x3C860FC", "C0035FD6");//antiban -  search DeveloperConsoleController.HandleBanUs and the method inside is the one
-    PATCH("0x49C724C", "000080D2C0035FD6");//Swear filter search for sand nigger
-    PATCH("0x3C2225C", "200080D2C0035FD6");//ValidateNickName
-    PATCH("0x3C2249C", "200080D2C0035FD6");//ValidateNickNameNoAnalytics
-    PATCH("0x369AD18", "C0035FD6");//Search for DataSystem.DataValidation and the cctor inside the first class
+    PATCH("0x3C67018", "C0035FD6");//antiban -  search DeveloperConsoleController.HandleBanUs and the method inside is the one
+    PATCH("0x49AF408", "000080D2C0035FD6");//Swear filter search for sand nigger
+    PATCH("0x3C04178", "200080D2C0035FD6");//ValidateNickName
+    PATCH("0x3C043B8", "200080D2C0035FD6");//ValidateNickNameNoAnalytics
+    PATCH("0x367BB70", "C0035FD6");//Search for DataSystem.DataValidation and the cctor inside the first class
 }
 
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("zyCheats PG3D - Premium 1.2e (23.1.2) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("zyCheats PG3D - Premium 1.2f (23.1.3) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth && isAuth()) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
@@ -1263,7 +1279,6 @@ void DrawMenu(){
                     {
                         loadMenu = true;
                     }
-                    ImGui::TextUnformatted(OBFUSCATE("Fixes whenever you're stuck in the loading screen, useful for Spoof Account"));
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Module Upgrades"), &modUp);
@@ -1277,24 +1292,23 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
+                    ImGui::Checkbox(OBFUSCATE("Purchase any weapon skin"), &wepSkins6);
+                    ImGui::TextUnformatted((OBFUSCATE("Lets you purchase any weapon skin")));
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
                     }
-                    if (ImGui::CollapsingHeader(OBFUSCATE("Spoof Methods")))
-                    {
-                        if (ImGui::Button(OBFUSCATE("Spoof Account")))
-                        {
-                            spoofMe = true;
-                        }
-                        ImGui::Checkbox(OBFUSCATE("Original ID -1"), &spoofMe3);
-                    }
-                    if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables")))
-                    {
-                        ImGui::TextUnformatted((OBFUSCATE("Gives the player items you pick, Freezes are expected.")));
+                    ImGui::Checkbox(OBFUSCATE("Spoof ID -1"), &spoofMe3);
+                    ImGui::TextUnformatted(OBFUSCATE("Hides your ID from other players"));
+                    if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables"))) {
+                        ImGui::TextUnformatted((OBFUSCATE(
+                                "Gives the player items you pick, Freezes are expected.")));
                         if (ImGui::Button(OBFUSCATE("Add All Wear"))) {
                             addAllArmors = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Skins"))) {
+                            addAllSkins = true;
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Gadgets"))) {
                             addAllGadgets = true;
@@ -1302,9 +1316,9 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
                             addAllPets = true;
                         }
-                        // if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
-                        //     isAddGraffitis = true;
-                        // }
+                         if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
+                             isAddGraffitis = true;
+                         }
                         // if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
                         //     addAllWepSkins = true;
                         // }
