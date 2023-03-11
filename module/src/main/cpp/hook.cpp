@@ -1127,6 +1127,7 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x4763844", "C0035FD6", spoofMe3); // networkstarttable.start() -> used there
     PATCH_SWITCH("0x24B140C", "00008052C0035FD6", modUp); //search OfferMiniIcons/module and look for the right method in the class
     PATCH_SWITCH("0x41869CC", "00008052C0035FD6", clanEnergy); // search Energy
     PATCH_SWITCH("0x3D82B90", "00008052C0035FD6", bundles); // just analyze LobbyItemsBundle and compare it to the other one to find
