@@ -96,7 +96,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins;
+        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wepSkins1, wepSkins2,wepSkins3, wepSkins4, wepSkins5, wepSkins6 ;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -136,6 +136,19 @@ void* webInstance()
 {
     static void*(*webInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B3BA40")));//Analyze LeprechauntManager.DropReward() and youll find it :)
     return webInstance();
+}
+
+void* weaponSkinInstance(const char* str)
+{
+    static void*(*skinInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3046000")));
+    static void*(*weaponSkinInstance)(void*, int, monoString*) = (void* (*)(void*, int, monoString*))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3060088")));
+    return weaponSkinInstance(skinInstance(), 1170, CreateIl2cppString(str));
+}
+
+void* graffitiInstance()
+{
+    static void*(*graffitiInstance)() = (void* (*)())(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1506D04")));
+    return graffitiInstance();
 }
 
 using namespace std::chrono_literals;
@@ -287,8 +300,13 @@ void (*setIDN) (void* instance, monoString* value);
 void (*setNameN) (void* instance, monoString* value);
 void (*setNetworkParams) (void* instance, monoString* name, monoString* ID, bool* something);
 void (*addSkin) (void* instance, monoString* name);
+void (*addWeaponSkin) (void* weaponSkin);
+void (*addWeaponSkin2) (void* weaponSkin);
 
 void Pointers() {
+    addGraffiti = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1508388")));
+    addWeaponSkin = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2134A14")));
+    addWeaponSkin2 = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2134750")));
     addSkin = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B5D194")));
     //setNetworkParams = (void(*)(void*, monoString*, monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4838618")));
 
@@ -926,13 +944,19 @@ void PixelTime(void *obj) {
         targetFrameRate((int*)(999));
         if (isAddGraffitis) {
             for (int i = 0; i < 15; i++) {
-                addWear((int*)(250000), CreateIl2cppString(graffitiList[i]));
+                addGraffiti(graffitiInstance(), CreateIl2cppString(graffitiList[i]));
             }
             isAddGraffitis = false;
         }
+        if (addAllWepSkins2) {
+            for (int i = 0; i < 459; i++) {
+                addWeaponSkin2(weaponSkinInstance(skinList[i]));
+            }
+            addAllWepSkins2 = false;
+        }
         if (addAllWepSkins) {
             for (int i = 0; i < 459; i++) {
-                addWear((int*)(240000), CreateIl2cppString(skinList[i]));
+                addWeaponSkin(weaponSkinInstance(skinList[i]));
             }
             addAllWepSkins = false;
         }
@@ -1137,11 +1161,14 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x301C3E8", "20008052C0035FD6", wepSkins6);
+
     PATCH_SWITCH("0x4763844", "C0035FD6", spoofMe3); // networkstarttable.start() -> used there
     PATCH_SWITCH("0x24B140C", "00008052C0035FD6", modUp); //search OfferMiniIcons/module and look for the right method in the class
     PATCH_SWITCH("0x41869CC", "00008052C0035FD6", clanEnergy); // search Energy
     PATCH_SWITCH("0x3D82B90", "00008052C0035FD6", bundles); // just analyze LobbyItemsBundle and compare it to the other one to find
     PATCH_SWITCH("0x3D82EA0", "00008052C0035FD6", bundles); // after you find the class ^^^^^^^^^^^^ search for LobbyItemBuff and get the set
+    PATCH_SWITCH("0x3F7B220", "20008052C0035FD6", bundles);
    // PATCH_SWITCH("0x38C5DAC", "20008052C0035FD6", shopnguitest);
     PATCH_SWITCH("0x41877C8", "00008052C0035FD6", clanparts); // just compare it
     PATCH_SWITCH("0x4186CD4", "00008052C0035FD6", clanparts); // just compare it
@@ -1190,7 +1217,6 @@ void DrawMenu(){
                     {
                         loadMenu = true;
                     }
-                    ImGui::TextUnformatted(OBFUSCATE("Fixes whenever you're stuck in the loading screen, useful for Spoof Account"));
                     ImGui::Checkbox(OBFUSCATE("Max Level"), &maxLevel);
                     ImGui::TextUnformatted((OBFUSCATE("Gives the player max level after a match ends (Recommended to use after level3)")));
                     ImGui::Checkbox(OBFUSCATE("Free Module Upgrades"), &modUp);
@@ -1204,19 +1230,15 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
                     ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
+                    ImGui::Checkbox(OBFUSCATE("Purchase any weapon skin"), &wepSkins6);
+                    ImGui::TextUnformatted((OBFUSCATE("Lets you purchase any weapon skin")));
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
                     }
-                    if (ImGui::CollapsingHeader(OBFUSCATE("Spoof Methods")))
-                    {
-                        if (ImGui::Button(OBFUSCATE("Spoof Account")))
-                        {
-                            spoofMe = true;
-                        }
-                        ImGui::Checkbox(OBFUSCATE("Original ID -1"), &spoofMe3);
-                    }
+                    ImGui::Checkbox(OBFUSCATE("Spoof ID -1"), &spoofMe3);
+                    ImGui::TextUnformatted(OBFUSCATE("Hides your ID from other players"));
                     if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables"))) {
                         ImGui::TextUnformatted((OBFUSCATE(
                                 "Gives the player items you pick, Freezes are expected.")));
@@ -1232,9 +1254,9 @@ void DrawMenu(){
                         if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
                             addAllPets = true;
                         }
-                        // if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
-                        //     isAddGraffitis = true;
-                        // }
+                         if (ImGui::Button(OBFUSCATE("Add All Graffities"))) {
+                             isAddGraffitis = true;
+                         }
                         // if (ImGui::Button(OBFUSCATE("Add All Weapon Skins"))) {
                         //     addAllWepSkins = true;
                         // }
