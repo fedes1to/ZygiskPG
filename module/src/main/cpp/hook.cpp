@@ -62,6 +62,68 @@ int glHeight, glWidth;
  *
  */
 
+uintptr_t find_pattern(uint8_t* start, const size_t length, const char* pattern) {
+    const char* pat = pattern;
+    uint8_t* first_match = 0;
+    for (auto current_byte = start; current_byte < (start + length); ++current_byte) {
+        if (*pat == '?' || *current_byte == strtoul(pat, NULL, 16)) {
+            if (!first_match)
+                first_match = current_byte;
+            if (!pat[2])
+                return (uintptr_t)first_match;
+            pat += *(uint16_t*)pat == 16191 || *pat != '?' ? 3 : 2;
+        }
+        else if (first_match) {
+            current_byte = first_match;
+            pat = pattern;
+            first_match = 0;
+        }
+    } return 0;
+}
+
+struct lib_info{
+    void* start_address;
+    void* end_address;
+    intptr_t size;
+    std::string name;
+};
+
+lib_info find_library(const char* module_name) {
+    lib_info library_info{};
+    char line[512], mod_name[64];
+
+    FILE* fp = fopen("/proc/self/maps", "rt");
+    if (fp != nullptr) {
+        while (fgets(line, sizeof(line), fp)) {
+            if (strstr(line, module_name)) {
+                sscanf(line, "%lx-%lx %*s %*s %*s %*d %s",
+                       (long unsigned *)&library_info.start_address,
+                       (long unsigned*)&library_info.end_address, mod_name);
+
+                library_info.size = reinterpret_cast<uintptr_t>(library_info.end_address) -
+                                    reinterpret_cast<uintptr_t>(library_info.start_address);
+
+                if (library_info.name.empty()) {
+                    library_info.name = mod_name;
+                }
+
+                break;
+            }
+        }
+        fclose(fp);
+    }
+
+    return library_info;
+}
+
+
+uintptr_t find_pattern_in_module(const char* lib_name, const char* pattern) {
+    lib_info lib_info = find_library(lib_name);
+    return find_pattern((uint8_t*)lib_info.start_address, lib_info.size, pattern);
+}
+
+#define PHOOK(pattern, ptr, orig) hook((void*)find_pattern_in_module(OBFUSCATE("libil2cpp.so"), OBFUSCATE(pattern)), (void *)ptr, (void **)&orig)
+
 static int selectedScene = 0;
 static int selectedCur = 0;
 static int selectedWeapon = 0;
@@ -312,9 +374,9 @@ void Pointers() {
     //buyWeaponSkinButton = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2138664")));
    // buyButtonHandle = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38D2C88")));
     //addGraffiti = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15B0D2C")));
-    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x32B7668"));
-    Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4458A7C")));
-    File$Exists = (bool(*)(monoString*)) (bool*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x32B637C")));
+    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (find_pattern_in_module("libil2cpp.so", "F4 0F 1E F8 F3 7B 01 A9 60 01 00 B4 08 10 40 B9 F3 03 00 AA C8 02 00 34 E0 03"));
+    Application$persistentDataPath = (monoString*(*)()) (monoString*) (find_pattern_in_module("libil2cpp.so", "F3 7B BF A9 53 41 01 F0 60 02 43 F9 A0 00 00 B5 60 6D 00 F0 00 34 2E 91 40 40"));
+    File$Exists = (bool(*)(monoString*)) (bool*) (find_pattern_in_module("libil2cpp.so", "F4 0F 1E F8 F3 7B 01 A9 34 CE 01 D0 88 7A 50 39 F3 03 00 AA 28 01 00 37 80 AA"));
     provideRoyaleItem = (void(*)(monoString*, bool*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3CB0630")));//search for GlidersInfo.GLIDER_EQUIPPED_KEY and find the right method in that class
     providePet = (void(*)(monoString*, int*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3CECB5C")));//search for [TEST] call StoreKitEventListener.CheckIfFirstTimePayment() and find the method in the class
     buyArmor = (void(*)(void* instance, int*, int*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B2FC94")));//search Armor_Army_1 find the one from Progress and above it its the one
@@ -359,7 +421,7 @@ void Pointers() {
     EnableJetpack = (void (*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47ED644")));//search for AddBonusAfterKillPlayerRPC, PhotonTargets.Others in player_move_c
  //   isDead = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x143726C")));
     SetXrayShader = (void(*)(void*, bool)) (void*) (g_il2cppBaseMap.startAddress + string2Offset("0x48015E8"));//in player_move_c search for .XRay, below is the methos
-    getDeviceUniqueIdentifier = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x442EC6C")));
+    getDeviceUniqueIdentifier = (monoString*(*)()) (monoString*) (find_pattern_in_module("libil2cpp.so", "F3 7B BF A9 93 42 01 D0 60 BE 45 F9 A0 00 00 B5 80 6E 00 F0 00 28 13 91 C4 DF"));
  //   AddScoreOnEvent = (void(*)(void*, int, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473B0FC")));
 #ifdef BIGSEX
     Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
@@ -1131,24 +1193,21 @@ HOOKAF(void, Input, void *thiz, void *ex_ab, void *ex_ac) {
 }
 
 void Hooks() {
-        HOOK("0x477E754", networkStartTable, old_networkStartTable);
-        HOOK("0x49C67C4", formatString, old_formatString);
+      //  HOOK("0x477E754", networkStartTable, old_networkStartTable);
+      //  HOOK("0x49C67C4", formatString, old_formatString);
         //HOOK("0x2135C9C", updateSkinButtons, old_updateSkinButtons);
-        HOOK("0x3D7D43C", PixelTime, old_PixelTime);
+      //  HOOK("0x3D7D43C", PixelTime, old_PixelTime);
        // HOOK("0x38C1638", ShopNGUIController, old_ShopNGUIController);
-        HOOK("0x1B0DD5C", WeaponSounds, oldWeaponSounds);
-        HOOK("0x1431A50", WeaponManager, old_WeaponManager);
-        HOOK("0x480C724", PlayerMoveC, oldPlayerMoveC);
-        HOOK("0x399F4DC", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
-        HOOK("0x338A7A8", CustomHandleJoinRoomFromEnterPasswordBtnClicked, old_CustomHandleJoinRoomFromEnterPasswordBtnClicked);
-        HOOK("0x21F775C", Speed, oldSpeeds);
-        HOOK("0x237569C", gadgetDuration, oldGadgetDuration);//search for gadget_combat_spinner and find the float via analyze
-        HOOK("0x17EEE48", FirstPersonControllSharp, oldFirstPersonControllerSharp);
-        // HOOK("0x47BC280", SendChatHooked, old_SendChatHooked);
-        HOOK("0x41227DC", petSpeed, oldPetSpeeds);//PetInfo
-        HOOK("0x412256C", petHealth, oldpetHealth);
-        HOOK("0x41226A4", petAttack, oldpetAttack);
-        //HOOK("0x1B04ED4", TeammateHealMultiplier, oldTeammateHealMultiplier);
+      //  HOOK("0x1B0DD5C", WeaponSounds, oldWeaponSounds);
+      //  HOOK("0x1431A50", WeaponManager, old_WeaponManager);// HOOK("0x480C724", PlayerMoveC, oldPlayerMoveC);
+       // HOOK("0x399F4DC", HandleJoinRoomFromEnterPasswordBtnClicked, old_HandleJoinRoomFromEnterPasswordBtnClicked);
+       // HOOK("0x338A7A8", CustomHandleJoinRoomFromEnterPasswordBtnClicked, old_CustomHandleJoinRoomFromEnterPasswordBtnClicked);
+        HOOK("0x21F377C", Speed, oldSpeeds);
+        //HOOK("0x237569C", gadgetDuration, oldGadgetDuration);//search for gadget_combat_spinner and find the float via analyze
+        //HOOK("0x17EEE48", FirstPersonControllSharp, oldFirstPersonControllerSharp);
+        //HOOK("0x41227DC", petSpeed, oldPetSpeeds);//PetInfo
+       // HOOK("0x412256C", petHealth, oldpetHealth);
+       // HOOK("0x41226A4", petAttack, oldpetAttack);
 }
 
 void Patches() {
@@ -1506,6 +1565,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     if(autolog) { isValidAuth = tryAutoLogin(); autolog = false;}
 
     if(!hookcheck && isAuth()){
+        LOGE("YEAH");
         Hooks();
         hookcheck = true;
     }

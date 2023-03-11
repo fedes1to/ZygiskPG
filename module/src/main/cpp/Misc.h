@@ -3,13 +3,13 @@
 //
 #ifndef ZYGISKPG_MISC_H
 #define ZYGISKPG_MISC_H
-
 #include "Includes/Dobby/dobbyForHooks.h"
 #include "Include/Unity.h"
 #include "KittyMemory/KittyMemory.h"
 #include "KittyMemory/KittyScanner.h"
 #include "KittyMemory/MemoryPatch.h"
 #include "Include/obfuscate.h"
+#include "hook.h"
 
 using KittyMemory::ProcMap;
 using KittyScanner::RegisterNativeFn;
