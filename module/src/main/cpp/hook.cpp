@@ -1274,7 +1274,7 @@ void Patches() {
 void DrawMenu(){
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     {
-        ImGui::Begin(OBFUSCATE("zyCheats PG3D - Premium 1.2f (23.1.3) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
+        ImGui::Begin(OBFUSCATE("zyCheats PG3D - Premium 1.3a (23.1.3) - chr1s#4191 && networkCommand()#7611 && ohmyfajett#3500"));
         if (isValidAuth && isAuth()) {
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if (ImGui::BeginTabBar("Menu", tab_bar_flags)) {
@@ -1310,9 +1310,6 @@ void DrawMenu(){
                         ImGui::TextUnformatted(OBFUSCATE("If you didnt get all the shit you wanted, retry the same button again."));
                         if (ImGui::Button(OBFUSCATE("Add All Wear"))) {
                             addAllArmors = true;
-                        }
-                        if (ImGui::Button(OBFUSCATE("Add All Skins"))) {
-                            addAllSkins = true;
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Gadgets"))) {
                             addAllGadgets = true;
@@ -1603,9 +1600,8 @@ void *hack_thread(void *arg) {
         sleep(1);
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap(OBFUSCATE("libil2cpp.so"));
     } while (!g_il2cppBaseMap.isValid());
-
     Pointers();
-    sleep(10);
+    sleep(15);
     auto eglhandle = dlopen(OBFUSCATE("libunity.so"), RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, OBFUSCATE("eglSwapBuffers"));
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers, (void**)&old_eglSwapBuffers);
