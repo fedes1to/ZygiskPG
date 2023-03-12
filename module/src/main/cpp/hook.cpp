@@ -96,7 +96,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wepSkins1, wepSkins2,wepSkins3, wepSkins4, wepSkins5, wepSkins6 ;
+        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wearUnlocker, wepSkins6 ;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -1162,7 +1162,8 @@ void Hooks() {
 
 void Patches() {
     PATCH_SWITCH("0x301C3E8", "20008052C0035FD6", wepSkins6);
-
+    PATCH_SWITCH("0x227F954", "80258052C0035FD6", wearUnlocker);
+    PATCH_SWITCH("0x30530C0", "E0868052C0035FD6", wearUnlocker);
     PATCH_SWITCH("0x4763844", "C0035FD6", spoofMe3); // networkstarttable.start() -> used there
     PATCH_SWITCH("0x24B140C", "00008052C0035FD6", modUp); //search OfferMiniIcons/module and look for the right method in the class
     PATCH_SWITCH("0x41869CC", "00008052C0035FD6", clanEnergy); // search Energy
@@ -1229,7 +1230,8 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
-                    ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
+                    ImGui::Checkbox(OBFUSCATE("Wear Unlocker"), &wearUnlocker);
+                    ImGui::TextUnformatted((OBFUSCATE("Shows hidden items and lets you purchase them, make sure to disable right before buying")));
                     ImGui::Checkbox(OBFUSCATE("Purchase any weapon skin"), &wepSkins6);
                     ImGui::TextUnformatted((OBFUSCATE("Lets you purchase any weapon skin")));
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
