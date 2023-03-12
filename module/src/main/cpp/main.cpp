@@ -1,8 +1,9 @@
+#include "hook.h"
+#include "zygisk.hpp"
 #include <cstring>
 #include <jni.h>
 #include <pthread.h>
-#include "hook.h"
-#include "zygisk.hpp"
+
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
