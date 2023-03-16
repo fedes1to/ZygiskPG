@@ -127,6 +127,7 @@ uintptr_t find_pattern_in_module(const char* lib_name, const char* pattern) {
 static int selectedScene = 0;
 static int selectedCur = 0;
 static int selectedWeapon = 0;
+static int selectedNormalWeapon = 0;
 
 std::string IDacc;
 
@@ -158,7 +159,7 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wearUnlocker, wepSkins6, portalLog;
+        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wearUnlocker, wepSkins6, portalLog, isAddWepPress2;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -328,18 +329,6 @@ void* (Player_move_c$skinName)(void* ref) {
     }
 }
 
-
-
-#ifdef BIGSEX
-                                                                                                                                                                                                                                // DebugLogWindow
-
-void* (*DebugLogWindow$get_debugLogWindow)();
-
-// Resources
-
-void* (*Resources$Load)(monoString* path);
-#endif
-
 void (*LookAt)(void* obj, Vector3);
 void (*set_rotation)(void* obj, Quaternion value);
 void (*get_rotation)(void* obj);
@@ -366,7 +355,7 @@ void (*addWeaponSkin) (void* weaponSkin);
 void (*addWeaponSkin2) (void* weaponSkin);
 
 void Pointers() {
-    addGraffiti = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1508388")));
+    addGraffiti = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15082D8")));
     addWeaponSkin = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2134A14")));
     addWeaponSkin2 = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2134750")));
     addSkin = (void(*)(void*, monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B5D194")));
@@ -432,10 +421,6 @@ void Pointers() {
     SetXrayShader = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset("0x47E7D18"));//in player_move_c search for .XRay, below is the methos
     getDeviceUniqueIdentifier = (monoString*(*)()) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4419F38")));
  //   AddScoreOnEvent = (void(*)(void*, int, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473B0FC")));
-#ifdef BIGSEX
-    Resources$Load = (void*(*)(monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x437FCA0")));
-    DebugLogWindow$get_debugLogWindow = (void*(*)()) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x16766AC")));
-#endif
 }
 
 #include "Auth.h"
@@ -496,6 +481,11 @@ void WeaponManager(void *obj) {
         {
             addWeapon(obj, CreateIl2cppString(goofyWeps[selectedWeapon]), (int *) (62));
             isAddWepPress = false;
+        }
+        if (isAddWepPress2)
+        {
+            addWeapon(obj, CreateIl2cppString(wepList[selectedNormalWeapon]), (int *) (62));
+            isAddWepPress2 = false;
         }
     }
     old_WeaponManager(obj);
@@ -1040,7 +1030,7 @@ void PixelTime(void *obj) {
             spoofMe = false;
         }
         if (loadMenu) {
-            LoadLevel(CreateIl2cppString(OBFUSCATE("AppCeneter")));
+            LoadLevel(CreateIl2cppString(OBFUSCATE("Menu_Custom")));
             loadMenu = false;
         }
         if(portalLog){
@@ -1227,6 +1217,8 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x1430C40", "00008052C0035FD6", showItems);
+    PATCH_SWITCH("0x14261E0", "00008052C0035FD6", showItems);
     PATCH_SWITCH("0x301C3E8", "20008052C0035FD6", wepSkins6);
     PATCH_SWITCH("0x227F954", "80258052C0035FD6", wearUnlocker);
     PATCH_SWITCH("0x30530C0", "E0868052C0035FD6", wearUnlocker);
@@ -1292,6 +1284,8 @@ void DrawMenu(){
                     ImGui::TextUnformatted((OBFUSCATE("Gives infinite energy")));
                     ImGui::Checkbox(OBFUSCATE("Collectibles"), &collectibles);
                     ImGui::TextUnformatted(OBFUSCATE("Does what collectibles used to do"));
+                    ImGui::Checkbox(OBFUSCATE("Gadget unlock"), &gadgetUnlock);
+                    ImGui::TextUnformatted(OBFUSCATE("Makes gadgets unlockable, recommended to just use Unlock All Gadgets in unlockables"));
                     ImGui::Checkbox(OBFUSCATE("Free Bundles"), &bundles);
                     ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
@@ -1302,6 +1296,7 @@ void DrawMenu(){
                     ImGui::TextUnformatted((OBFUSCATE("Allows you to buy any skin, just press on it and buy!")));
                     ImGui::Checkbox(OBFUSCATE("Free Lottery"), &modKeys);
                     ImGui::TextUnformatted(OBFUSCATE("Makes the keys a negative value. (Don't buy stuff from the Armoury while this is on)"));
+                    ImGui::Checkbox(OBFUSCATE("Show Items"), &showItems);
                     if (ImGui::Button(OBFUSCATE("Buy Easter Sticker Pack"))) {
                         isBuyEasterSticker = true;
                     }
@@ -1309,7 +1304,6 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Hides your ID from other players"));
                     if (ImGui::CollapsingHeader(OBFUSCATE("Unlockables"))) {
                         ImGui::TextUnformatted((OBFUSCATE("Gives the player items you pick, Freezes are expected.")));
-                        ImGui::TextUnformatted(OBFUSCATE("If you didnt get all the shit you wanted, retry the same button again."));
                         ImGui::TextUnformatted(OBFUSCATE("If you didnt get all the shit you wanted, retry the same button again."));
                         if (ImGui::Button(OBFUSCATE("Add All Wear"))) {
                             addAllArmors = true;
@@ -1343,39 +1337,48 @@ void DrawMenu(){
                         }
                         if (ImGui::CollapsingHeader(OBFUSCATE("Weapon Unlock")))
                         {
-
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
-                                isAddWeapons = true;
+                            if (ImGui::CollapsingHeader(OBFUSCATE("Mass Unlock"))) {
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 0-150"))) {
+                                    isAddWeapons = true;
+                                }
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 151-300"))) {
+                                    isAddWeapons2 = true;
+                                }
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 301-450"))) {
+                                    isAddWeapons3 = true;
+                                }
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 451-600"))) {
+                                    isAddWeapons4 = true;
+                                }
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 601-750"))) {
+                                    isAddWeapons5 = true;
+                                }
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 751-900"))) {
+                                    isAddWeapons6 = true;
+                                }
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 901-1050"))) {
+                                    isAddWeapons7 = true;
+                                }
+                                if (ImGui::Button(OBFUSCATE("Add All Weapons 1051-1194"))) {
+                                    isAddWeapons8 = true;
+                                }
                             }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 151-300"))) {
-                                isAddWeapons2 = true;
-                            }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 301-450"))) {
-                                isAddWeapons3 = true;
-                            }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 451-600"))) {
-                                isAddWeapons4 = true;
-                            }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 601-750"))) {
-                                isAddWeapons5 = true;
-                            }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 751-900"))) {
-                                isAddWeapons6 = true;
-                            }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 901-1050"))) {
-                                isAddWeapons7 = true;
-                            }
-                            if (ImGui::Button(OBFUSCATE("Add All Weapons 1051-1194"))) {
-                                isAddWeapons8 = true;
-                            }
-                            ImGui::ListBox(OBFUSCATE("Weapon"), &selectedWeapon, goofyWeps,IM_ARRAYSIZE(goofyWeps), 4);
+                            ImGui::ListBox(OBFUSCATE("Weapons"), &selectedNormalWeapon, wepList,IM_ARRAYSIZE(wepList), 4);
                             if (ImGui::Button(OBFUSCATE("Add Weapon"))) {
+                                isAddWepPress2 = true;
+                            }
+                            ImGui::ListBox(OBFUSCATE("Unobtainables"), &selectedWeapon, goofyWeps,IM_ARRAYSIZE(goofyWeps), 4);
+                            if (ImGui::Button(OBFUSCATE("Add Unobtainable Weapon"))) {
                                 isAddWepPress = true;
                             }
                         }
                     }
                     if (ImGui::CollapsingHeader(OBFUSCATE("Currency Mods"))) {
+#ifdef BIGSEX
+                        ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 100000);
+#else
                         ImGui::SliderInt(OBFUSCATE("Amount"), &amountws, 0, 5000);//dont fucking change it you cocksucker, make it how you want in a dev build but for users its 5000
+#endif
                         ImGui::TextUnformatted(OBFUSCATE("Will be counted as the value that the game will use. (I reccommend not getting more than 50K)"));
                         ImGui::ListBox(OBFUSCATE("Currency"), &selectedCur, curList,IM_ARRAYSIZE(curList), 4);
                         if (ImGui::Button(OBFUSCATE("Add Currency"))) {
