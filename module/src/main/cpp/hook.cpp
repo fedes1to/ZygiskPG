@@ -1105,6 +1105,7 @@ void PixelTime(void *obj) {
             {
                 addSkin(webInstance(), CreateIl2cppString(skinsArray[i]));
             }
+            addAllSkins = false;
         }
         if (addAllPets) {
             for (int i = 0; i < 94; i++) {
@@ -1310,6 +1311,9 @@ void DrawMenu(){
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Gadgets"))) {
                             addAllGadgets = true;
+                        }
+                        if (ImGui::Button(OBFUSCATE("Add All Player Skins"))) {
+                            addAllSkins = true;
                         }
                         if (ImGui::Button(OBFUSCATE("Add All Pets"))) {
                             addAllPets = true;
