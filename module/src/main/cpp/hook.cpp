@@ -159,7 +159,8 @@ bool maxLevel, cWear, uWear, gadgetUnlock, isLoadScenePressed, modKeys, tgod,
         showItems, gadgetduration, isAddWeapons7,isAddWeapons8,uncapFps, couponClicker, teamkill, noclip, pgod, pspeed, pdamage, prespawntime, addAllWepSkins,
         isAddWepPress, addAllPets, addAllRoyale1, addAllRoyale2, addAllRoyale3, addAllRoyale4, playerScore, gbullets, flamethrower, pnoclip, reflections,
         isAddGraffitis, showWepSkins, clanparts, buyall, shopnguitest, showInfo, unban, spoofMe2, spoofMe3, loadMenu, bundles, wepSkins,
-        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wearUnlocker, wepSkins6, portalLog, isAddWepPress2;
+        modUp, clanEnergy, hookcheck, invisible, ammosteal, ignorereflect, mythic, addAllSkins, addAllWepSkins2, wearUnlocker, wepSkins6, portalLog, isAddWepPress2,
+        isAdded, lobbyItems;
 
 float damage, rimpulseme, rimpulse,fovModifier,snowstormbullval, jumpHeight;
 int reflection, amountws, maxLevelam;
@@ -1217,6 +1218,7 @@ void Hooks() {
 }
 
 void Patches() {
+    PATCH_SWITCH("0x1D9BEE0", "20008052C0035FD6", isAdded);
     PATCH_SWITCH("0x1430C40", "00008052C0035FD6", showItems);
     PATCH_SWITCH("0x14261E0", "00008052C0035FD6", showItems);
     PATCH_SWITCH("0x301C3E8", "20008052C0035FD6", wepSkins6);
@@ -1228,6 +1230,8 @@ void Patches() {
     PATCH_SWITCH("0x3D82B90", "00008052C0035FD6", bundles); // just analyze LobbyItemsBundle and compare it to the other one to find
     PATCH_SWITCH("0x3D82EA0", "00008052C0035FD6", bundles); // after you find the class ^^^^^^^^^^^^ search for LobbyItemBuff and get the set
     PATCH_SWITCH("0x3F7B220", "20008052C0035FD6", bundles);
+    PATCH_SWITCH("0x3F7B840", "20008052C0035FD6", lobbyItems);
+    PATCH_SWITCH("0x3F7B2A0", "00008052C0035FD6", lobbyItems);
    // PATCH_SWITCH("0x38C5DAC", "20008052C0035FD6", shopnguitest);
     PATCH_SWITCH("0x41877C8", "00008052C0035FD6", clanparts); // just compare it
     PATCH_SWITCH("0x4186CD4", "00008052C0035FD6", clanparts); // just compare it
@@ -1288,6 +1292,8 @@ void DrawMenu(){
                     ImGui::TextUnformatted(OBFUSCATE("Makes gadgets unlockable, recommended to just use Unlock All Gadgets in unlockables"));
                     ImGui::Checkbox(OBFUSCATE("Free Bundles"), &bundles);
                     ImGui::TextUnformatted(OBFUSCATE("Lets you buy lobby bundles for free"));
+                    ImGui::Checkbox(OBFUSCATE("Show hidden lobby items"), &lobbyItems);
+                    ImGui::TextUnformatted(OBFUSCATE("Lets you buy hidden lobby items"));
                     ImGui::Checkbox(OBFUSCATE("Free Clan Parts"), &clanparts);
                     ImGui::TextUnformatted(OBFUSCATE("Makes it so you can upgrade forts/tanks easily"));
                     ImGui::Checkbox(OBFUSCATE("Wear Unlocker"), &wearUnlocker);
@@ -1398,6 +1404,8 @@ void DrawMenu(){
                     ImGui::Checkbox(OBFUSCATE("Speed"), &speed);
                     ImGui::Checkbox(OBFUSCATE("Invisible"), &invisible);
                     ImGui::TextUnformatted(OBFUSCATE("Makes you invisible after you respawn."));
+                    ImGui::Checkbox(OBFUSCATE("Is Added"), &isAdded);
+                    ImGui::TextUnformatted(OBFUSCATE("Makes every player added"));
                     ImGui::SliderFloat(OBFUSCATE("Jump/Jetpack Height"), &jumpHeight, 0.0f,2.5f);
                     ImGui::EndTabItem();
                 }
