@@ -131,7 +131,7 @@ bool tryAutoLogin() {
         jsonresult = j.dump(1);
         accessibleCode = http_code;
         results = result;
-        if (jsonresult.find("success") != std::string::npos && jsonresult.find(hwid) != std::string::npos && jsonresult.find(username) != std::string::npos) {
+        if (jsonresult.find("success") != std::string::npos) {
             split = string2Offset(OBFUSCATE("0x30"));
             return true;
         }
