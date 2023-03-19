@@ -373,7 +373,7 @@ void Pointers() {
     //buyWeaponSkinButton = (void(*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x2138664")));
    // buyButtonHandle = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x38D2C88")));
     //addGraffiti = (void(*)(void*, monoString*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x15B0D2C")));
-    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset("0x329E4C0"));
+    File$ReadAllLines = (monoArray<monoString*> *(*)(monoString*)) (monoArray<monoString*>*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x329E4C0")));
     Application$persistentDataPath = (monoString*(*)()) (monoString*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4441D70")));
     File$Exists = (bool(*)(monoString*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x329D1D4")));
     provideRoyaleItem = (void(*)(monoString*, bool*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x3C9154C")));//search for GlidersInfo.GLIDER_EQUIPPED_KEY and find the right method in that class
@@ -388,11 +388,11 @@ void Pointers() {
     setSomething = (void(*) (void*, monoString*, int*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1B44CC0")));//search up ClanLootBoxPoints and look for Progress
     SendChat = (void(*) (void*, monoString*, bool, monoString *)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47CE6C0")));//search SendChat
     addWeapon = (void(*) (void*, monoString*, int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x1437B5C")));//search AddW_eaponToInv rec == null , tag =  {0}
-    SetMasterClient = (bool(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset("0x446D5E8"));//search SetMasterClient in strings
-    get_LocalPlayer = (void*(*)()) (g_il2cppBaseMap.startAddress + string2Offset("0x446600C"));//find the photonplayer class name and just search it until you find something similiar to the old version
-    DestroyPlayerObjects = (void (*)(void *)) (g_il2cppBaseMap.startAddress + string2Offset("0x446DAA4"));//search DestroyPlayerObjects in strings
-    PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (g_il2cppBaseMap.startAddress + string2Offset("0x446631C"));//same steps as localplayer, its the 2nd array, so below the first array method you see
-    EnableXray = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset("0x47C0990"));//search "use_zoom"
+    SetMasterClient = (bool(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x446D5E8")));//search SetMasterClient in strings
+    get_LocalPlayer = (void*(*)()) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x446600C")));//find the photonplayer class name and just search it until you find something similiar to the old version
+    DestroyPlayerObjects = (void (*)(void *)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x446DAA4")));//search DestroyPlayerObjects in strings
+    PhotonNetwork_playerListothers = (monoArray<void **> *(*)()) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x446631C")));//same steps as localplayer, its the 2nd array, so below the first array method you see
+    EnableXray = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47C0990")));//search "use_zoom"
     BuyStickerPack = (void(*)(int*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x416EBF0")));//look in StickersController, compare and find the right function
     JoinToRoomPhotonAfterCheck = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x397DDE4")));//not obfuscated just search
     JoinToRoomPhotonAfterCheckCustom = (void(*)(void*)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x336D7E4")));//not obfuscated just search
@@ -419,7 +419,7 @@ void Pointers() {
     //set_position = (void (*)(void*, Vector3)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4410ABC")));
     EnableJetpack = (void (*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47D3D74")));//search for AddBonusAfterKillPlayerRPC, PhotonTargets.Others in player_move_c
  //   isDead = (bool (*)(void*)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x143726C")));
-    SetXrayShader = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset("0x47E7D18"));//in player_move_c search for .XRay, below is the methos
+    SetXrayShader = (void(*)(void*, bool)) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x47E7D18")));//in player_move_c search for .XRay, below is the methos
     getDeviceUniqueIdentifier = (monoString*(*)()) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x4419F38")));
  //   AddScoreOnEvent = (void(*)(void*, int, float)) (void*) (g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473B0FC")));
 }
@@ -841,7 +841,7 @@ float petAttack(void* obj){
 
 bool isEnemy(void* player, void* enemy)
 {
-    bool (*isEnemy)(void *player, void *enemy) = (bool(*)(void *, void *))(g_il2cppBaseMap.startAddress + string2Offset("0x473BCB0")); // PlayerDamageable$$IsEnemyTo
+    bool (*isEnemy)(void *player, void *enemy) = (bool(*)(void *, void *))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473BCB0"))); // PlayerDamageable$$IsEnemyTo
     return isEnemy(player, enemy);
 }
 
@@ -851,7 +851,7 @@ bool IsMine(void* SkinName){
 
 bool isDead(void* player)
 {
-    bool (*IsDead)(void *player) = (bool(*)(void *))(g_il2cppBaseMap.startAddress + string2Offset("0x473C00C")); // PlayerDamageable$$IsDead
+    bool (*IsDead)(void *player) = (bool(*)(void *))(g_il2cppBaseMap.startAddress + string2Offset(OBFUSCATE("0x473C00C"))); // PlayerDamageable$$IsDead
     return IsDead(player);
 }
 
