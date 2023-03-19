@@ -92,6 +92,7 @@ bool tryAutoLogin() {
         password.erase(i);
     }
 
+    char *ip;
     CURL *handle;
     CURLcode result;
     long http_code;
@@ -104,7 +105,6 @@ bool tryAutoLogin() {
 
     struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, OBFUSCATE("Content-Type: application/x-www-form-urlencoded"));
-
     std::ostringstream oss;
     oss << OBFUSCATE("type=login&aid=") << aid << OBFUSCATE("&apikey=")<< apikey << OBFUSCATE("&secret=") << secret << OBFUSCATE("&username=")<< username.c_str() << OBFUSCATE("&password=") << password.c_str() << OBFUSCATE("&hwid=") << hwid;
     std::string var = oss.str();
@@ -124,6 +124,13 @@ bool tryAutoLogin() {
     result = curl_easy_perform(handle); /* post away! */
 
     curl_easy_getinfo (handle, CURLINFO_RESPONSE_CODE, &http_code);
+    curl_easy_getinfo(handle, CURLINFO_LOCAL_IP, &ip);
+
+    char chars[] = "- ";
+    std::string totally = getDeviceUniqueIdentifier()->getString();
+    for (unsigned int i = 0; i < strlen(chars); ++i) {
+        totally.erase (std::remove(totally.begin(), totally.end(), chars[i]), totally.end());
+    }
 
     curl_slist_free_all(headers); /* free the header list */
     if (http_code == 200 && result != CURLE_ABORTED_BY_CALLBACK) {
@@ -131,7 +138,7 @@ bool tryAutoLogin() {
         jsonresult = j.dump(1);
         accessibleCode = http_code;
         results = result;
-        if (jsonresult.find("success") != std::string::npos) {
+        if (jsonresult.find("success") != std::string::npos && jsonresult.find(username) != std::string::npos && jsonresult.find(totally) != std::string::npos) {
             split = string2Offset(OBFUSCATE("0x30"));
             return true;
         }

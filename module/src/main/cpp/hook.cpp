@@ -1619,7 +1619,9 @@ void *hack_thread(void *arg) {
         g_il2cppBaseMap = KittyMemory::getLibraryBaseMap(OBFUSCATE("libil2cpp.so"));
     } while (!g_il2cppBaseMap.isValid());
     Pointers();
+#ifndef BIGSEX
     sleep(15);
+#endif
     auto eglhandle = dlopen(OBFUSCATE("libunity.so"), RTLD_LAZY);
     auto eglSwapBuffers = dlsym(eglhandle, OBFUSCATE("eglSwapBuffers"));
     DobbyHook((void*)eglSwapBuffers,(void*)hook_eglSwapBuffers, (void**)&old_eglSwapBuffers);
