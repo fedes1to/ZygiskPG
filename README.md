@@ -2,7 +2,7 @@
 Mod Menu for Pixel Gun 3D
 
 This is NOT a good project 
-You WILL encounter many problems
+You WILL encounter many proplams.
 
 
 # Build and Installation
